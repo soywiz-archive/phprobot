@@ -33,6 +33,19 @@
 		return array(gethostbyname($host), (int)$port);
 	}
 
+	// ENDED
+	function getSimilarValue($array, $value, $prec = 60) {
+		if (!is_array($array)) $array = array($array);
+		$return = $value = strtolower(trim($value));
+
+		foreach ($array as $va) {
+			similar_text(strtolower(trim($va)), $value, $per);
+			if ($per > $prec) { $prec = $per; $return = $va; }
+		}
+
+		return $return;
+	}
+
 	function getSimilarArray($array, $value) {
 		$return = array();
 		foreach ($array as $k => $v) {

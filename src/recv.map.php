@@ -313,9 +313,9 @@
 			$z->level_max = $v['level_max'];
 			$z->sp_max    = $v['sp_max'];
 			$z->range     = $v['range'];
-			$z->name      = isset($o->lists['skill_names'][$v['id']])  ? $o->lists['skill_names'][$v['id']]  : 'Unknown';
-			$z->title     = isset($o->lists['skill_titles'][$v['id']]) ? $o->lists['skill_titles'][$v['id']] : 'Unknown';
-			$z->delay     = isset($o->lists['skill_delays'][$v['id']]) ? $o->lists['skill_delays'][$v['id']] : 0;
+			$z->name      = isset($o->lists['Skill_name'][$v['id']])  ? $o->lists['Skill_name'][$v['id']]  : 'Unknown';
+			$z->title     = isset($o->lists['Skill_title'][$v['id']]) ? $o->lists['Skill_title'][$v['id']] : 'Unknown';
+			$z->delay     = isset($o->lists['Skill_delay'][$v['id']]) ? $o->lists['Skill_delay'][$v['id']] : 0;
 			$z->canup     = $v['canup'];
 		}
 	}
@@ -557,10 +557,6 @@
 		$d = parse_str_packet($d, 'a[id;name;guild_name;title]lz[24]z[24]-z[24]z[24]');
 	}
 
-	// 019b - Unit Gained Level
-	function parse_recv_019b(GenericBot &$o, $p, $d) {
-		echo "Unparsed packet: 0x019b\n";
-	}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -659,6 +655,134 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+
+	// 00e5 - Trade Request
+	function parse_recv_00e5(GenericBot &$o, $p, $d) {
+		$d = parse_str_packet($d, 'a[name]z[24]');
+
+		$o->onTradeRequest(
+			$o->trade_entity      = Entity::getEntityByName($o, $d['name']),
+			$o->trade_entity_name = $d['name']
+		);
+
+		//$entity->visible = true;
+	}
+
+	// 00e7 - Trade Response
+	function parse_recv_00e7(GenericBot &$o, $p, $d) {
+		$d = parse_str_packet($d, 'a[mes]b');
+
+		switch ($d['mes']) {
+			case DealConst::SUCCESS:
+				$o->onTradeStart($o->trade_entity, $o->trade_entity_name);
+			break;
+			default:
+				$o->onTradeCancel($o->trade_entity, $o->trade_entity_name, $d['mes']);
+			break;
+		}
+
+		//$entity->visible = true;
+	}
+
+	// 00ea - Add items
+	function parse_recv_00ea(GenericBot &$o, $p, $d) {
+		$d = parse_str_packet($d, 'a[index;mes]wb');
+
+		//echo $d['index'] . ': ' . $d['mes'] . "\n";
+	}
+
+	// 00ec - Trade OK From
+	function parse_recv_00ec(GenericBot &$o, $p, $d) {
+		$d = parse_str_packet($d, 'a[from]b');
+
+		$o->tradeOkFlags |= (1 << $d['from']);
+
+		if ($d['from'] == DealConst::OK_OTHER) $o->onTradeOk($o->trade_entity, $o->trade_entity_name);
+
+		//echo "Trade OK : " . $o->tradeOkFlags . ' - ' . $d['from'] . "\n";
+
+		// Si ambos est疣 disponibles
+		//echo 'FLAGS: ' . $o->tradeOkFlags . ' - ' . DealConst::OK_SELF . ' | ' . DealConst::OK_OTHER . "\n";
+		if (($o->tradeOkFlags & (1 << DealConst::OK_SELF)) && ($o->tradeOkFlags & (1 << DealConst::OK_OTHER))) {
+			$o->onTradeFinish($o->trade_entity, $o->trade_entity_name);
+		}
+	}
+
+	// 00ee - Trade Cancel (message)
+	function parse_recv_00ee(GenericBot &$o, $p, $d) {
+		$o->onTradeCancel($o->trade_entity, $o->trade_entity_name, DealConst::ERROR_CANCEL);
+	}
+
+	// 00f0 - Trade Success (message)
+	function parse_recv_00f0(GenericBot &$o, $p, $d) {
+		$o->onTradeSuccess($o->trade_entity, $o->trade_entity_name);
+	}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+	// 019b - Effect
+	function parse_recv_019b(GenericBot &$o, $p, $d) {
+		$d = parse_str_packet($d, 'a[id;type]ll');
+
+		$e = &Entity::GetEntityByIdCreate($o, $d['id']);
+
+		switch ($d['type']) {
+			case 0x00: $o->onEffect($e, $d['type']); break; // Base Level Up
+			case 0x01: $o->onEffect($e, $d['type']); break; // Job Level Up
+			case 0x03: $o->onEffect($e, $d['type']); break; // Refining
+			default: throw(new Exception("019b type unknown (" . $d['type'] . ")")); break;
+		}
+	}
+
+	// 008a - Attack/Sit/Stand
+	function parse_recv_008a(GenericBot &$o, $p, $d) {
+		$d = parse_str_packet($d, 'a[src_id;dst_id;tick;src_speed;dst_speed;param1;param2;type;param3]lllllwwbw');
+
+		if ($d['src_id'] != 0) $from = &Entity::GetEntityByIdCreate($o, $d['src_id']); else $from = NULL;
+		if ($d['dst_id'] != 0) $to   = &Entity::GetEntityByIdCreate($o, $d['dst_id']); else $to = NULL;
+
+		switch ($d['type']) {
+			case 0x00: break; // MISS/Damage
+			case 0x01: break; // Item pickup
+			case 0x02: $o->onSit($from);   break; // Sit Down
+			case 0x03: $o->onStand($from); break; // Stand Up
+			case 0x08: break; // Multiple Attack
+			case 0x0a: break; // Critical Attack
+			case 0x0b: break; // Perfect Evade
+			default:   throw(new Exception("008a type unknown (" . $d['type'] . ")")); break;
+		}
+
+/*
+	type=00 param1=0 miss
+			param1=0 miss
+	type=00 param1:ダメージ(の合計?) param2:分割数 param3:アサシン2刀流逆手ダメージ
+			param1:damage(of total?) param2:number of division  param3:damage of assasin's left hand
+		NPCからの攻撃の場合、param2,param3はゴミデータ
+		if the attack was by npc, param2 and param3 are not used
+		speedはPCの場合内部ASPDと一致
+		speed match the aspd if it's player character
+	type=01 itemを拾う ID*2以外ゴミ
+			pick up item, unused data except ID*2
+	type=02 座る src ID以外ゴミ
+			sit down, unused data except src ID
+	type=03 立つ src ID以外ゴミ
+			stand up, unused data except src ID
+	type=08 複数攻撃
+			multiple attack
+	type=0a クリティカル
+			critical attack
+	type=0b 完全回避
+			perfect evade
+*/
+
+		//echo $d['index'] . ': ' . $d['mes'] . "\n";
+	}
+
+	//R 008a <src ID>.l <dst ID>.l <server tick>.l <src speed>.l <dst speed>.l <param1>.w <param2>.w <type>.B <param3>.w
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -46,4 +46,24 @@
 			// TODO
 		}
 	}
+
+///////////////////////////////////////////////////////////////////////////////
+
+	function sendRequestResponse(GenericBot &$o, $accept = false) {
+		$o->sock->send(maker16(0x00e6) . maker8($accept ? 3 : 4));
+	}
+
+	function sendTradeZeny(GenericBot &$o, $zeny) {
+		$o->sock->send(maker16(0x00eb) . maker16(0) . maker32($zeny));
+	}
+
+	function sendTradeOk(GenericBot &$o) {
+		//echo "sendTradeOk(GenericBot &$o)\n";
+		$o->sock->send(maker16(0x00eb));
+	}
+
+	function sendTradeFinish(GenericBot &$o) {
+		echo "sendTradeFinish(GenericBot &$o)\n";
+		$o->sock->send(maker16(0x00ef));
+	}
 ?>

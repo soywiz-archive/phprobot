@@ -12,6 +12,7 @@
 	define('GB_SYSTEM_LODADED', true);
 
 	require_once(PATH_SYSTEM . '/types.php');
+	require_once(PATH_SYSTEM . '/constants.php');
 
 	require_once(PATH_SYSTEM . '/send.master.php');
 	require_once(PATH_SYSTEM . '/send.chara.php');
@@ -54,6 +55,11 @@
 	abstract class GenericBot {
 		public $lists = array();
 		public $player;
+
+		// Trade
+		public $trade_entity;
+		public $trade_entity_name;
+		public $tradeOkFlags;
 
 		public $trackPath;
 		public $trackLast;
@@ -195,11 +201,14 @@
 						$hex = str_pad(dechex($p), 4, '0', STR_PAD_LEFT);
 
 						$f = "parse_recv_{$hex}";
+						//echo "+ $f\n";
 						if (!function_exists($f)) {
 							throw(new Exception("La función '{$f}' no está definida\n"));
 						} else {
 							$f($this, $p, $d);
 						}
+
+						$this->tasks->run($this);
 					}
 				break;
 			}
@@ -379,8 +388,31 @@
 			$this->moveAt($pos[0], $pos[1], $add);
 		}
 
-		function moveNear(Entity &$entity, $near = 2, $add = false) {
-			$this->moveNearTo($entity->x, $entity->y, $near, $add);
+		function moveNear($entity, $near = 2, $add = false) {
+			if ($entity instanceof Entity) $this->moveNearTo($entity->x, $entity->y, $near, $add);
+		}
+
+		// TRADE
+
+		function tradeRequestAccept() {
+			sendRequestResponse($this, true);
+		}
+
+		function tradeCancel() {
+			sendRequestResponse($this, false);
+		}
+
+		function tradeOk($zeny = NULL) {
+			if (isset($zeny)) $this->tradeZeny($zeny);
+			sendTradeOk($this);
+		}
+
+		function tradeZeny($zeny) {
+			sendTradeZeny($this, $zeny);
+		}
+
+		function tradeFinish() {
+			sendTradeFinish($this);
 		}
 
 // ----------------------------------------------------------------------------
@@ -412,9 +444,17 @@
 		function onUpdateSP(Entity &$e)     { }
 
 		// Dealing
-		function onDealRequest(Entity &$e)  { }
-		function onDealStart(Entity &$e)    { }
-		function onDealCancel(Entity &$e)   { }
-		function onDealSuccess(Entity &$e)  { }
+		function onTradeRequest(Entity &$e, $from_name)        { $this->tradeCancel(); }
+		function onTradeStart(Entity &$e, $from_name)          { }
+		function onTradeCancel(Entity &$e, $from_name, $error) { }
+		function onTradeSuccess(Entity &$e, $from_name)        { }
+		function onTradeOk(Entity &$e, $from_name)             { $this->tradeOk(); }
+		function onTradeFinish(Entity &$e, $from_name)         { $this->tradeFinish(); }
+
+		// Sit/Stand
+		function onSit(Entity &$e)   { }
+		function onStand(Entity &$e) { }
+
+		function onEffect(Entity &$e, $type) { }
 	}
 ?>

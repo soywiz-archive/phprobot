@@ -109,19 +109,47 @@
 				$data = explode(' ', $text, 2);
 				if (!isset($data[1])) $data[1] = ''; else $data[1] = ltrim($data[1]);
 
-				$command = $data[0];
+				$command = getSimilarValue(
+					array(
+						'exit', 'say', 'move', 'where', 'skill', 'similar', 'look'
+					),
+					$data[0],
+					85
+				);
+
+				echo "COMMAND: {$command}\n";
+
 				switch (strtolower(trim($command))) {
 					case 'exit': exit; break;
 					case 'say':  $this->say($data[1]); break;
-					case 'move': $this->moveAt($from->x, $from->y); break;
-					case 'move_near': $this->moveNear($from, 4); break;
+					//case 'move': $this->moveAt($from->x, $from->y); break;
+					//case 'move_near': $this->moveNear($from, 4); break;
+					case 'move':
+						$s = &$data[1];
+						echo "MOVE: $s\n";
+						if (trim($s)) {
+							$this->moveNear($e = Entity::getEntityBySimilarName($this, $s), 4);
+							echo "MOVE: $e";
+							if ($e instanceof Entity) echo "-> " . $e->name;
+							echo "\n";
+						} else {
+							$this->moveNear($from, 4);
+						}
+					break;
 					case 'where':
 						$to_say = $this->map->name . ' : ' . $this->player->x . ', ' . $this->player->y;
 						echo $to_say . "\n";
 						$this->say($to_say);
 					break;
 					case 'skill':
-
+						Skill::$sensibleSimilar = 20;
+						$s = &$data[1];
+						try {
+							$this->useSkill($sk = Skill::getSkillBySimilarName($this, $s), 10, $from);
+							echo "Must use SKILL: " . $sk->name . "\n";
+						} catch (Exception $e) {
+							echo "Don't have skill\n";
+						}
 					break;
 					case 'similar':
 						foreach (Entity::entitySimilar($this, $data[1]) as $v) {
@@ -140,6 +168,15 @@
 							break;
 						}
 					break;
+					default:
+						Skill::$sensibleSimilar = 44;
+						try {
+							$this->useSkill($sk = Skill::getSkillBySimilarName($this, $command), 10, $from);
+							echo "Must use SKILL: " . $sk->name . "\n";
+						} catch (Exception $e) {
+							echo "I dont understand you\n";
+						}
+					break;
 				}
 			}
 		}
@@ -149,13 +186,18 @@
 //-----------------------------------------------------------------------------
 
 		function onMoving(Entity &$e) {
+			if (!isset($this->myMoveTick)) $this->myMoveTick = 0;
+
 			echo "* onMoving();\n";
 			//echo $e->id . ': ' . $e->x . ', ' . $e->y . ' - (' . $e->name . ')' . "\n";
 			//$this->lookAt($e);
 			//$this->moveNear($e);
 			if ($e->visible) {
 				if (strtolower($e->name) == 'thewiz') {
-					$this->moveNear($e, 4);
+					if ($this->myMoveTick++ >= 3) {
+						$this->moveNear($e, 4);
+						$this->myMoveTick = 0;
+					}
 				}
 			} else {
 				if (strtolower($e->name) == 'thewiz') {
@@ -166,6 +208,11 @@
 		}
 
 		function onUpdateHP(Entity &$e) {
+			if (isset($e) && (($e->is('thewiz')) || ($e === $this->player))) {
+				if ((($e->hp * 100) / $e->hp_max) < 75) {
+					$this->useSkill($sk = Skill::getSkillBySimilarName($this, 'heal'), 10, $e);
+				}
+			}
 			echo $e->name . ' - ' . $e->hp . "/" . $e->hp_max . "\n";
 		}
 
@@ -193,15 +240,37 @@
 			//$this->moveNearTo($e->to_x, $e->to_y, 1);
 		}
 
-		function onDealRequest(Entity &$e) {
-			if ($e->is('thewiz')) {
-				$this->dealRequestAccept();
+		function onTradeRequest(Entity &$e, $from_name) {
+			echo "Request from: {$from_name}\n";
+			if (isset($e) && $e->is('thewiz')) {
+				$this->tradeRequestAccept();
 			} else {
-				$this->dealCancel();
+				$this->tradeCancel();
 			}
-
-			//$this->dealRequest($e);
 		}
+
+		function onTradeStart(Entity &$e, $from_name) {
+			echo "Trade Start: {$from_name}\n";
+			$this->tradeZeny(0);
+			$this->tradeOk();
+		}
+
+		function onTradeCancel(Entity &$e, $from_name, $error) {
+			echo "Trade Cancel: {$from_name}, {$error}\n";
+		}
+
+		function onTradeSuccess(Entity &$e, $from_name) {
+			echo "Trade Success: {$from_name}\n";
+		}
+
+		function onCrossPortal(Entity &$e, Portal &$p) {
+			if ($e->is('thewiz')) {
+				$this->moveAt($p);
+			}
+		}
+
+		function onSit(Entity &$e)   { echo "SIT: " . $e->name . "\n"; }
+		function onStand(Entity &$e) { echo "STAND: " . $e->name . "\n"; }
 	}
 
 //-----------------------------------------------------------------------------

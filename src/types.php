@@ -92,6 +92,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 	class Entity extends IdList {
+		public static $sensibleSimilar = 30;
+
 		// ETC. (TODO)
 		const player  = 0;
 		const monster = 1;
@@ -115,6 +117,7 @@
 		public $to_y = 0;
 		public $to_time_t;
 
+		public $map_name;
 		public $map_x = -1;
 		public $map_y = -1;
 
@@ -133,7 +136,22 @@
 		public $emblem = NULL;
 		public $party  = NULL;
 		public $party_leader = false;
-		public $map_name;
+
+		function __construct(GenericBot &$o, $id, $register = true) {
+			parent::__construct($o, $id, $register);
+
+			if (isset($this->o) && $this->o instanceof GenericBot) {
+				$this->map_name = $this->o->map->name;
+			}
+		}
+
+		function same_map(Entity &$e) {
+			return ($this->map_name == $e->map_name);
+		}
+
+		function current_map() {
+			return ($this->map_name == $this->o->map->name);
+		}
 
 		// Check name from list
 		function is($namel) {
@@ -258,6 +276,13 @@
 			return $z;
 		}
 
+		static function getEntityBySimilarName(GenericBot &$o, $name) {
+			foreach (Entity::entitySimilar($o, $name) as $v) {
+				return ($v[1] > Entity::$sensibleSimilar) ? $v[0] : false;
+			}
+
+		}
+
 		static function getEntityByName(GenericBot &$o, $name) {
 			if (isset($o->lists['Entity_name_list'][strtolower(trim($name))])) {
 				return entity::getEntityById(
@@ -297,20 +322,26 @@
 		// array(array(int, Entity), ...)
 		static function entitySimilar(GenericBot &$o, $name) {
 			//echo "Similar List:\n";
+			$name = strtolower(trim($name));
 			$z = &$o->lists['Entity_memo'];
 			$return   = array();
 			$percents = array();
 			$entities = array();
 			$fixn = 0;
+
 			foreach ($z as $k => $e) {
-				similar_text($e->name, $name, $per);
-				if ($per < 99) {
-					$per *= $e->visible ? 1 : 0.5;
-					if ($e->visible) {
-						$dist = sqrt(pow($o->player->x - $e->x, 2) + pow($o->player->y - $e->y, 2));
-						if ($dist > 5) $per /= ($dist / 5);
-					}
+				similar_text(strtolower(trim($e->name)), $name, $per);
+
+				$per *= $e->current_map() ? $e->visible ? 1 : 0.75 : 0.50;
+
+				//$per *= $e->visible ? 1 : 0.75;
+				//$per *= $e->visible ? 1 : 0.5;
+				/*
+				if ($e->visible) {
+					$dist = sqrt(pow($o->player->x - $e->x, 2) + pow($o->player->y - $e->y, 2));
+					if ($dist > 5) $per /= ($dist / 5);
 				}
+				*/
 
 				//echo "$per -> " . $e->name . "\n";
 
@@ -422,11 +453,13 @@
 	class Npc     extends Entity { }
 	class Monster extends Entity { }
 	class Pet     extends Entity { }
-	class Warp    extends Entity { }
+	class Portal  extends Entity { }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 	class Skill extends IdList {
+		public static $sensibleSimilar = 40;
+
 		protected $_name = NULL;
 		protected $_title;
 
@@ -435,6 +468,8 @@
 		public $sp_max;
 		public $range;
 		public $canup;
+
+		//function __construct() { }
 
 		function __destruct() {
 			if ($this->register) {
@@ -454,14 +489,14 @@
 				switch ($name) {
 					case 'name':
 						$vr = strtolower(trim($val));
-						$skill_name_list = &$this->o->lists['skill_name_list'];
+						$skill_name_list = &$this->o->lists['Skill_name_list'];
 						if (!isset($this->_name)) unset($skill_name_list[$vr]);
 						$this->_name = $val;
 						$skill_name_list[$vr] = &$this;
 					break;
 					case 'title':
 						$vr = strtolower(trim($val));
-						$skill_title_list = &$this->o->lists['skill_title_list'];
+						$skill_title_list = &$this->o->lists['Skill_title_list'];
 						if (!isset($this->_name)) unset($skill_title_list[$vr]);
 						$this->_title = $val;
 						$skill_title_list[$vr] = &$this;
@@ -484,14 +519,33 @@
 			}
 		}
 
-		static function getSkillById(GenericBot &$o, $id)    { $z = &$o->lists['Skill_memo'][$id]; return isset($z) ? $z : $this->o->lists['Skill_memo'][-1]; }
-		static function getSkillByTitle(GenericBot &$o, $id) { $z = &$o->lists['Skill_title'][strtolower(trim($id))]; return isset($z) ? $z : $o->lists['Skill_memo'][-1]; }
-		static function getSkillByName(GenericBot &$o, $id)  { $z = &$o->lists['Skill_name'][strtolower(trim($id))]; return isset($z) ? $z : $o->lists['Skill_memo'][-1]; }
+		static function getSkillById(GenericBot &$o, $id)    { $z = &$o->lists['Skill_memo'][$id]; if (isset($z)) return $z; throw(new Exception()); }
+		static function getSkillByTitle(GenericBot &$o, $id) { $z = &$o->lists['Skill_title'][strtolower(trim($id))]; if (isset($z)) return $z; throw(new Exception()); }
+		static function getSkillByName(GenericBot &$o, $id)  { $z = &$o->lists['Skill_name'][strtolower(trim($id))]; if (isset($z)) return $z; throw(new Exception()); }
+		static function getSkillBySimilarName(GenericBot &$o, $title) {
+			//foreach ($o->lists as $k => $v) echo "-> $k\n";
+			$z = &$o->lists['Skill'];
+			//if (!isset($z)) $z = array();
+			$pera = Skill::$sensibleSimilar; // Min %
+			foreach ($z as $k => $s) {
+				foreach (array($s->title, $s->name, $s->id) as $check) {
+					similar_text(strtolower(trim($check)), $title, $per);
+					if ($per > $pera) { $pera = $per; $return = $s; }
+				}
+			}
+
+			if (!isset($return)) throw(new Exception());
+
+			//echo 'SKILL: ' . $return->name . "\n";
+
+			return $return;
+		}
 
 		static function load(GenericBot &$o, $file) {
-			$z = &$o->lists['skill_names'];  $skill_names = &$z;  if (!isset($z)) $z = array();
-			$z = &$o->lists['skill_titles']; $skill_titles = &$z; if (!isset($z)) $z = array();
-			$z = &$o->lists['skill_delays']; $skill_delays = &$z; if (!isset($z)) $z = array();
+			$z = &$o->lists['Skill_memo'];  $skill_memos  = &$z; if (!isset($z)) $z = array();
+			$z = &$o->lists['Skill_name'];  $skill_names  = &$z; if (!isset($z)) $z = array();
+			$z = &$o->lists['Skill_title']; $skill_titles = &$z; if (!isset($z)) $z = array();
+			$z = &$o->lists['Skill_delay']; $skill_delays = &$z; if (!isset($z)) $z = array();
 
 			if (file_exists($file) && is_readable($file)) {
 				foreach (file($file) as $line) {
