@@ -42,6 +42,15 @@
 		'GB_STEP_DISCONNECTED'
 	);
 
+	// Constantes utilizadas en el método "say" y en el evento "onSay"
+	make_enum(
+		'GB_SAY_TYPE_GLOBAL',
+		'GB_SAY_TYPE_GUILD',
+		'GB_SAY_TYPE_PARTY',
+		'GB_SAY_TYPE_PUBLIC',
+		'GB_SAY_TYPE_PRIVATE'
+	);
+
 	// Clase para bots genérica
 	abstract class GenericBot {
 		public $lists = array();
@@ -82,7 +91,6 @@
 // ----------------------------------------------------------------------------
 
 		function setBusy($flag) {
-			echo "[" . ($flag ? 'O' : 'X') . "]";
 			if ($flag) {
 				$this->busy       = true;
 				$this->busy_skill = true;
@@ -109,8 +117,14 @@
 			$this->step = GB_STEP_MASTER_LOGIN;
 		}
 
+// ----------------------------------------------------------------------------
+// PROCESS
+// ----------------------------------------------------------------------------
+
 		function process() {
-			usleep(1000);
+			// Para dejar tiempo de proceso a la CPU y que el proceso no consuma
+			// el 99% de los recursos del sistema.
+			usleep(5000);
 
 			switch ($this->step) {
 				case GB_STEP_DISCONNECTED:        $this->onDisconnect();       break;
@@ -120,30 +134,14 @@
 				case GB_STEP_CHARA_LOGIN_ERROR:   $this->onCharaLoginError();  break;
 				case GB_STEP_CHARA_LOGIN_SUCCESS: $this->onCharaSelect();      break;
 
-				case GB_STEP_MAP_PROCESS:
-
-					echo $this->busy ? 'O' : 'X';
-					if (!$this->busy) {
-						if (($z = $this->busy_time->dist()) > 0) {
-							$this->lastRun = time();
-							$this->tasks->run($this);
-						}
-						//echo $z . "\n";
-					} else {
-						//echo ".";
-					}
-
-					//echo '.';
-				case GB_STEP_MASTER_PROCESS: case GB_STEP_CHARA_PROCESS:
+				case GB_STEP_MAP_PROCESS: case GB_STEP_MASTER_PROCESS: case GB_STEP_CHARA_PROCESS:
 					while ($pk = $this->sock->extractPacket()) {
 						list($p, $d) = $pk;
 						$hex = str_pad(dechex($p), 4, '0', STR_PAD_LEFT);
 
-						// Call functions
 						$f = "parse_recv_{$hex}";
-						//echo "- {$f}\n";
 						if (!function_exists($f)) {
-							echo "La función '{$f}' no está definida\n";
+							throw(new Exception("La función '{$f}' no está definida\n"));
 						} else {
 							$f($this, $p, $d);
 						}
@@ -255,5 +253,16 @@
 			sendSkillUse($this, $skill->id, min($level, $skill->level_max), $e->id);
 		}
 
+		function say($type, $text, &$to = NULL) {
+			if (isset($from) && !($from instanceof Entity)) throw(new Exception(''));
+
+			switch ($type) {
+				case GB_SAY_TYPE_GLOBAL:  break;
+				case GB_SAY_TYPE_GUILD:   break;
+				case GB_SAY_TYPE_PARTY:   break;
+				case GB_SAY_TYPE_PUBLIC:  break;
+				case GB_SAY_TYPE_PRIVATE: break;
+			}
+		}
 	}
 ?>

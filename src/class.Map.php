@@ -59,10 +59,17 @@
 		}
 
 		function __construct($name = NULL) {
+			// La primera vez que se instancia un mapa carga la extensión php_ffi y el módulo "path.dll"
 			if (!isset(Map::$path_ffi)) {
-				extension_loaded('ffi') or dl('php_ffi.dll') or die("Please install FFI extension.\n");
+				if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+					// Para windows
+					extension_loaded('ffi') or dl('php_ffi.dll') or die("Please install FFI extension.\n");
 
-				Map::$path_ffi = new ffi("[lib='msvcrt.dll'] void free(char *ptr); [lib='path.dll'] char *path_get(char *map_data, int map_w, int map_h, int x_src, int y_src, int x_dst, int y_dst, int time);");
+					Map::$path_ffi = new ffi("[lib='msvcrt.dll'] void free(char *ptr); [lib='path.dll'] char *path_get(char *map_data, int map_w, int map_h, int x_src, int y_src, int x_dst, int y_dst, int time);");
+				} else {
+					throw(new Exception("Esta versión de PHP Ro Bot solo está preparada para el SO Windows. Si puedes compilar util/ext/path/ agradeceríamos su colaboración. Gracias."));
+					exit;
+				}
 			}
 
 			if (!isset(Map::$conversion_list)) {
