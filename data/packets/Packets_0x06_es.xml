@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-15" ?>
 <packets protocolVersion="0x06">
+	<document name="Paquetes" alias="Packets" language="es" />
+	<document name="Cliente" alias="Player" language="es" />
 	<document name="Jugador" alias="Player" language="es" />
 	<document name="Jugadores" alias="Jugador" language="es" />
 	<document name="Dirección de Correo" alias="Mail" language="es" />
@@ -9,6 +11,8 @@
 	<document name="Personajes" alias="Personaje" language="es" />
 	<document name="Mapas" alias="Maps" language="es" />
 	<document name="Tabla de Contenidos" alias="Contents" language="es" />
+	<document name="Paquetes Recibidos" alias="Receive Packets" language="es" />
+	<document name="Paquetes Enviados" alias="Send Packets" language="es" />
 
 	<document name="Main" language="es" shortdescription="Introducción">
 		<p>
@@ -39,11 +43,24 @@
 			El servidor <k>Master</k> es el encargado de loguear al usuario en todos sus
 			<k>Character</k> servers.
 		</p>
+		<p>
+			<b>Comunicación</b>: La comuniación con el <k>Master</k> Server es muy sencilla.
+			El <k>Cliente</k> envía el paquete <k>0x0064</k> y el servidor responde con
+			<k>0x0069</k> si los datos son correctos o con <k>0x006a</k> en caso contrario.
+		</p>
 		<hr />
 		<p>
 			El servidor tiene una serie de paquetes asociados:<br />
 			<ul>
-				<li>
+				<li /><k>Paquetes Recibidos</k>
+				<ul>
+					<li /><k>0x0069</k> - Login Correcto - Información
+					<li /><k>0x006a</k> - Login Incorrecto
+				</ul>
+				<li /><k>Paquetes Enviados</k>
+				<ul>
+					<li /><k>0x0064</k> - Login Master Server
+				</ul>
 			</ul>
 		</p>	
 		<hr />
@@ -111,12 +128,48 @@
 		</p>		
 	</document>
 	
+	<document name="Receive Packets" language="es" shortdescription="Paquetes recibidos">
+		<p>
+			Los Paquetes Recibidos son referentes al cliente, los paquetes que recibe el cliente
+			y que manda el servidor.
+		</p>
+		<hr />
+		<p>
+			Vea también: <k>Paquetes</k> <k>Paquetes Enviados</k>
+		</p>
+		<p>
+			Volver a: <k>Principal</k>
+		</p>		
+	</document>
+
+	<document name="Packets" language="es" shortdescription="Paquetes">
+		<p>
+			En el Ragnarok hay 2 tipos de paquetes. Los que envía el cliente y los que
+			envía el servidor. A su vez se pueden categorizar en 2 formas diferentes. Los
+			paquetes de tamaño fijo y los paquetes de tamaño variable.
+		</p>
+		<hr />
+		<p>
+			Vea también: <k>Paquetes Recibidos</k> <k>Paquetes Enviados</k>
+		</p>
+		<p>
+			Volver a: <k>Principal</k>
+		</p>		
+	</document>
+	
 	<category name="MasterServer" shortdescription="Master Server">
 		<description language="es">
 			<p>This packets
 			</p>
 		</description>
 	</category>
+	
+	<packet id="0x0064" length="54" server="master" sender="client" shortdescription="Login Master Server">
+		<entry name="Code"            type="uint32" />
+		<entry name="AccountName"     type="stringz" length="24" />
+		<entry name="AccountPassword" type="stringz" length="24" />
+		<entry name="Version"         type="uint16" />
+	</packet>
 
 	<packet id="0x0069" length="-" server="master" sender="server" shortdescription="Información de la cuenta">
 		<entry name="IdLogin1"      type="uint32" />

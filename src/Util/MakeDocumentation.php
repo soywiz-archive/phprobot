@@ -22,6 +22,16 @@ EOD;
 
 	$DocumentAliases = array();
 
+	function PregReplaceForLinkAliase($Match) {
+		global $DocumentAliases;
+
+		$Key = $Match[2];
+
+		while (isset($DocumentAliases[$Key])) $Key = $DocumentAliases[$Key];
+
+		return '<a href="' . str_replace(' ', '%20', $Key) . '.html">' . $Match[2] . '</a>';
+	}
+
 	function MakeDocumentationParseDocument(SimpleXMLElement $Entry, $Dir) {
 		global $DocumentAliases;
 
@@ -60,10 +70,15 @@ EOD;
 
 		//preg_replace('/<(k)>/i', mixed replacement, mixed subject)
 
+		//$Data = preg_replace('/(<k>)([a-z0-9\\x20]*)(<\\/k>)/i', '<a href="\\2">\\2</a>', SimpleXMLGetChildrenAsXML($Entry));
+		$Data = preg_replace_callback('/(<k>)([^<]*)(<\\/k>)/i', 'PregReplaceForLinkAliase', SimpleXMLGetChildrenAsXML($Entry));
+		//$Data = $Entry->asXML();
+
+
 		MakeDir($Dir);
 
 		if ($fd = fopen($Dir . '/' . $Name . '.html', 'wb')) {
-			fwrite($fd, '<html><head><title>' . $Description . '</title></head>');
+			fwrite($fd, '<html><head><link rel="stylesheet" href="../documentation.css"/><title>' . $Description . '</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head>');
 			fwrite($fd, '<body>');
 			fwrite($fd, $Data);
 			fwrite($fd, '</body></html>');
@@ -74,7 +89,7 @@ EOD;
 		//echo "Document: $Name\n";
 	}
 
-	function MakeDocumentation($ProtocolVersion = 0x02, $Language = 'es') {
+	function MakeDocumentation($ProtocolVersion = 0x06, $Language = 'es') {
 		global $DocumentAliases;
 
 		$DocumentAliases = array();
