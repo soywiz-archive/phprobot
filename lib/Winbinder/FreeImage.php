@@ -67,13 +67,12 @@ define("FIF_GIF",		25);
 
 //------------------------------------------------------------- GLOBAL VARIABLES
 
-if(!isset($FI))
-	$FI = wb_load_library("freeimage");
+if (!isset($FI))
+	$FI = wb_load_library('freeimage');
 
 //-------------------------------------------------------------------- FUNCTIONS
 
-function FreeImage_GetVersion()
-{
+function FreeImage_GetVersion() {
 	global $FI;
 	static $pfn = null;
 
@@ -86,73 +85,73 @@ function FreeImage_GetVersion()
 	return $version;
 }
 
-function FreeImage_GetInfoHeader($dib)
-{
+function FreeImage_GetInfoHeader($dib) {
 	global $FI;
 	static $pfn = null;
 
-	if($pfn === null)
+	if ($pfn === null)
 		$pfn = wb_get_function_address("_FreeImage_GetInfoHeader@4", $FI);
+
 	return wb_call_function($pfn, array($dib));
 }
 
-function FreeImage_GetBits($dib)
-{
+function FreeImage_GetBits($dib) {
 	global $FI;
 	static $pfn = null;
 
-	if($pfn === null)
+	if ($pfn === null)
 		$pfn = wb_get_function_address("_FreeImage_GetBits@4", $FI);
+
 	return wb_call_function($pfn, array($dib));
 }
 
-function FreeImage_Unload($bmp)
-{
+function FreeImage_Unload($bmp) {
 	global $FI;
 	static $pfn = null;
 
-	if($pfn === null)
+	if ($pfn === null)
 		$pfn = wb_get_function_address("_FreeImage_Unload@4", $FI);
+
 	return wb_call_function($pfn, array($bmp));
 }
 
-function FreeImage_GetWidth($bmp)
-{
+function FreeImage_GetWidth($bmp) {
 	global $FI;
 	static $pfn = null;
 
-	if($pfn === null)
+	if ($pfn === null)
 		$pfn = wb_get_function_address("_FreeImage_GetWidth@4", $FI);
+
 	return wb_call_function($pfn, array($bmp));
 }
 
-function FreeImage_GetHeight($bmp)
-{
+function FreeImage_GetHeight($bmp) {
 	global $FI;
 	static $pfn = null;
 
-	if($pfn === null)
+	if ($pfn === null)
 		$pfn = wb_get_function_address("_FreeImage_GetHeight@4", $FI);
+
 	return wb_call_function($pfn, array($bmp));
 }
 
-function FreeImage_Load($type, $filename, $flags=0)
-{
+function FreeImage_Load($type, $filename, $flags=0) {
 	global $FI;
 	static $pfn = null;
 
-	if($pfn === null)
+	if ($pfn === null)
 		$pfn = wb_get_function_address("_FreeImage_Load@12", $FI);
+
 	return wb_call_function($pfn, array($type, $filename, $flags));
 }
 
-function FreeImage_Save($type, $dib, $filename, $flags=0)
-{
+function FreeImage_Save($type, $dib, $filename, $flags=0) {
 	global $FI;
 	static $pfn = null;
 
-	if($pfn === null)
+	if ($pfn === null)
 		$pfn = wb_get_function_address("_FreeImage_Save@16", $FI);
+
 	return wb_call_function($pfn, array($type, $dib, $filename, $flags));
 }
 
