@@ -1,9 +1,12 @@
 <?php
+	Import('Ragnarok.Status');
+
 	class Entity {
 		public $Id;
 		public $Name;
 		public $Map;
 		public $Position;
+		public $Sex        = Sex::UNKNOWN;
 	}
 
 	class Position {

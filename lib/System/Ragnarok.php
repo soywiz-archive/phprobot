@@ -38,6 +38,24 @@
 		foreach (func_get_args() as $v) if (!defined($v)) define($v, $c++);
 	}
 
+	function GetSimilarObjectValue(&$array, $param, $value) {
+		if (!is_array($array)) $array = array($array);
+
+		foreach (array_keys($array) as $k) {
+			$va = &$array[$k];
+			similar_text(strtolower(trim($va->$param)), $value, $per);
+
+			if (!isset($prec) || $per > $prec) {
+				$return = $k;
+				$prec = $per;
+			}
+		}
+
+		if (!isset($return)) return false;
+
+		return $array[$return];
+	}
+
 	function GetSimilarValue($array, $value, $prec = 60) {
 		if (!is_array($array)) $array = array($array);
 		$return = $value = strtolower(trim($value));

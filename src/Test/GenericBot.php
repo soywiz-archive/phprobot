@@ -4,11 +4,16 @@
 	class TestBot extends GenericBot {
 		function OnDisconnect() {
 			echo "OnDisconnect()\n";
-			$this->ConnectMaster('localhost', 'Test', 'Test2');
+			$this->ConnectMaster('localhost', 'Test', 'Test');
 		}
 
 		function OnMasterLoginError() {
 			$this->Disconnect();
+		}
+
+		function OnMasterLogin(&$ServerList) {
+			//print_r($this->ServerCharaList);
+			$this->ConnectChara('eAthena');
 		}
 	}
 

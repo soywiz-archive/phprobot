@@ -46,6 +46,8 @@
 			$ReverseG  = false;
 
 			foreach ($group as $k => $entry) {
+				if (strcasecmp($k, 'entry') != 0) continue;
+
 				list($name, $type, $length, $unused, $reverse, $param) = array(null, '', 0, false, false, '');
 
 				foreach ($entry->attributes() as $aname => $avalue) {

@@ -3,6 +3,8 @@
 	Import('Net.SocketPacket');
 	Import('Ragnarok.SendPackets.*');
 	Import('Ragnarok.RecivePackets.*');
+	Import('Ragnarok.Server');
+	Import('System.Ragnarok');
 
 	abstract class GenericBot extends EntityMoveablePlayerMain {
 		public $SocketPacket;
@@ -10,8 +12,8 @@
 		public $ConnectionStatus;
 		public $ConnectionServer;
 
-		public $ClientCode              = 0x14;
-		public $ClientProtocolVersion   = 0x02;
+		public $ClientCode               = 0x14;
+		public $ClientProtocolVersion    = 0x02;
 
 		const SERVER_NONE                = 0;
 		const SERVER_MASTER              = 1;
@@ -32,6 +34,13 @@
 		const STEP_ZONE_PROCESS          = 8;
 		const STEP_DISCONNECTED          = 9;
 
+		public $IdLogin1                 = 0x00000000;
+		public $IdLogin2                 = 0x00000000;
+
+		public $DateLastLogin            = '';
+
+		public $ServerCharaList          = array();
+
 		function __construct() {
 			$this->ConnectionServer = self::SERVER_NONE;
 			$this->SocketPacket     = new SocketPacket(PacketList::LoadFromFile($this->ClientProtocolVersion));
@@ -47,16 +56,26 @@
 			$this->SocketPacket = new SocketPacket(new PacketList($this->ClientProtocolVersion));
 		}
 
+		// TODO
+		public function SetError($Id, $Text) {
+			// TODO
+			echo "Error: {$Id} - {$Text}";
+		}
+
 		function Check() {
 			usleep(5000);
 
 			switch ($this->ConnectionStep) {
-				case self::STEP_DISCONNECTED:        $this->OnDisconnect();       break;
-				case self::STEP_MASTER_LOGIN:        $this->OnMasterLogin();      break;
-				case self::STEP_MASTER_LOGIN_ERROR:  $this->OnMasterLoginError(); break;
-				case self::STEP_CHARA_LOGIN:         $this->OnCharaLogin();       break;
-				case self::STEP_CHARA_LOGIN_ERROR:   $this->OnCharaLoginError();  break;
-				case self::STEP_CHARA_LOGIN_SUCCESS: $this->OnCharaSelect();      break;
+				case self::STEP_DISCONNECTED:         $this->OnDisconnect();                         break;
+				case self::STEP_MASTER_LOGIN:         $this->OnMasterLogin($this->ServerCharaList);  break;
+				case self::STEP_MASTER_LOGIN_ERROR:   $this->OnMasterLoginError();                   break;
+				case self::STEP_CHARA_LOGIN:          $this->OnCharaLogin();                         break;
+				case self::STEP_CHARA_LOGIN_ERROR:    $this->OnCharaLoginError();                    break;
+				case self::STEP_CHARA_LOGIN_SUCCESS:  $this->OnCharaSelect();                        break;
+				case self::STEP_CHARA_DELETE_ERROR:   $this->OnCharaDeleteError();                   break;
+				case self::STEP_CHARA_DELETE_SUCCESS: $this->OnCharaDelete();                        break;
+				case self::STEP_CHARA_CREATE_ERROR:   $this->OnCharaDelete();                        break;
+				case self::STEP_CHARA_CREATE_SUCCESS: $this->OnCharaDelete();                        break;
 
 				case self::STEP_ZONE_PROCESS:
 					// Proceso de movimiento
@@ -69,6 +88,7 @@
 						$hex = str_pad(dechex($Id), 4, '0', STR_PAD_LEFT);
 
 						$f = "RecivePacket0x{$hex}";
+						echo "$f()\n";
 
 						if (!function_exists($f)) {
 							throw(new Exception("La función '{$f}' no está definida\n"));
@@ -91,13 +111,37 @@
 		// Interface
 
 		public function ConnectMaster($Host, $User, $Password) {
-			echo "this->Connect($Host, 6900);\n";
 			$this->SocketPacket->Connect($Host, 6900);
 
-			echo "SendMasterLogin($this, $User, $Password, $this->ClientCode, $this->ClientProtocolVersion);\n";
 			SendMasterLogin($this, $User, $Password, $this->ClientCode, $this->ClientProtocolVersion);
 
 			$this->ConnectionStep = self::STEP_MASTER_PROCESS;
+		}
+
+		public function ConnectChara($ServerChara) {
+			if (!($ServerChara instanceof ServerChara)) {
+				if (isset($this->ServerCharaList[$ServerChara])) {
+					$ServerChara = &$this->ServerCharaList[$ServerChara];
+				} else {
+					// Comprobación por nombre
+					//GetSimilarValue($this->ServerCharaList);
+					$ServerChara = GetSimilarObjectValue($this->ServerCharaList, 'Name', $ServerChara);
+
+					//throw(new Exception('El servidor no existe'));
+				}
+			}
+
+			if (!($ServerChara instanceof ServerChara)) {
+				throw(new Exception('No se pudo elegir ningún servidor'));
+			}
+
+			$this->SocketPacket->Connect($ServerChara->Ip, $ServerChara->Port);
+
+			SendCharaLogin($this);
+
+			$this->IdAccount2 = GetR32($this->SocketPacket->Extract(4));
+
+			$this->ConnectionStep = self::STEP_CHARA_PROCESS;
 		}
 
 		public function Disconnect() {

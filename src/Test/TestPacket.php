@@ -2,5 +2,5 @@
 	//Import('Packets.*');
 	Import('Packets.PacketList');
 
-	print_r(PacketList::LoadFromFile(0x1402));
+	print_r(PacketList::LoadFromFile(0x02));
 ?>
