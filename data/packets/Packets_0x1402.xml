@@ -69,7 +69,7 @@
 		<entry name="Charas"           type="group" length="rest">
 			<entry name="Id"           type="uint32" />
 			<entry name="ExpBase"      type="uint32" />
-			<entry name="Zeny"         type="uint32" />
+			<entry name="Zenny"        type="uint32" />
 			<entry name="ExpJob"       type="uint32" />
 			<entry name="LevelJob"     type="uint32" />
 			<entry name="Option"       type="uint32" />

@@ -12,6 +12,12 @@
 		public $ConnectionStatus;
 		public $ConnectionServer;
 
+		public $StepCallback;
+		public $StepCallbackParameters;
+		public $StepCallbackQueue;
+
+		private $WaitMilliseconds;
+
 		public $ClientCode               = 0x14;
 		public $ClientProtocolVersion    = 0x02;
 
@@ -23,17 +29,6 @@
 		const STATUS_OK                  = 0;
 		const STATUS_ERROR               = 1;
 
-		const STEP_MASTER_LOGIN          = 0;
-		const STEP_MASTER_LOGIN_ERROR    = 1;
-		const STEP_MASTER_PROCESS        = 2;
-		const STEP_CHARA_LOGIN           = 3;
-		const STEP_CHARA_LOGIN_ERROR     = 4;
-		const STEP_CHARA_LOGIN_SUCCESS   = 5;
-		const STEP_CHARA_PROCESS         = 6;
-		const STEP_ZONE_LOGIN            = 7;
-		const STEP_ZONE_PROCESS          = 8;
-		const STEP_DISCONNECTED          = 9;
-
 		public $IdLogin1                 = 0x00000000;
 		public $IdLogin2                 = 0x00000000;
 
@@ -42,10 +37,12 @@
 		public $ServerCharaList          = array();
 
 		function __construct() {
-			$this->ConnectionServer = self::SERVER_NONE;
-			$this->SocketPacket     = new SocketPacket(PacketList::LoadFromFile($this->ClientProtocolVersion));
-			$this->ConnectionStatus = self::STATUS_OK;
-			$this->ConnectionStep   = self::STEP_DISCONNECTED;
+			$this->ConnectionServer  = self::SERVER_NONE;
+			$this->SocketPacket      = new SocketPacket(PacketList::LoadFromFile($this->ClientProtocolVersion));
+			$this->ConnectionStatus  = self::STATUS_OK;
+			$this->StepCallbackQueue = array();
+			$this->WaitMilliseconds  = 0;
+			$this->SetStepCallBack('OnBegin');
 		}
 
 		// Set information
@@ -62,44 +59,48 @@
 			echo "Error: {$Id} - {$Text}";
 		}
 
+		public function SetStepCallBack() {
+			$array = func_get_args();
+			array_push($this->StepCallbackQueue, $array);
+
+			$this->StepCallback = array_shift($this->StepCallbackParameters = array_shift($this->StepCallbackQueue));
+			//$this->StepCallback = array_shift($this->StepCallbackParameters = func_get_args());
+		}
+
+		public function Wait($Milliseconds) {
+			$this->WaitMilliseconds += $Milliseconds;
+		}
+
 		function Check() {
-			usleep(5000);
-
-			switch ($this->ConnectionStep) {
-				case self::STEP_DISCONNECTED:         $this->OnDisconnect();                         break;
-				case self::STEP_MASTER_LOGIN:         $this->OnMasterLogin($this->ServerCharaList);  break;
-				case self::STEP_MASTER_LOGIN_ERROR:   $this->OnMasterLoginError();                   break;
-				case self::STEP_CHARA_LOGIN:          $this->OnCharaLogin();                         break;
-				case self::STEP_CHARA_LOGIN_ERROR:    $this->OnCharaLoginError();                    break;
-				case self::STEP_CHARA_LOGIN_SUCCESS:  $this->OnCharaSelect();                        break;
-				case self::STEP_CHARA_DELETE_ERROR:   $this->OnCharaDeleteError();                   break;
-				case self::STEP_CHARA_DELETE_SUCCESS: $this->OnCharaDelete();                        break;
-				case self::STEP_CHARA_CREATE_ERROR:   $this->OnCharaDelete();                        break;
-				case self::STEP_CHARA_CREATE_SUCCESS: $this->OnCharaDelete();                        break;
-
-				case self::STEP_ZONE_PROCESS:
-					// Proceso de movimiento
-					$this->ProcessMoving();
-
-				case self::STEP_MASTER_PROCESS: case self::STEP_CHARA_PROCESS:
-					while ($Packet = $this->SocketPacket->ExtractPacket()) {
-						list($Id, $Data, $DataRaw) = $Packet;
-
-						$hex = str_pad(dechex($Id), 4, '0', STR_PAD_LEFT);
-
-						$f = "RecivePacket0x{$hex}";
-						echo "$f()\n";
-
-						if (!function_exists($f)) {
-							throw(new Exception("La función '{$f}' no está definida\n"));
-						} else {
-							// GenericBot &$Bot, $PId, $Data, $DataRaw
-							$f($this, $Id, $Data, $DataRaw);
-						}
-					}
-				break;
-
+			if ($this->WaitMilliseconds > 0) {
+				usleep($this->WaitMilliseconds * 100);
+				$this->WaitMilliseconds = 0;
 			}
+
+			usleep(1000);
+
+			// Proceso de movimiento
+			//$this->ProcessMoving();
+
+			while ($Packet = $this->SocketPacket->ExtractPacket()) {
+				list($Id, $Data, $DataRaw) = $Packet;
+
+				$hex = str_pad(dechex($Id), 4, '0', STR_PAD_LEFT);
+
+				$f = "RecivePacket0x{$hex}";
+				echo '- ' . $f . '(' . @implode(', ', array_values($Data)) . ")\n";
+
+				if (!function_exists($f)) {
+					throw(new Exception("La función '{$f}' no está definida\n"));
+				} else {
+					// GenericBot &$Bot, $PId, $Data, $DataRaw
+					$f($this, $Id, $Data, $DataRaw);
+				}
+			}
+
+			call_user_func_array(array(&$this, $this->StepCallback), $this->StepCallbackParameters);
+
+			$this->SetStepCallBack('OnTick');
 		}
 
 		function __call($m, $a) {
@@ -114,8 +115,6 @@
 			$this->SocketPacket->Connect($Host, 6900);
 
 			SendMasterLogin($this, $User, $Password, $this->ClientCode, $this->ClientProtocolVersion);
-
-			$this->ConnectionStep = self::STEP_MASTER_PROCESS;
 		}
 
 		public function ConnectChara($ServerChara) {
@@ -140,8 +139,6 @@
 			SendCharaLogin($this);
 
 			$this->IdAccount2 = GetR32($this->SocketPacket->Extract(4));
-
-			$this->ConnectionStep = self::STEP_CHARA_PROCESS;
 		}
 
 		public function Disconnect() {
@@ -153,7 +150,7 @@
 
 			$this->SocketPacket->Disconnect();
 
-			$this->ConnectionStep = self::STEP_DISCONNECTED;
+			$this->SetStepCallBack('OnDisconnected');
 		}
 
 		// Private Interface

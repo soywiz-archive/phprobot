@@ -25,4 +25,13 @@
 		const MALE      = 1;
 		const UNKNOWN   = 2;
 	}
+
+	class EntityType {
+		const UNKNOWN   = 0;
+		const PORTAL    = 1;
+		const ENEMY     = 2;
+		const PLAYER    = 3;
+		const NPC       = 4;
+		const PET       = 5;
+	}
 ?>

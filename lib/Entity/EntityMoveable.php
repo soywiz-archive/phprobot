@@ -1,4 +1,5 @@
 <?php
+	Import('Entity.Entity');
 	Import('Ragnarok.Status');
 
 	class EntityMoveable extends Entity {

@@ -4,7 +4,7 @@
 	// 0069 - Account Info
 	function RecivePacket0x0069(GenericBot &$Bot, $PId, $Data, $DataRaw) {
 		$Bot->ServerCharaList = array();
-		$scl = &$Bot->ServerCharaList;
+		$Scl = &$Bot->ServerCharaList;
 
 		$Bot->IdLogin1      = $Data['IdLogin1'];
 		$Bot->IdLogin2      = $Data['IdLogin2'];
@@ -13,10 +13,10 @@
 		$Bot->DateLastLogin = $Data['DateLastLogin'];
 
 		foreach ($Data['Servers'] as $Server) {
-			$scl[] = new ServerChara($Server['Ip'], $Server['Port'], $Server['Name'], $Server['Count']);
+			$Scl[] = new ServerChara($Server['Ip'], $Server['Port'], $Server['Name'], $Server['Count']);
 		}
 
-		$Bot->ConnectionStep = GenericBot::STEP_MASTER_LOGIN;
+		$Bot->SetStepCallBack('OnMasterLoginSuccess', $Scl);
   	}
 
 	// 006a - Connection Failed
@@ -34,6 +34,6 @@
 			default: $Bot->SetError($Error, 'Error desconocido'); break;
 		}
 
-		$Bot->ConnectionStep = GenericBot::STEP_MASTER_LOGIN_ERROR;
+		$Bot->SetStepCallBack('OnMasterLoginError');
 	}
 ?>

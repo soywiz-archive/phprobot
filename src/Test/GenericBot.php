@@ -2,7 +2,11 @@
 	Import('Ragnarok.GenericBot');
 
 	class TestBot extends GenericBot {
-		function OnDisconnect() {
+		function OnBegin() {
+			$this->OnDisconnected();
+		}
+
+		function OnDisconnected() {
 			echo "OnDisconnect()\n";
 			$this->ConnectMaster('localhost', 'Test', 'Test');
 		}
@@ -11,9 +15,12 @@
 			$this->Disconnect();
 		}
 
-		function OnMasterLogin(&$ServerList) {
+		function OnMasterLoginSuccess(&$ServerList) {
 			//print_r($this->ServerCharaList);
 			$this->ConnectChara('eAthena');
+		}
+
+		function OnTick() {
 		}
 	}
 

@@ -1,6 +1,8 @@
 <?php
+	Import('Entity.EntityMoveablePlayer');
+
 	class EntityMoveablePlayerMain extends EntityMoveablePlayer {
-		public $Zeny;
+		public $Zenny;
 		public $Weight;
 		public $WeightMax;
 	}
