@@ -7,6 +7,7 @@
 		public  $Description;
 		private $Structure;
 
+		// Crea una estructura de paquete a partir de un SimpleXMLElement
 		function __construct(SimpleXMLElement $packet) {
 			list($PacketId, $PacketLength, $PacketDescription) = array('', '', '');
 
@@ -14,6 +15,7 @@
 			$this->Length      = &$PacketLength;
 			$this->Description = &$PacketDescription;
 
+			// Examina los atributos del paquete
 			foreach ($packet->attributes() as $aname => $avalue) {
 				switch (trim(strtolower($aname))) {
 					case 'id':          $PacketId          = trim($avalue); break;
@@ -23,13 +25,14 @@
 				}
 			}
 
-			//echo "$PacketId: ";
-
 			if (substr($PacketId, 0, 2) == '0x') {
+				// Hexadecimal
 				$PacketId = hexdec(substr($PacketId, 2));
 			//} else if (substr($PacketId, 0, 1) == '0') {
+			//  // Octal
 			//	$PacketId = octdec(substr($PacketId, 1));
 			} else {
+				// Decimal
 				$PacketId = (int)$PacketId;
 			}
 
