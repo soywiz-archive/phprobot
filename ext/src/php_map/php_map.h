@@ -30,6 +30,7 @@ static ZEND_BEGIN_ARG_INFO(map__get_arg_info, 0)
 		ZEND_END_ARG_INFO();
 
 	PHP_METHOD(Map, __construct);
+	PHP_METHOD(Map, Update);
 	PHP_METHOD(Map, __set);
 	//PHP_METHOD(Map, __get);
 	PHP_METHOD(Map, Get);

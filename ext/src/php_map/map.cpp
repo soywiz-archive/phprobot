@@ -18,6 +18,7 @@ static zend_function_entry map_functions[] = {
 
 static zend_function_entry map_class_functions[] = {
 	PHP_ME(Map, __construct,      NULL, 0)
+	PHP_ME(Map, Update,           NULL, 0)
 	PHP_ME(Map, __set,            map__set_arg_info, 0)
 	//PHP_ME(Map, __get,            map__get_arg_info, 0)
 	PHP_ME(Map, Get,              NULL, 0)
@@ -53,80 +54,40 @@ void zend_call_any_function(INTERNAL_FUNCTION_PARAMETERS, char *function_name, z
 	FREE_ZVAL(zval_function_name);
 }
 
-/*
-static void *PHPgetProperty(zval *id, char *name, int namelen, int proptype TSRMLS_DC) {
-	zval **tmp;
-	int id_to_find;
-	void *property;
-	int type;
-
-	if (id) {
-		if (zend_hash_find(Z_OBJPROP_P(id), name, namelen + 1, (void **)&tmp) == FAILURE) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Unable to find property %s", name);
-			return NULL;
-		}
-		id_to_find = Z_LVAL_PP(tmp);
-	} else {
-		return NULL;
-	}
-
-	property = zend_list_find(id_to_find, &type);
-
-	if (!property || type != proptype) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Unable to find identifier (%d)", id_to_find);
-		return NULL;
-	}
-
-	return property;
-}
-
-
-static Mapptr getMap(zval *id TSRMLS_DC){
-	void *map = PHPgetProperty(id, "map", 3, le_mapp TSRMLS_CC);
-
-	if (!map) { php_error_docref(NULL TSRMLS_CC, E_ERROR, "Called object is not an Map"); }
-	return (Mapptr)map;
-}
-*/
-
 
 PHP_METHOD(Map, __construct) {	
 	zval **width, **height, **data;
 
-	//if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &filename) == FAILURE) WRONG_PARAM_COUNT;	
 	if (ZEND_NUM_ARGS() != 3 || zend_get_parameters_ex(3, &data, &width, &height) == FAILURE) WRONG_PARAM_COUNT;	
 
 	convert_to_string_ex(data);
 	convert_to_long_ex(width);
 	convert_to_long_ex(height);
-	//mygrf = grf_callback_open(Z_STRVAL_PP(filename), "rb", NULL, NULL);
 
-	
-	//mymap = (Mapptr)emalloc(sizeof(Map));
-
-	// Posiblemente PHP borre la variable despues
-	//mymap->map    = (void *)data;
-	//mymap->map    = zend_str_dup(data, );
-	//mymap->width  = Z_LVAL_PP(width);
-	//mymap->height = Z_LVAL_PP(height);
-
-	//ret = zend_list_insert(mymap, le_mapp);
-	
 	object_init_ex(getThis(), map_class_entry_ptr);
-	//add_property_resource(getThis(), "map", ret);
 	add_property_zval(getThis(), "data", *data);
 	add_property_long(getThis(), "width", Z_LVAL_PP(width));
 	add_property_long(getThis(), "height", Z_LVAL_PP(height));
-	//zend_list_addref(ret);
+}
 
-	//RETURN_FALSE;
+PHP_METHOD(Map, Update) {	
+	zval **width, **height, **data;
+
+	if (ZEND_NUM_ARGS() != 3 || zend_get_parameters_ex(3, &data, &width, &height) == FAILURE) WRONG_PARAM_COUNT;	
+
+	convert_to_string_ex(data);
+	convert_to_long_ex(width);
+	convert_to_long_ex(height);
+
+	add_property_zval(getThis(), "data", *data);
+	add_property_long(getThis(), "width", Z_LVAL_PP(width));
+	add_property_long(getThis(), "height", Z_LVAL_PP(height));
 }
 
 PHP_METHOD(Map, __set) {
 	zval *val, *tmp;
 	char *var;
 	int var_l;
-	//Mapptr mymap;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz", &var, &var_l, &val) == FAILURE) WRONG_PARAM_COUNT;
 
@@ -238,7 +199,6 @@ PHP_METHOD(Map, Find) {
 PHP_MINIT_FUNCTION(Map) {	
 	zend_class_entry map_class_entry;
 	INIT_CLASS_ENTRY(map_class_entry, "Map", map_class_functions);
-	//le_mapp = zend_register_list_destructors_ex(destroy_map_resource, NULL, "Map", module_number);
 	map_class_entry_ptr = zend_register_internal_class(&map_class_entry TSRMLS_CC);	
 
 	#define CONSTANT(s,c) REGISTER_LONG_CONSTANT((s), (c), CONST_CS | CONST_PERSISTENT)
@@ -259,48 +219,3 @@ PHP_MINFO_FUNCTION(Map) {
 	php_info_print_table_row(2, "Version", "1.0");
 	php_info_print_table_end();
 }
-
-/////////////////////////////////////////////
-/////////////////////////////////////////////
-
-// DLL_EXPORT
-
-
-//#define DLL_EXPORT __declspec(dllexport)
-//#define DLL_EXPORT
-
-/*
-DLL_EXPORT char *path_get(char *map_data, int map_w, int map_h, int x_src, int y_src, int x_dst, int y_dst, int time) {
-	pos *pos_list; int pos_list_count = 0, n, p, d;
-	pos myp;
-	char *retval = "";
-
-	PATHFIND *pf = new PATHFIND(x_dst, y_dst, x_src, y_src, map_data, map_w, map_h, type);
-
-	if (pf->get_error() == PF_OK) {
-		pos_list = (pos *)malloc(sizeof(pos) * 2500);
-
-		do {
-			pf->get_actual_node(myp.x, myp.y);
-			pos_list[pos_list_count++] = myp;
-		} while (pf->next_node() == PF_OK);
-
-		retval = (char *)malloc((pos_list_count + 1) * 8);
-		d = 0;
-
-		for (n = 0; n < pos_list_count; n++) {
-			p = pos_list_count - n - 1;
-
-			sprintf(&retval[d], "%i,%i\n", pos_list[p].x, pos_list[p].y);
-			d += strlen(&retval[d]);
-		}
-		retval[d] = 0;
-
-		free(pos_list);
-	}
-
-	delete pf;
-
-	return retval;
-}
-*/
