@@ -53,7 +53,7 @@
 		private $PacketStructures;
 	}
 
-	class PacketSocket {
+	class PacketSocket : Socket {
 		private $PacketList;
 	}
 
