@@ -47,8 +47,8 @@
 			$this->serverCharaSelect('wiz_server');
 		}
 
-		function onMasterCharaError() {
-			echo "* onMasterCharaError();\n";
+		function onCharaSelectError() {
+			echo "* onCharaSelectError();\n";
 			$this->disconnect();
 		}
 
@@ -119,6 +119,26 @@
 						$to_say = $this->map->name . ' : ' . $this->player->x . ', ' . $this->player->y;
 						echo $to_say . "\n";
 						$this->say($to_say);
+					break;
+					case 'skill':
+
+					break;
+					case 'similar':
+						foreach (Entity::entitySimilar($this, $data[1]) as $v) {
+							list($e, $per) = $v;
+							echo "$per. " . $e->name . "\n";
+						}
+					break;
+					case 'look':
+						foreach (Entity::entitySimilar($this, $data[1]) as $v) {
+							if ($v[1] > 15) {
+								$this->lookAt($v[0]);
+								echo 'Looking...' . $v[0]->name . " - " . $v[1] . "\n";
+							} else {
+								echo "Can't Look ??\n";
+							}
+							break;
+						}
 					break;
 				}
 			}

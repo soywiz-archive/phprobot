@@ -388,11 +388,11 @@
 // ----------------------------------------------------------------------------
 
 		// Login
-		function onDisconnect()       { }
+		function onDisconnect()       { $this->reconnect();  }
 		function onMasterLogin()      { }
-		function onMasterLoginError() { }
+		function onMasterLoginError() { $this->disconnect(); }
 		function onCharaLogin()       { }
-		function onMasterCharaError() { }
+		function onCharaSelectError() { $this->disconnect(); }
 		function onCharaSelect()      { }
 		function onMapStart()         { }
 

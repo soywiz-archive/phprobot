@@ -5,12 +5,12 @@
 		private static $look_player = 'Master';
 
 		// Login
-		function onDisconnect()  { $this->reconnect(); }
-		function onMasterLogin() { $this->masterConnect('localhost:6900', 'test2', 'test2'); }
+		function onDisconnect()       { $this->reconnect(); }
+		function onMasterLogin()      { $this->masterConnect('localhost:6900', 'test2', 'test2'); }
 		function onMasterLoginError() { $this->disconnect(); }
-		function onCharaLogin() { $this->serverCharaSelect('test_server'); }
-		function onMasterCharaError() { $this->disconnect(); }
-		function onCharaSelect() { $this->charaSelect('CharaTest'); }
+		function onCharaLogin()       { $this->serverCharaSelect('test_server'); }
+		function onCharaSelectError() { $this->disconnect(); }
+		function onCharaSelect()      { $this->charaSelect('CharaTest'); }
 
 		// Process
 		function onMoving(Entity &$e) {

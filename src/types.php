@@ -92,6 +92,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 	class Entity extends IdList {
+		// ETC. (TODO)
+		const player  = 0;
+		const monster = 1;
+		const npc     = 2;
+		const pet     = 3;
+		const flag    = 4;
+		const warp    = 5;
+
+		public $type;
+
 		public $_name;
 		//protected $_name;
 
@@ -274,6 +284,41 @@
 					}
 				}
 			}
+		}
+
+		// EXTRA (FIX)
+		// array(array(int, Entity), ...)
+		static function entitySimilar(GenericBot &$o, $name) {
+			//echo "Similar List:\n";
+			$z = &$o->lists['Entity_memo'];
+			$return   = array();
+			$percents = array();
+			$entities = array();
+			$fixn = 0;
+			foreach ($z as $k => $e) {
+				similar_text($e->name, $name, $per);
+				if ($per < 99) {
+					$per *= $e->visible ? 1 : 0.5;
+					if ($e->visible) {
+						$dist = sqrt(pow($o->player->x - $e->x, 2) + pow($o->player->y - $e->y, 2));
+						if ($dist > 5) $per /= ($dist / 5);
+					}
+				}
+
+				//echo "$per -> " . $e->name . "\n";
+
+				$entities['f' . (string)$fixn] = $e;
+				$percents['f' . (string)$fixn] = round($per, 3);
+				$fixn++;
+				//echo "Similar-Entity: " . $e->name . ' - ' . round($per, 2) . "\n";
+			}
+			//echo "END Similar List:\n";
+
+			arsort($percents);
+			$percents = array_slice($percents, 0, 5);
+			foreach ($percents as $k => $percent) $return[] = array(&$entities[$k], $percent);
+
+			return $return;
 		}
 	}
 
