@@ -21,27 +21,27 @@
 	}
 
 	// String functions
-    function Make8($num)               { return chr($num); }
-    function Make16($num)              { return chr($num >> 8) . chr($num & 0xFF); }
-    function Make32($num)              { return Make16($num >> 16) . Make16($num & 0xFFFF); }
+	function Make8($num)               { return chr($num); }
+	function Make16($num)              { return chr($num >> 8) . chr($num & 0xFF); }
+	function Make32($num)              { return Make16($num >> 16) . Make16($num & 0xFFFF); }
 
-    function MakeR8($num)              { return chr($num); }
-    function MakeR16($num)             { return chr($num & 0xFF) . chr($num >> 8); }
-    function MakeR32($num)             { return MakeR16($num & 0xFFFF) . MakeR16($num >> 16); }
+	function MakeR8($num)              { return chr($num); }
+	function MakeR16($num)             { return chr($num & 0xFF) . chr($num >> 8); }
+	function MakeR32($num)             { return MakeR16($num & 0xFFFF) . MakeR16($num >> 16); }
 
-    function MakeStr8($str)            { $str = substr($str, 0, 255); return Make8(strlen($str)) . $str; }
-    function MakeStr16($str)           { $str = substr($str, 0, pow(2, 16) - 1); return Make16(strlen($str)) . $str; }
-    function MakeStr32($str)           { $str = substr($str, 0, pow(2, 32) - 1); return Make32(strlen($str)) . $str; }
+	function MakeStr8($str)            { $str = substr($str, 0, 255); return Make8(strlen($str)) . $str; }
+	function MakeStr16($str)           { $str = substr($str, 0, pow(2, 16) - 1); return Make16(strlen($str)) . $str; }
+	function MakeStr32($str)           { $str = substr($str, 0, pow(2, 32) - 1); return Make32(strlen($str)) . $str; }
 
-    function MakeZS($str, $len)        { return str_pad($str, $len, chr(0)); }
+	function MakeZS($str, $len)        { return str_pad($str, $len, chr(0)); }
 
-    function Get8($str)                { return ord($str[0]); }
-    function Get16($str)               { return ord($str[1]) + (ord($str[0]) * 256); }
-    function Get32($str)               { return ord($str[3]) + (ord($str[2]) * 256) + (ord($str[1]) * 65536) + (ord($str[0]) * 16777216); }
+	function Get8($str)                { return ord($str[0]); }
+	function Get16($str)               { return ord($str[1]) + (ord($str[0]) * 256); }
+	function Get32($str)               { return ord($str[3]) + (ord($str[2]) * 256) + (ord($str[1]) * 65536) + (ord($str[0]) * 16777216); }
 
-    function GetR8($str)               { return ord($str[0]); }
-    function GetR16($str)              { return ord($str[0]) + (ord($str[1]) * 256); }
-    function GetR32($str)              { return ord($str[0]) + (ord($str[1]) * 256) + (ord($str[2]) * 65536) + (ord($str[3]) * 16777216); }
+	function GetR8($str)               { return ord($str[0]); }
+	function GetR16($str)              { return ord($str[0]) + (ord($str[1]) * 256); }
+	function GetR32($str)              { return ord($str[0]) + (ord($str[1]) * 256) + (ord($str[2]) * 65536) + (ord($str[3]) * 16777216); }
 
 	function GetStrZero($str)          { if (($pos = strpos($str, chr(0))) !== false) { return substr($str, 0, $pos); } else { return $str; } }
 

@@ -1,16 +1,7 @@
 <?php
-	$map = new Map('prueba', 5, 5);
+	Import('Map.MapRagnarok');
 
-	//print_r($map);
+	$map = new MapRagnarok('alberta.gat');
 
-	//$map->width = 200;
-	//$map->height = 200;
-
-	$map->Find(0, 0, 10, 11, FIND_WALK);
-
-	print_r($map);
-
-	//echo $grf->Read('data\\mapnametable.txt');
-
-	//sleep(20);
+	print_r($map->Find(60, 100, 100, 100, FIND_WALK));
 ?>

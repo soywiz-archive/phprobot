@@ -100,6 +100,9 @@ PATHFIND::PATHFIND(short src_x, short src_y, short dst_x, short dst_y, char *wal
 	if (src_y < 0) src_y = 0; else if (src_y >= pf_height) src_y = pf_height - 1;
 	if (src_x < 0) src_x = 0; else if (src_x >= pf_width)  src_x = pf_width - 1;
 
+	if (dst_y < 0) dst_y = 0; else if (dst_y >= pf_height) dst_y = pf_height - 1;
+	if (dst_x < 0) dst_x = 0; else if (dst_x >= pf_width)  dst_x = pf_width - 1;
+
 	// allocate memory
 	nodes = (NODE *)malloc(sizeof(NODE) * pf_width * pf_height);
 	memset(nodes, 0, sizeof(NODE) * pf_width * pf_height);
@@ -110,11 +113,32 @@ PATHFIND::PATHFIND(short src_x, short src_y, short dst_x, short dst_y, char *wal
 	for (int yt = 0, val = 0; yt < pf_height; yt++, val += pf_width) y_table[yt] = val;
 
 	// transform the walkarea array to our nodes format
-	tmp = 0;
-	for (int y = 0; y < pf_height; y++) {
-		for (int x = 0; x < pf_width; x++, tmp++) {
-			//nodes[tmp].status = (getpixel(walkarea, x, y) == freecol) ? NODE_BLANK : NODE_BLOCKED;
-			nodes[tmp].status = ((walkarea[tmp] == 1) || (walkarea[tmp] == 5)) ? NODE_BLOCKED : NODE_BLANK;
+	if (type == FIND_WALK) {
+		// Find Walk
+		tmp = 0;
+		for (int y = 0; y < pf_height; y++) {
+			for (int x = 0; x < pf_width; x++, tmp++) {
+				//nodes[tmp].status = (getpixel(walkarea, x, y) == freecol) ? NODE_BLANK : NODE_BLOCKED;
+				nodes[tmp].status = ((walkarea[tmp] == 1) || (walkarea[tmp] == 5)) ? NODE_BLOCKED : NODE_BLANK;
+			}
+		}
+	} else if (type == FIND_FLY) {
+		// Find Fly
+		tmp = 0;
+		for (int y = 0; y < pf_height; y++) {
+			for (int x = 0; x < pf_width; x++, tmp++) {
+				//nodes[tmp].status = (getpixel(walkarea, x, y) == freecol) ? NODE_BLANK : NODE_BLOCKED;
+				nodes[tmp].status = ((walkarea[tmp] == 1)) ? NODE_BLOCKED : NODE_BLANK;
+			}
+		}
+	} else {
+		// Desconocido
+		tmp = 0;
+		for (int y = 0; y < pf_height; y++) {
+			for (int x = 0; x < pf_width; x++, tmp++) {
+				//nodes[tmp].status = (getpixel(walkarea, x, y) == freecol) ? NODE_BLANK : NODE_BLOCKED;
+				nodes[tmp].status = NODE_BLANK;
+			}
 		}
 	}
 

@@ -5,6 +5,7 @@
 #include "php.h"
 #include "php_globals.h"
 #include "ext/standard/info.h"
+#include "ext/standard/php_array.h"
 
 #include "php_map.h"
 #include "Path/path.h"
@@ -39,6 +40,18 @@ zend_module_entry map_module_entry = {
 };
 
 ZEND_GET_MODULE(map)
+
+void zend_call_any_function(INTERNAL_FUNCTION_PARAMETERS, char *function_name, zval **returnvalue, int number_of_arguments, zval ***params) {
+	zval *zval_function_name;
+
+	MAKE_STD_ZVAL(zval_function_name);
+	ZVAL_STRING(zval_function_name, function_name, 1);
+	if (call_user_function_ex(EG(function_table), NULL, zval_function_name, returnvalue, number_of_arguments, params, 0, NULL TSRMLS_CC) == FAILURE) {
+		php_error_docref(NULL TSRMLS_CC, E_ERROR, "function '%s' not found", Z_STRVAL_P(zval_function_name));
+	}
+	zval_dtor(zval_function_name); /* to free stringvalue memory */
+	FREE_ZVAL(zval_function_name);
+}
 
 /*
 static void *PHPgetProperty(zval *id, char *name, int namelen, int proptype TSRMLS_DC) {
@@ -137,16 +150,47 @@ PHP_METHOD(Map, __set) {
 }
 
 PHP_METHOD(Map, Get) {
-	RETURN_FALSE;
+	zval *width, *height, *data;
+	int x, y;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &x, &y) == FAILURE) WRONG_PARAM_COUNT;	
+
+	width  = zend_read_property(map_class_entry_ptr, getThis(), "width",  5, 1 TSRMLS_CC);
+	height = zend_read_property(map_class_entry_ptr, getThis(), "height", 6, 1 TSRMLS_CC);
+	data   = zend_read_property(map_class_entry_ptr, getThis(), "data",   4, 1 TSRMLS_CC);
+
+	if (x < 0 || y < 0 || x >= Z_LVAL_P(width) || y >= Z_LVAL_P(height)) {
+		RETURN_FALSE;
+	} else {
+		RETURN_LONG((int)((Z_STRVAL_P(data))[y * Z_LVAL_P(width) + x]));
+	}
 }
 
 PHP_METHOD(Map, Put) {
-	RETURN_FALSE;
+	zval *width, *height, *data;
+	int x, y, set;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lll", &x, &y, &set) == FAILURE) WRONG_PARAM_COUNT;	
+
+	width  = zend_read_property(map_class_entry_ptr, getThis(), "width",  5, 1 TSRMLS_CC);
+	height = zend_read_property(map_class_entry_ptr, getThis(), "height", 6, 1 TSRMLS_CC);
+	data   = zend_read_property(map_class_entry_ptr, getThis(), "data",   4, 1 TSRMLS_CC);
+
+	if (x < 0 || y < 0 || x >= Z_LVAL_P(width) || y >= Z_LVAL_P(height)) {
+		RETURN_FALSE;
+	} else {
+		(Z_STRVAL_P(data))[y * Z_LVAL_P(width) + x] = (char)set;
+		RETURN_TRUE;
+	}
 }
 
 PHP_METHOD(Map, Find) {
+	zval *arrayXY;
 	zval *width, *height, *data;
+	zval *retval;
+	zval **arguments[1];
 	int x_src, y_src, x_dst, y_dst, type;
+	short mx, my;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lllll", &x_src, &y_src, &x_dst, &y_dst, &type) == FAILURE) WRONG_PARAM_COUNT;	
 
@@ -155,11 +199,35 @@ PHP_METHOD(Map, Find) {
 	data   = zend_read_property(map_class_entry_ptr, getThis(), "data",   4, 1 TSRMLS_CC);
 
 	if (Z_STRLEN_P(data) >= Z_LVAL_P(width) * Z_LVAL_P(height)) {
-		PATHFIND *pf = new PATHFIND(x_dst, y_dst, x_src, y_src, Z_STRVAL_P(data), Z_LVAL_P(width), Z_LVAL_P(height), type);
+		PATHFIND *pf = new PATHFIND((short)x_dst, (short)y_dst, (short)x_src, (short)y_src, Z_STRVAL_P(data), Z_LVAL_P(width), Z_LVAL_P(height), type);
 
-		//if (pf->get_error() == PF_OK) {
-		
-		//}
+		array_init(return_value);
+
+		if (pf->get_error() == PF_OK) {		
+			do {
+				pf->get_actual_node(mx, my);
+
+				MAKE_STD_ZVAL(arrayXY);
+				array_init(arrayXY);
+				add_next_index_long(arrayXY, (int)mx);
+				add_next_index_long(arrayXY, (int)my);
+
+				//printf("%i, %i\n", (int)mx, (int)my);
+
+				add_next_index_zval(return_value, arrayXY);
+			} while (pf->next_node() == PF_OK);
+
+			arguments[0] = &return_value;
+			zend_call_any_function(INTERNAL_FUNCTION_PARAM_PASSTHRU, "array_reverse", &retval, 1, arguments);
+			*return_value = *retval;
+		} else {
+			MAKE_STD_ZVAL(arrayXY);
+			array_init(arrayXY);
+			add_next_index_long(arrayXY, x_src);
+			add_next_index_long(arrayXY, y_src);
+
+			add_next_index_zval(return_value, arrayXY);
+		}
 
 		delete pf;
 	} else {
@@ -175,8 +243,8 @@ PHP_MINIT_FUNCTION(Map) {
 
 	#define CONSTANT(s,c) REGISTER_LONG_CONSTANT((s), (c), CONST_CS | CONST_PERSISTENT)
 
-	CONSTANT("FIND_WALK",  0);
-	CONSTANT("FIND_FLY",   1);
+	CONSTANT("FIND_WALK",  FIND_WALK);
+	CONSTANT("FIND_FLY",   FIND_FLY);
 
 	return SUCCESS;
 }

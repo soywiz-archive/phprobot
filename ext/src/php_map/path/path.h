@@ -50,13 +50,18 @@ class PATHFIND {
 		~PATHFIND();
 };
 
+/*
 struct pos {
 	short x;
 	short y;
 };
+*/
 
-#define DLL_EXPORT
+//#define DLL_EXPORT
 
-DLL_EXPORT char *path_get(char *map_data, int map_w, int map_h, int x_src, int y_src, int x_dst, int y_dst, int time);
+//DLL_EXPORT char *path_get(char *map_data, int map_w, int map_h, int x_src, int y_src, int x_dst, int y_dst, int time);
+
+#define FIND_WALK 0
+#define FIND_FLY 1
 
 #endif
