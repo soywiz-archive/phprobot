@@ -122,62 +122,13 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\map.c">
+				RelativePath=".\map.cpp">
 			</File>
 			<Filter
-				Name="map"
+				Name="Path"
 				Filter="">
 				<File
-					RelativePath=".\map\map.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\map\mapcrypt.c">
-				</File>
-				<File
-					RelativePath=".\map\mapsupport.c">
-				</File>
-			</Filter>
-			<Filter
-				Name="Zlib"
-				Filter="">
-				<File
-					RelativePath=".\map\zlib\adler32.c">
-				</File>
-				<File
-					RelativePath=".\map\zlib\compress.c">
-				</File>
-				<File
-					RelativePath=".\map\zlib\crc32.c">
-				</File>
-				<File
-					RelativePath=".\map\zlib\deflate.c">
-				</File>
-				<File
-					RelativePath=".\map\zlib\inffast.c">
-				</File>
-				<File
-					RelativePath=".\map\zlib\inflate.c">
-				</File>
-				<File
-					RelativePath=".\map\zlib\inftrees.c">
-				</File>
-				<File
-					RelativePath=".\map\zlib\trees.c">
-				</File>
-				<File
-					RelativePath=".\map\zlib\zutil.c">
+					RelativePath=".\path\path.cpp">
 				</File>
 			</Filter>
 		</Filter>
@@ -189,50 +140,10 @@
 				RelativePath=".\php_map.h">
 			</File>
 			<Filter
-				Name="map"
+				Name="Path"
 				Filter="">
 				<File
-					RelativePath=".\map\map.h">
-				</File>
-				<File
-					RelativePath=".\map\mapcrypt.h">
-				</File>
-				<File
-					RelativePath=".\map\mapsupport.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="Zlib"
-				Filter="">
-				<File
-					RelativePath=".\map\zlib\crc32.h">
-				</File>
-				<File
-					RelativePath=".\map\zlib\deflate.h">
-				</File>
-				<File
-					RelativePath=".\map\zlib\inffast.h">
-				</File>
-				<File
-					RelativePath=".\map\zlib\inffixed.h">
-				</File>
-				<File
-					RelativePath=".\map\zlib\inflate.h">
-				</File>
-				<File
-					RelativePath=".\map\zlib\inftrees.h">
-				</File>
-				<File
-					RelativePath=".\map\zlib\trees.h">
-				</File>
-				<File
-					RelativePath=".\map\zlib\zconf.h">
-				</File>
-				<File
-					RelativePath=".\map\zlib\zlib.h">
-				</File>
-				<File
-					RelativePath=".\map\zlib\zutil.h">
+					RelativePath=".\path\path.h">
 				</File>
 			</Filter>
 		</Filter>
