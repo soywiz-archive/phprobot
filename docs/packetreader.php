@@ -1,7 +1,9 @@
 <?php
+	// Packets/PacketStructure.php
+
 	class PacketStructure {
 		public  $Id;
-		private $Length;
+		public  $Length;
 		public  $Description;
 		private $Structure;
 
@@ -21,7 +23,7 @@
 				}
 			}
 
-			echo "$PacketId: ";
+			//echo "$PacketId: ";
 
 			if (substr($PacketId, 0, 2) == '0x') {
 				$PacketId = hexdec(substr($PacketId, 2));
@@ -39,7 +41,7 @@
 
 			if (!isset($this->Structure)) $this->Structure = $this->ProcessEntryGroup($packet);
 
-			echo $this->Structure . "\n";
+			//echo $this->Structure . "\n";
 		}
 
 		private function ProcessEntryGroup(SimpleXMLElement $group) {
@@ -89,18 +91,39 @@
 			return $Structure;
 		}
 
-		public function Length() {
-			return $this->Length;
-		}
-
 		public function Extract(string $String) {
 		}
 	}
 
-	$o = simplexml_load_file(dirname(__FILE__) . '/packets.xml');
-	foreach ($o as $k => $packet) {
-		if ($packet instanceof SimpleXMLElement) {
-			if ($k == 'packet') new PacketStructure($packet);
+	// Packets/PacketList.php
+
+	//import('Packets.PacketStructure');
+
+	class PacketList {
+		private $PacketStructures = array();
+
+		static public function LoadFromFile($FileName) {
+			$Return = new PacketList();
+
+			$o = simplexml_load_file($FileName);
+			foreach ($o as $k => $packet) {
+				if (strtolower($k) == 'packet') {
+					$packeto = new PacketStructure($packet);
+					$Return->PacketStructures[$packeto->Id] = &$packeto;
+				}
+			}
+
+			return $Return;
+		}
+
+		public function Merge(PacketList $PacketList) {
+			foreach (array_keys($PacketList->PacketStructures) as $id) {
+				$this->PacketStructures[$id] = $PacketList->PacketStructures[$id];
+			}
 		}
 	}
+
+	print_r(
+	PacketList::LoadFromFile(dirname(__FILE__) . '/packets.xml')
+	);
 ?>
