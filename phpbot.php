@@ -1,5 +1,5 @@
 <?php
-	require_once(dirname(__FILE__) . '/core/class.GenericBot.php');
+	require_once(dirname(__FILE__) . '/src/class.GenericBot.php');
 
 	class Bot extends GenericBot {
 		function onDisconnect() {

@@ -15,10 +15,6 @@
 		}
 	}
 
-	//print_r($map_water_weights);
-
-	// float high[4]; int type;
-
 	foreach (scandir($path) as $file) {
 		if ($file != '.' && $file != '..') {
 			$ext = (($p = strrpos($file, '.')) !== false) ? strtolower(trim(substr($file, $p + 1))) : '';
@@ -36,9 +32,13 @@
 						list($w, $h) = array(&$size['w'], &$size['h']);
 						fwrite($fw, pack('SS', $w, $h));
 
-						// 0 -> ??
-						// 1 -> ??
-						// 3 -> Water
+						///////////////////////////////////
+						// 000 - 0 -> Pasable
+						// 001 - 1 -> Bloqueado
+						// 011 - 3 -> Agua
+						// 101 - 5 -> Atravesar paredes
+						// 110 - 6 -> Cosa rara
+						///////////////////////////////////
 						for ($y = 0; $y < $h; $y++) {
 							for ($x = 0; $x < $w; $x++) {
 								$line = unpack('f4h/Ltype', fread($fd, 20));
@@ -46,11 +46,10 @@
 
 								if ($t == 0 && isset($map_water_weights[$mname])) {
 									$wh = &$map_water_weights[$mname];
-									$t = (($h1 > $wh) || ($h2 > $wh) || ($h3 > $wh) || ($h4 > $wh)) ? 2 : 0;
+									$t = (($h1 > $wh) || ($h2 > $wh) || ($h3 > $wh) || ($h4 > $wh)) ? 3 : 0;
 								}
 
 								if ($x <= 0 || $y <= 0 || $x >= $w || $y >= $h) $t = 1;
-								if ($t != 0 && $t != 2) $t = 1;
 
 								fwrite($fw, chr($t));
 							}

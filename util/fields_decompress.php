@@ -3,8 +3,8 @@
 
 	$dir = '../maps/';
 	foreach (scandir($dir) as $file) {
-		if (strtolower(substr($file, strpos($file, '.'))) == '.fld.bz2') {
-			$file3 = substr($file, 0, strpos($file, '.')) . '.fld';
+		if (strtolower(substr($file, strpos($file, '.'))) == '.map.bz2') {
+			$file3 = substr($file, 0, strpos($file, '.')) . '.map';
 			echo "{$file}...";
 			if (!file_exists($file2 = $dir . $file3)) {
 				//echo "$file\n";
