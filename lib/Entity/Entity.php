@@ -3,7 +3,7 @@
 	Import('Ragnarok.EntityList');
 
 	class Entity {
-		public $EntityList;
+		public $EntityList = null;
 		public $Id;
 		public $Name;
 		public $Map;
@@ -40,9 +40,9 @@
 			if (isset($this->EntityList)) $this->EntityList->Unregister($this);
 		}
 
-		function __construct(EntityList &$EntityList, $Id) {
+		function __construct($EntityList, $Id) {
 			$this->Id = $Id;
-			$this->EntityInit($EntityList);
+			if ($EntityList instanceof EntityList) $this->EntityInit($EntityList);
 		}
 
 		function __destruct() {

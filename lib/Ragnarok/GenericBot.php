@@ -22,6 +22,10 @@
 		public  $ClientCode               = 0x14;
 		public  $ClientProtocolVersion    = 0x02;
 
+		const   SPEECH_GLOBAL             = 0;
+		const   SPEECH_PRIVATE            = 1;
+		const   SPEECH_GLOBAL_FROM        = 2;
+
 		const   SERVER_NONE               = 0;
 		const   SERVER_MASTER             = 1;
 		const   SERVER_CHARA              = 2;
@@ -42,15 +46,18 @@
 			$EntityList             = $this->EntityList;
 			$SocketPacket           = $this->SocketPacket;
 			$ServerCharaList        = $this->ServerCharaList;
+			$Map                    = $this->Map;
 			$this->EntityList       = null;
 			$this->SocketPacket     = null;
 			$this->ServerCharaList  = null;
+			$this->Map              = null;
 
 			print_r($this);
 
 			$this->EntityList       = $EntityList;
 			$this->SocketPacket     = $SocketPacket;
 			$this->ServerCharaList  = $ServerCharaList;
+			$this->Map              = $Map;
 		}
 
 		function __construct() {

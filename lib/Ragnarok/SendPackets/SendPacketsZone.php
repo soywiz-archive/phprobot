@@ -15,27 +15,28 @@
 		$Bot->IdZone = MakeR32($Bot->SocketPacket->Extract(4));
 	}
 
-/*
-	function sendMove(GenericBot &$o, $x, $y) {
-		$o->sock->send(maker16(0x0085) . makeXY($x, $y));
-	}
-
-	function sendMapLogin(GenericBot &$o) {
-		//print_r($o->connectionData); foreach ($o->connectionData as $k => $v) echo "$k -> " . dechex($v) . "\n"; exit;
-		$o->sock->send(
-			maker16(0x0072) .
-			maker32($o->connectionData['id_account']) .
-			maker32($o->connectionData['id_character']) .
-			maker32($o->connectionData['id_login1']) .
-			maker32(getTickCount()) .
-			 maker8($o->sex)
+	function SendZoneLoaded(GenericBot &$Bot) {
+		$Bot->SocketPacket->Send(
+			MakeR16(0x007D)
 		);
 	}
 
-	function sendMapLoaded(GenericBot &$o) {
-		$o->sock->send(maker16(0x007D));
+	function SendZoneMove(GenericBot &$Bot, Position $Position) {
+		$Bot->SocketPacket->Send(
+			MakeR16(0x0085)    .
+			MakeXYP($Position)
+		);
 	}
 
+	function SendZoneGetEntityName(GenericBot &$Bot, $Id) {
+		$Bot->SocketPacket->Send(
+			MakeR16(0x0094)    .
+			MakeR32($Id)
+		);
+	}
+
+
+/*
 	function sendGetEntityName(GenericBot &$o, $id) {
 		$o->sock->send(maker16(0x0094) . maker32($id));
 	}

@@ -265,6 +265,11 @@
 		<entry name="Id" type="uint32" />
 		<entry name="Name" type="stringz" length="24" />
 	</packet>
+	
+	<packet id="0x0096" length="-" server="zone" sender="client" shortdescription="Private Message From Player">
+		<entry name="Name" type="stringz" length="24" />
+		<entry name="Text" type="stringz" length="rest" />
+	</packet>
 
 	<packet id="0x0097" length="-" server="zone" sender="server" shortdescription="Private Message From Player">
 		<entry name="Name" type="stringz" length="24" />
@@ -421,15 +426,16 @@
 
 	<packet id="0x010f" length="-" server="zone" sender="server" shortdescription="Skill List">
 		<!-- a[id;target;level_max;sp_max;range;name;canup]www-wwwz[24]b !-->
-		<entry name="List" type="group" length="rest">
-			<entry name="Id" type="uint16" />
-			<entry name="Target" type="uint16" />
-			<entry name="Unused1" type="uint16" unused="true" />
-			<entry name="MaxLevel" type="uint16" />
-			<entry name="MaxSp" type="uint16" />
-			<entry name="Range" type="uint16" />
-			<entry name="Name" type="stringz" length="24" />
-			<entry name="CanUp" type="uint8" />
+		<!-- a[list]x[rest][a[id;target;level_max;sp_max;range;name;canup]www-wwwz[24]b] !-->
+		<entry name="List"         type="group" length="rest">
+			<entry name="Id"       type="uint16" />
+			<entry name="Target"   type="uint16" />
+			<entry name="Unused1"  type="uint16" unused="true" />
+			<entry name="LevelMax" type="uint16" />
+			<entry name="SpMax"    type="uint16" />
+			<entry name="Range"    type="uint16" />
+			<entry name="Name"     type="stringz" length="24" />
+			<entry name="CanUp"    type="uint8" />
 		</entry>
 	</packet>
 

@@ -25,6 +25,10 @@
 		return $ret;
 	}
 
+	function MakeXYP(Position $Position) {
+		return MakeXY($Position->X, $Position->Y);
+	}
+
 	function GetAngle($x1, $y1, $x2, $y2) {
 		list($dx, $dy) = array($x2 - $x1, $y2 - $y1);
 		if ($dx == 0) return ($dy > 0) ? -90 : 90;

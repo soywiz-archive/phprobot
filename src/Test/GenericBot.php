@@ -31,6 +31,10 @@
 		function OnCharaSelectSuccess(ServerZone &$Zone) {
 			$this->ConnectZone();
 		}
+
+		function OnZoneSay($Type, $Entity, $Text) {
+			echo "$Type: $Text\n";
+		}
 	}
 
 	//sleep(10);

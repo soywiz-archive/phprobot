@@ -2,11 +2,15 @@
 	Import('Ragnarok.Server');
 	Import('Ragnarok.Status');
 	Import('Entity.Entity');
+	Import('Map.MapRagnarok');
 
 	// 0073 - Enter Map
 	function RecivePacket0x0073(GenericBot &$Bot, $PId, $Data, $DataRaw) {
-		$Bot->Dump();
-		//exit;
+		$Bot->Position = new Position($Data['Position'][0], $Data['Position'][1]);
+		$Bot->Map      = new MapRagnarok($Bot->ServerZone->MapName);
+
+		SendZoneLoaded($Bot);
+		SendZoneGetEntityName($Bot, $Bot->Id);
   	}
 
 	// 0081 - Disconnect
@@ -14,104 +18,117 @@
 		$Bot->Disconnect();
   	}
 
-/*
-	// 0081 - Disconnected from Server
-	function parse_recv_0081(GenericBot &$o, $p, $d) {
-		$d = parse_str_packet($d, 'a[error]b');
-		$o->disconnect();
+	// 008e - Global Message
+	function RecivePacket0x008e(GenericBot &$Bot, $PId, $Data, $DataRaw) {
+		$Bot->SetStepCallBack('OnZoneSay', GenericBot::SPEECH_GLOBAL, null, $Data['Text']);
 	}
-
-	// 0073 - Enter Map
-	function parse_recv_0073(GenericBot &$o, $p, $d) {
-		$d = parse_str_packet($d, 'a[tick;pos]lpw-');
-
-		Entity::deleteAll($o);
-
-		$z = $o->characterSelected;
-
-		$o->player = new MainPlayer($o, $o->connectionData['id_map']);
-		$o->characterSelected = &$o->player;
-
-		foreach (array('hp', 'hp_max', 'sp', 'sp_max', 'flee', 'head', 'body', 'x', 'y', 'view_class',
-		'group', 'speed', 'base_exp', 'zeny', 'job_exp', 'job_level', 'option', 'karma',
-		'manner', 'status_points', 'walk_speed', 'class', 'hair_type', 'weapon', 'base_level',
-		'skill_points', 'head_bottom', 'shield', 'head_top', 'head_mid', 'hair_color',
-		'clothes_color', 'name', 'str', 'agi', 'vit', 'int', 'dex', 'luk') as $p) {
-			$o->player->$p = $z->$p;
-		}
-		//$o->player->trace();
-
-		$o->player->setXY($d['pos'][0], $d['pos'][1]);
-
-		// Mapa Cargado correctamente
-		sendMapLoaded($o);
-		sendGetEntityName($o, $o->player->id);
-
-		$o->onMapStart();
-	}
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 
 	// 00b1 - Your Status Info (Exp, Job Exp, Zeny)
-	function parse_recv_00b1(GenericBot &$o, $p, $d) {
-		parse_recv_00b0($o, $p, $d);
+	function RecivePacket0x00b1(GenericBot &$Bot, $PId, $Data, $DataRaw) {
+		RecivePacket0x00b0($Bot, $PId, $Data, $DataRaw);
 	}
 
 	// 00b0 - Your Status Info
-	function parse_recv_00b0(GenericBot &$o, $p, $d) {
-		$d = parse_str_packet($d, 'a[type;value]wl');
-		$type = &$d['type']; $value = &$d['value'];
+	function RecivePacket0x00b0(GenericBot &$Bot, $PId, $Data, $DataRaw) {
+		$Type = &$Data['Type']; $Value = &$Data['Value'];
 
-		$c = $o->player;
+		switch ($Type) {
+			case 0x0000: $Bot->Speed         = $Value; break;
+			case 0x0001: $Bot->ExpBase       = $Value; break;
+			case 0x0002: $Bot->ExpJob        = $Value; break;
+			case 0x0003:                               break;
+			case 0x0004:                               break;
+			case 0x0005: $Bot->Hp            = $Value; break;
+			case 0x0006: $Bot->HpMax         = $Value; break;
+			case 0x0007: $Bot->Sp            = $Value; break;
+			case 0x0008: $Bot->SpMax         = $Value; break;
+			case 0x0009: $Bot->PointsStatus  = $Value; break;
+			case 0x000A:                               break;
+			case 0x000B: $Bot->LevelBase     = $Value; break;
+			case 0x000C: $Bot->PointsSkill   = $Value; break;
+			case 0x000D:                               break;
+			case 0x000E:                               break;
+			case 0x000F:                               break;
+			case 0x0010:                               break;
+			case 0x0011:                               break;
+			case 0x0012:                               break;
+			case 0x0013:                               break;
+			case 0x0014: $Bot->Zenny         = $Value; break;
+			case 0x0015:                               break;
+			case 0x0016: $Bot->ExpBaseNext   = $Value; break;
+			case 0x0017: $Bot->ExpJobNext    = $Value; break;
+			case 0x0018: $Bot->Weight        = $Value; break;
+			case 0x0019: $Bot->WeightMax     = $Value; break;
+			case 0x001A:                               break;
+			case 0x001B:                               break;
+			case 0x001C:                               break;
+			case 0x001D:                               break;
+			case 0x001E:                               break;
+			case 0x001F:                               break;
+			case 0x0020:                               break;
+			case 0x0021:                               break;
+			case 0x0022:                               break;
+			case 0x0023:                               break;
+			case 0x0024:                               break;
+			case 0x0025:                               break;
+			case 0x0026:                               break;
+			case 0x0027:                               break;
+			case 0x0028:                               break;
+			case 0x0029: $Bot->Atk           = $Value; break;
+			case 0x002A: $Bot->AtkPer        = $Value; break;
+			case 0x002B: $Bot->MAtk          = $Value; break;
+			case 0x002C: $Bot->MAtkMax       = $Value; break;
+			case 0x002D: $Bot->Def           = $Value; break;
+			case 0x002E: $Bot->DefPer        = $Value; break;
+			case 0x002F: $Bot->MDef          = $Value; break;
+			case 0x0030: $Bot->MDefPer       = $Value; break;
+			case 0x0031: $Bot->Hit           = $Value; break;
+			case 0x0032: $Bot->Flee          = $Value; break;
+			case 0x0033: $Bot->FleePer       = $Value; break;
+			case 0x0034: $Bot->Crit          = $Value; break;
+			case 0x0035: $Bot->Aspd          = $Value; break;
+			case 0x0036:                               break;
+			case 0x0037: $Bot->LevelJob      = $Value; break;
 
-		switch ($type) {
-			case 0x0000: $c->speed         = $value; break;
-
-			case 0x0001: $c->base_exp      = $value; break;
-			case 0x0002: $c->job_exp       = $value; break;
-
-			case 0x0005: $c->hp            = $value; $o->onUpdateHP($o->player); break;
-			case 0x0006: $c->hp_max        = $value; $o->onUpdateHP($o->player); break;
-			case 0x0007: $c->sp            = $value; $o->onUpdateSP($o->player); break;
-			case 0x0008: $c->sp_max        = $value; $o->onUpdateSP($o->player); break;
-			case 0x0009: $c->status_points = $value; break;
-			case 0x000b: $c->base_level    = $value; break;
-			case 0x000c: $c->skill_points  = $value; break;
-
-			case 0x0014: $c->zeny          = $value; break;
-			case 0x0016: $c->base_exp_next = $value; break;
-			case 0x0017: $c->job_exp_next  = $value; break;
-
-			case 0x0018: $c->weight        = $value; break;
-			case 0x0019: $c->weight_max    = $value; break;
-
-			case 0x0029: $c->atk           = $value; break;
-			case 0x002A: $c->atk_per       = $value; break;
-			case 0x002B: $c->matk          = $value; break;
-			case 0x002C: $c->matk_max      = $value; break;
-
-			case 0x002D: $c->def           = $value; break;
-			case 0x002E: $c->def_per       = $value; break;
-
-			case 0x002F: $c->mdef          = $value; break;
-			case 0x0030: $c->mdef_per      = $value; break;
-
-			case 0x0031: $c->hit           = $value; break;
-			case 0x0032: $c->flee          = $value; break;
-			case 0x0033: $c->flee_per      = $value; break;
-
-			case 0x0034: $c->crit          = $value; break;
-			case 0x0035: $c->atack_speed   = $value; break;
-
-			case 0x0037: $c->job_level     = $value; break;
-
-			default: echo "Unknown 0x00B0/0x00B1 type: {$type} : {$value}\n"; break;
+			default: echo "Unknown 0x00B0/0x00B1 type: {$Type} : {$Value}\n"; break;
 		}
-
-		$o->onCharaInfoUpdate($type, $value);
 	}
 
+	// 0097 - Private Message (From Other)
+	function RecivePacket0x0097(GenericBot &$Bot, $PId, $Data, $DataRaw) {
+		$Entity = new Entity(null, -1);
+		$Entity->Name = $Data['Name'];
+
+		$Bot->SetStepCallBack('OnZoneSay', GenericBot::SPEECH_GLOBAL, $Entity, $Data['Text']);
+	}
+
+
+	// 010f - Skills List
+	function RecivePacket0x010f(GenericBot &$Bot, $PId, $Data, $DataRaw) {
+		print_r($Data);
+		//$Bot->Dump();
+		exit;
+		// Obtiene la lista de habilidades y parámetros
+		$d = parse_str_packet($d, 'a[list]x[rest][a[id;target;level_max;sp_max;range;name;canup]www-wwwz[24]b]');
+
+		// Genera la lista de habilidades
+		foreach ($d['list'] as $v) {
+			// Genera una nueva habilidad a partir de un ID
+			$z = new Skill($o, $v['id']);
+
+			// Introduce los datos de la habilidad
+			$z->target    = $v['target'];
+			$z->level_max = $v['level_max'];
+			$z->sp_max    = $v['sp_max'];
+			$z->range     = $v['range'];
+			$z->name      = isset($o->lists['Skill_name'][$v['id']])  ? $o->lists['Skill_name'][$v['id']]  : 'Unknown';
+			$z->title     = isset($o->lists['Skill_title'][$v['id']]) ? $o->lists['Skill_title'][$v['id']] : 'Unknown';
+			$z->delay     = isset($o->lists['Skill_delay'][$v['id']]) ? $o->lists['Skill_delay'][$v['id']] : 0;
+			$z->canup     = $v['canup'];
+		}
+	}
+
+/*
 	// 00bd - Your Status Info (Calculated)
 	function parse_recv_00bd(GenericBot &$o, $p, $d) {
 		$d = parse_str_packet($d, 'a[status_points;str;str_b;agi;agi_b;vit;vit_b;int;int_b;dex;dex_b;luk;luk_b;atk;atk_per;matk;matk_max;def;def_per;mdef;mdef_per;hit;flee;flee_per;crit;karma;manner]wbbbbbbbbbbbbwwwwwwwwwwwwww');

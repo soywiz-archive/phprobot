@@ -53,14 +53,14 @@
 
 				$p = ExtR16($s);
 
-				echo "Recibido Paquete 0x" . str_pad(dechex($p), 4, '0', STR_PAD_LEFT) . "\n";
+				//echo "Recibido Paquete 0x" . str_pad(dechex($p), 4, '0', STR_PAD_LEFT) . "\n";
 
 				// No está definida la estructura del paquete
 				if (($l = $this->PacketList->PacketLength($p)) === false) {
 					return false;
 				}
 
-				if ($l == -1) $l = ExtR16($s);
+				if ($l == -1) $l = ExtR16($s) - 4;
 
 				//return array($p, StrShift($s, $l));
 				$se = StrShift($s, $l);
