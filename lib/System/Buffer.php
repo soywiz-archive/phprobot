@@ -20,6 +20,18 @@
 		return (int)$str;
 	}
 
+	function GetBoolean($str) {
+		$str = strtolower(trim($str));
+
+		if ($str == 'false') {
+			$str = false;
+		} else {
+			$str = (bool)$str;
+		}
+
+		return (bool)$str;
+	}
+
 	// String functions
 	function Make8($num)               { return chr($num); }
 	function Make16($num)              { return chr($num >> 8) . chr($num & 0xFF); }

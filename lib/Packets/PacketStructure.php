@@ -43,26 +43,30 @@
 		private function ProcessEntryGroup(SimpleXMLElement $group) {
 			$Structure = '';
 			$NameList  = array();
+			$ReverseG  = false;
 
 			foreach ($group as $k => $entry) {
-				list($name, $type, $length, $unused) = array(null, '', 0, false);
+				list($name, $type, $length, $unused, $reverse, $param) = array(null, '', 0, false, false, '');
 
 				foreach ($entry->attributes() as $aname => $avalue) {
 					switch (strtolower(trim($aname))) {
-						case 'name':   $name   = trim($avalue); break;
-						case 'type':   $type   = strtolower(trim($avalue)); break;
-						case 'length': $length = trim($avalue); break;
-						case 'unused': $unused = strtolower(trim($avalue)); break;
+						case 'name':    $name    = trim($avalue); break;
+						case 'type':    $type    = strtolower(trim($avalue)); break;
+						case 'length':  $length  = trim($avalue); break;
+						case 'unused':  $unused  = GetBoolean(strtolower(trim($avalue))); break;
+						case 'reverse': $reverse = GetBoolean(strtolower(trim($avalue))); break;
+						case 'param':   $param   = strtolower(trim($avalue)); break;
 					}
 				}
 
-				if ($unused == 'false') {
-					$unused = false;
-				} else {
-					$unused = (bool)$unused;
-				}
+				if (strtolower(trim($type)) == 'function') array_pop($NameList);
 
 				if ($name != null && !$unused) $NameList[] = $name;
+
+				if ($ReverseG != $reverse) {
+					$Structure .= $reverse ? 'r' : 'n';
+					$ReverseG = $reverse;
+				}
 
 				switch (strtolower(trim($type))) {
 					case 'uint8':  case 'int8':  $Structure .= 'b'; break;
@@ -72,6 +76,9 @@
 					case 'pos40':                $Structure .= 'q'; break;
 					case 'stringz':              $Structure .= 'z[' . $length . ']'; break;
 					case 'string':               $Structure .= 's[' . $length . ']'; break;
+					case 'function':
+						$Structure .= 'f[' . $param  . ']';
+					break;
 					case 'group':
 						$Structure .= 'x[' . $length . '][' . $this->ProcessEntryGroup($entry) . ']';
 					break;
@@ -79,6 +86,8 @@
 						throw(new Exception('Unknown Type (' . $type . ')'));
 					break;
 				}
+
+				if ($unused) $Structure .= '-';
 			}
 
 			$Structure = 'a[' . implode(';', $NameList) . ']' . $Structure;

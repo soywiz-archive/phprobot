@@ -38,12 +38,6 @@
 		foreach (func_get_args() as $v) if (!defined($v)) define($v, $c++);
 	}
 
-	function GetIpAndPort($string, $default_port) {
-		list($host, $port) = (strpos($string, ':') !== false) ? explode(':', $string, 2) : array($string, $default_port);
-
-		return array(gethostbyname($host), (int)$port);
-	}
-
 	function GetSimilarValue($array, $value, $prec = 60) {
 		if (!is_array($array)) $array = array($array);
 		$return = $value = strtolower(trim($value));

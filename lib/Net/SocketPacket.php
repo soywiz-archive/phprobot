@@ -2,12 +2,11 @@
 	import('Net.Socket');
 	import('Packets.PacketList');
 
-	class PacketSocket extends Socket {
+	class SocketPacket extends Socket {
 		private $PacketList;
 		private $SockBuffer = '';
 
 		function __construct(PacketList $PacketList) {
-			base::__construct();
 			$this->PacketList = $PacketList;
 		}
 

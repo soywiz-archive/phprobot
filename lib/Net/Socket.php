@@ -7,15 +7,17 @@
 		protected $Simulated;
 		protected $SimulatedBuffer;
 
-		function Connect($Ip = null, $Port = null) {
+		public function Connect($Host = null, $Port = null) {
 			// Simular conexión
-			if (!isset($Ip) || !isset($Port)) {
+			if (!isset($Host) && !isset($Port)) {
 				$this->Connected       = true;
 				$this->Simulated       = true;
-				$this->SimulatedBuffer = '';
 				return true;
 			}
 
+			list($Ip, $Port) = GetIpAndPort($Host, $Port);
+
+			$this->SimulatedBuffer = '';
 			$this->Simulated = false;
 
 			if (!extension_loaded('sockets') && !dl('php_sockets.dll')) return false;
@@ -32,14 +34,19 @@
 			return false;
 		}
 
-		function Close() {
+		public function Disconnect() {
+			$this->Sock      = NULL;
+			$this->Connected = false;
+		}
+
+		public function Close() {
 			if ($this->Connected) {
 				if (!$this->Simulated) socket_close($this->Sock);
 				$this->Connected = false;
 			}
 		}
 
-		function Extract($Length) {
+		public function Extract($Length) {
 			if (!$this->Simulated) {
 				return $this->Connected ? @socket_read($this->Sock, $Length) : false;
 			} else {
@@ -47,7 +54,11 @@
 			}
 		}
 
-		function Send($Data) {
+		public function ReciveSimulate($String) {
+			// TODO
+		}
+
+		public function Send($Data) {
 			if ($this->Connected) {
 				if (!$this->Simulated) @socket_write($this->Sock, $Data);
 				return true;
@@ -56,16 +67,21 @@
 			return false;
 		}
 
-		function GetReadLength() {
+		public function GetReadLength() {
 			if ($this->Connected) {
 				if (!$this->Simulated) {
 					$ls = array($this->Sock);
-					//return @socket_select($ls, $a = null, $a = null, 0);
-					return @socket_select($ls, null, null, 0);
+					return @socket_select($ls, $a = null, $a = null, 0);
 				} else {
 					return strlen($this->SimulatedBuffer);
 				}
 			}
 		}
+	}
+
+	function GetIpAndPort($string, $default_port) {
+		list($host, $port) = (strpos($string, ':') !== false) ? explode(':', $string, 2) : array($string, $default_port);
+
+		return array(gethostbyname($host), (int)$port);
 	}
 ?>

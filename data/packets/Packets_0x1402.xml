@@ -1,5 +1,33 @@
 <?xml version="1.0" ?>
-<packets protocolVersion="0x1402">
+<packets protocolVersion="0x1402">		
+	<packet id="0x0069" length="9" description="Account Info">
+		<!-- a[id_login1;id_account;id_login2;date_last_login;sex;servers]llll-z[24]w-bx[rest][
+				a[ip;port;name;users]rlnf[ip]wz[20]w-w-w
+			] !-->
+		<entry name="IdLogin1"      type="uint32" />
+		<entry name="IdAccount"     type="uint32" />
+		<entry name="IdLogin2"      type="uint32" />
+		<entry name="Unused1"       type="uint32" unused="true" />
+		<entry name="DateLastLogin" type="stringz" length="24" />
+		<entry name="UnUsed1"       type="uint16" unused="true" />
+		<entry name="Sex"           type="uint8" />
+		<entry name="List" type="group" length="rest">
+			<entry name="IpRaw"     type="uint32"   reverse="true" />
+			<entry name="Ip"        type="function" param="ip" />
+			<entry name="Port"      type="uint16" />
+			<entry name="Name"      type="stringz" length="20" />
+			<entry name="UnUsed2"   type="uint16" unused="true" />
+			<entry name="UnUsed3"   type="uint16" unused="true" />
+			<entry name="Users"     type="uint16" />
+		</entry>		
+	</packet>
+	
+	<packet id="0x0073" length="9" description="Enter Map">
+		<entry name="Tick" type="uint32" />
+		<entry name="Position" type="pos24" />
+		<entry name="Unused1" type="uint16" unused="true" />
+	</packet>
+
 	<packet id="0x0073" length="9" description="Enter Map">
 		<entry name="Tick" type="uint32" />
 		<entry name="Position" type="pos24" />
