@@ -9,16 +9,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "php_map", "php_map\php_map.
 EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
-		Debug = Debug
 		Release = Release
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
-		{1EDA16CF-8FC0-4996-8FAD-82C3C19D500F}.Debug.ActiveCfg = Debug|Win32
-		{1EDA16CF-8FC0-4996-8FAD-82C3C19D500F}.Debug.Build.0 = Debug|Win32
 		{1EDA16CF-8FC0-4996-8FAD-82C3C19D500F}.Release.ActiveCfg = Release|Win32
 		{1EDA16CF-8FC0-4996-8FAD-82C3C19D500F}.Release.Build.0 = Release|Win32
-		{1EDA16CF-8FC0-4996-8FAD-82C3C19D500F}.Debug.ActiveCfg = Debug|Win32
-		{1EDA16CF-8FC0-4996-8FAD-82C3C19D500F}.Debug.Build.0 = Debug|Win32
 		{1EDA16CF-8FC0-4996-8FAD-82C3C19D500F}.Release.ActiveCfg = Release|Win32
 		{1EDA16CF-8FC0-4996-8FAD-82C3C19D500F}.Release.Build.0 = Release|Win32
 	EndGlobalSection
