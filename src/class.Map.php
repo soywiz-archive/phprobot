@@ -11,21 +11,24 @@
 		public         $name;
 		private        $data;
 		static private $path_ffi;
+		static private $conversion_list;
 
 		function open($name) {
 			$this->name = $nname = substr($name, 0, (($z = strpos($name, '.')) === false) ? strlen($name) : $z);
 
-			foreach (array('fld', 'fld.bz2', 'fld.gz') as $ext) {
+			if (isset(Map::$conversion_list[$nname])) $nname = Map::$conversion_list[$nname];
+
+			foreach (array('map', 'map.bz2', 'map.gz') as $ext) {
 				$cname = $nname . '.' . $ext;
 				foreach (array(PATH_MAP . $cname, $cname) as $rname) {
 					if (file_exists($rname)) {
 						$data = file_get_contents($rname);
 						// BZ2
-						if ($ext == 'fld.bz2') {
+						if ($ext == 'map.bz2') {
 							extension_loaded('bz2') or dl('php_bz2.dll') or die('Se requiere la extensión bz2');
 							$data = bzdecompress($data);
 						// GZ
-						} else if ($ext == 'fld.gz') {
+						} else if ($ext == 'map.gz') {
 							$data = gzuncompress($data);
 						}
 
@@ -62,11 +65,38 @@
 				Map::$path_ffi = new ffi("[lib='msvcrt.dll'] void free(char *ptr); [lib='path.dll'] char *path_get(char *map_data, int map_w, int map_h, int x_src, int y_src, int x_dst, int y_dst, int time);");
 			}
 
+			if (!isset(Map::$conversion_list)) {
+				Map::$conversion_list = array();
+
+				$lines = explode('#', file_get_contents(PATH_SYSTEM . '/resnametable.txt'));
+
+				while (sizeof($lines)) {
+					$line = array_shift($lines);
+					if (sizeof($lines) == 0) break;
+					$line = trim($line);
+					$line_res = trim(array_shift($lines));
+
+					if (strlen($line) == 0 || strlen($line_res) == 0) continue;
+
+					$ext1 = (($p = strrpos($line, '.')) !== false) ? strtolower(trim(substr($line, $p + 1))) : '';
+					$ext2 = (($p = strrpos($line, '.')) !== false) ? strtolower(trim(substr($line, $p + 1))) : '';
+
+					list($line2)     = explode('.', $line, 2);     $line2 = strtolower(trim($line2));
+					list($line_res2) = explode('.', $line_res, 2); $line_res2 = strtolower(trim($line_res2));
+
+					if ($ext1 == 'rsw' || $ext1 == 'gat' || $ext1 == 'gnd') {
+						Map::$conversion_list[$line2] = $line_res2;
+					}
+				}
+			}
+
 			if (isset($name)) $this->open($name);
 		}
 	}
-/*
-	$map = new Map('prontera');
-	$map->getPath(50, 50, 52, 52);
-*/
+
+	/*
+	$map = new Map('pvp_n_1-2');
+	print_r($map->getPath(50, 50, 52, 52));
+	exit;
+	*/
 ?>

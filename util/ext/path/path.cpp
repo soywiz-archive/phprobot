@@ -118,7 +118,7 @@ PATHFIND::PATHFIND(short src_x, short src_y, short dst_x, short dst_y, char *wal
 	for (int y = 0; y < pf_height; y++) {
 		for (int x = 0; x < pf_width; x++, tmp++) {
 			//nodes[tmp].status = (getpixel(walkarea, x, y) == freecol) ? NODE_BLANK : NODE_BLOCKED;
-			nodes[tmp].status = (walkarea[x + y * pf_width] == 1) ? NODE_BLOCKED : NODE_BLANK;
+			nodes[tmp].status = ((walkarea[tmp] == 1) || (walkarea[tmp] == 5)) ? NODE_BLOCKED : NODE_BLANK;
 		}
 	}
 
