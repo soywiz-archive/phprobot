@@ -25,6 +25,63 @@ Directories:
 Notas:
 	En "php.ini" el fichero de preppend debe ser "system.php"
 
+Interfaz de las extensiones:
+
+php_grf.dll
+
+class Grf {
+	function __construct($filename) {
+		//...
+	}
+
+	function __destruct() {
+		//...
+	}
+
+	function Find($name) {
+		//...
+		// return id
+	}
+
+	function Read($id) {
+		// ...
+		// return string
+	}
+}
+
+php_map.dll
+
+class Map {
+	public $width, $height;
+
+	function __construct($width, $height, $string) {
+		//...
+	}
+
+	function __destruct() {
+		//...
+	}
+
+	function Get($x, $y) {
+		//...
+	}
+
+	function Put($x, $y, $type) {
+		//...
+	}
+
+	// -------------------------------------
+	// $type
+	//    0 - Buscar camino (andar)
+	//    1 - Buscar camino (flecha/hechizo)
+	// -------------------------------------
+
+	function Find($x1, $y1, $x2, $y2, $type) {
+		//...
+		return Path;
+	}
+}
+
 */
 	class Error {
 		public $Id;
