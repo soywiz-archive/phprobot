@@ -3,19 +3,29 @@
 
 	$Bot = new TestBot();
 
-	import('Winbinder.winbinder');
+	Import('Winbinder.winbinder');
+	Import('Winbinder.FreeImage');
 
 	$cmd = 1001;
-	define('ID_APP_TIMER', $cmd++);
-	define('IDC_RESULT',   $cmd++);
-	define('ID_SELECT',    $cmd++);
-	define('ID_WEBSITE',   $cmd++);
-	define('ID_ABOUT',     $cmd++);
+	define('ID_APP_TIMER',           $cmd++);
+	define('IDC_RESULT',             $cmd++);
+	define('ID_SELECT',              $cmd++);
+	define('ID_VIEW_MAP',            $cmd++);
+	define('ID_WEBSITE_LUNEA',       $cmd++);
+	define('ID_WEBSITE_WINBINDER',   $cmd++);
+	define('ID_WEBSITE_PHP',         $cmd++);
+	define('ID_ABOUT',               $cmd++);
+
+    define('MW_FRAME',               1001);
 
 	$mainwin = wb_create_window(NULL, 101, 'Lunea', WBC_CENTER, WBC_CENTER, 320, 240, WBC_VISIBLE, 0);
-	wb_set_image($mainwin, dirname(dirname(__FILE__)) . '/bin/lunea.ico');
 
-	//wb_create_window(NULL, PopupWindow, "Hello world!", 480, 320);
+    $mapwin = wb_create_window(NULL, PopupWindow, "Map", WBC_CENTER, WBC_CENTER, 200, 200, WBC_INVISIBLE);
+    $mapwinframe = wb_create_control($mapwin, Frame, '', 0, 0, 50, 50, 101, WBC_IMAGE);
+	wb_set_handler($mapwin, 'process_map');
+
+	wb_set_image($mainwin, dirname(dirname(__FILE__)) . '/bin/lunea.ico');
+	wb_set_image($mapwin, dirname(dirname(__FILE__)) . '/bin/lunea.ico');
 
 	$Box = wb_create_control($mainwin, EditBox, "", 0, 0, 313, 213, IDC_RESULT, WBC_VISIBLE | WBC_ENABLED | WBC_LINES);
 
@@ -23,12 +33,18 @@
 	"&File",
 		array(ID_SELECT,	"Select &Bot...\tCtrl+B", "", "", "Ctrl+B"),
 		null,
-		array(IDCLOSE,		"E&xit\tAlt+F4", "", PATH_RES . "menu_exit.bmp"),
+		//array(IDCLOSE,		"E&xit\tAlt+F4", "", PATH_RES . "menu_exit.bmp"),
+		array(IDCLOSE,		"E&xit\tAlt+F4", '', ''),
+	"&View",
+		array(ID_VIEW_MAP,	"&Map...\tCtrl+M", '', '', 'Ctrl+M'),
 	"&Help",
-		array(ID_WEBSITE,	"&Web site..."),
+		array(ID_WEBSITE_LUNEA,	"&Web site of Lunea..."),
 		null,
-		array(ID_ABOUT,		"&About...", "", PATH_RES . "menu_help.bmp"),
-
+		array(ID_WEBSITE_WINBINDER,	"&Web site of Winbinder..."),
+		array(ID_WEBSITE_PHP,	"&Web site of Php..."),
+		null,
+		//array(ID_ABOUT,		"&About...", "", PATH_RES . "menu_help.bmp"),
+		array(ID_ABOUT,		"&About...", "", ''),
 	), $mainwin);
 
 	wb_set_handler($mainwin, 'process_main');
@@ -56,62 +72,69 @@
 				if (strlen($data)) {
 					$sl = strlen($set = wb_get_text($Box) . $data);
 					wb_set_text($Box, $set);
-					//wb_send_message($Box, 0xf0b1, 30, 1);
 					wb_refresh($Box, 1);
-
-					//wb_send_message($Box, EM_SETSEL, $sl, $sl);
-					//wb_send_message(IDC_RESULT, 0xf0b1, 0, 0);
-					echo wb_send_message($Box, 0xF0B0, 0, 0);
 				}
 			break;
-			case ID_WEBSITE:
+			case ID_VIEW_MAP:
+				global $mapwin;
+				map_image('prontera');
+				map_show(!wb_get_visible($mapwin));
+			break;
+			case ID_WEBSITE_LUNEA:
 				if (!wb_exec("http://phprobot.sourceforge.net/"))
 					wb_message_box($window, "Problem opening web site.");
-				break;
+			break;
+			case ID_WEBSITE_WINBINDER:
+				if (!wb_exec("http://winbinder.sourceforge.net/"))
+					wb_message_box($window, "Problem opening web site.");
+			break;
+			case ID_WEBSITE_PHP:
+				if (!wb_exec("http://www.php.net/"))
+					wb_message_box($window, "Problem opening web site.");
+			break;
 			case IDCLOSE:
 				wb_destroy_window($window);
 			break;
 		}
 	}
 
-/*
-EM_GETSEL
-An application sends an EM_GETSEL message to get the starting and ending character positions of the current selection in an edit control.
+	function process_map($window, $id) {
+		global $Bot;
+		global $Box;
 
-EM_GETSEL
-wParam = (WPARAM) (LPDWORD) lpdwStart; // receives starting position
-lParam = (LPARAM) (LPDWORD) lpdwEnd;   // receives ending position
+		switch($id) {
+			case IDCLOSE:
+				map_show(false);
+			break;
+		}
+	}
 
+	function map_image($map) {
+		global $mapwin, $mapwinframe;
 
-Parameters
+		list($base) = explode('.', basename($map), 2);
 
-lpdwStart
+		$file = LUNEA_MAPS_IMG . '/' . $base . '.png';
 
-Value of wParam. Points to a 32-bit value that receives the starting position of the selection. This parameter can be NULL.
+		if (!file_exists($file)) {
+		}
 
-lpdwEnd
+		$dib = FreeImage_Load(FIF_PNG, $file);
+		list($width, $height) = array(FreeImage_GetWidth($dib), FreeImage_GetHeight($dib));
 
-Value of lParam. Points to a 32-bit value that receives the position of the first nonselected character after the end of the selection. This parameter can be NULL.
+		wb_set_size($mapwin, $width + 5, $height + 27);
+		wb_set_size($mapwinframe, $width, $height);
+		wb_set_position($mapwin);
 
-Return Values
+		$bmp = wb_create_image($width, $height, FreeImage_GetInfoHeader($dib), FreeImage_GetBits($dib));
+		FreeImage_Unload($dib);
 
-The return value is a zero-based 32-bit value with the starting position of the selection in the low-order word and the position of the first character after the last selected character in the high-order word. If either of these values exceeds 65, 535, the return value is -1.
+		wb_set_image($mapwinframe, $bmp);
+		wb_destroy_image($bmp);
+	}
 
-Remarks
-
-In a rich edit control, if the selection is not entirely contained in the first 64K, use the message EM_EXGETSEL.
-
-See Also
-
-EM_EXGETSEL, EM_SETSEL
-
-EM_REPLACESEL
-
-An application sends an EM_SETSEL message to select a range of characters in an edit control.
-
-EM_SETSEL
-wParam = (WPARAM) (INT) nStart;    // starting position
-lParam = (LPARAM) (INT) nEnd;      // ending position
-
-*/
+	function map_show($show = true) {
+		global $mapwin;
+		wb_set_visible($mapwin, $show);
+	}
 ?>

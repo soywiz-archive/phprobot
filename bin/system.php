@@ -1,12 +1,13 @@
 <?php
 	define('LUNEA_ROOT', dirname(dirname(__FILE__)));
 
-	define('LUNEA_DATA', LUNEA_ROOT . '/data/');
-	define('LUNEA_CONF', LUNEA_ROOT . '/conf/');
-	define('LUNEA_MAPS', LUNEA_DATA . '/maps/');
-	define('LUNEA_SRC',  LUNEA_ROOT . '/src/');
-	define('LUNEA_LIB',  LUNEA_ROOT . '/lib/');
-	define('LUNEA_DOCS', LUNEA_ROOT . '/docs/');
+	define('LUNEA_DATA',     LUNEA_ROOT . '/data/');
+	define('LUNEA_CONF',     LUNEA_ROOT . '/conf/');
+	define('LUNEA_MAPS',     LUNEA_DATA . '/maps/');
+	define('LUNEA_MAPS_IMG', LUNEA_DATA . '/maps_img/');
+	define('LUNEA_SRC',      LUNEA_ROOT . '/src/');
+	define('LUNEA_LIB',      LUNEA_ROOT . '/lib/');
+	define('LUNEA_DOCS',     LUNEA_ROOT . '/docs/');
 
 	function Import($import) {
 		$import_path = explode('.', $import);

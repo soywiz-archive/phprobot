@@ -67,6 +67,8 @@ define("FIF_GIF",		25);
 
 //------------------------------------------------------------- GLOBAL VARIABLES
 
+global $FI;
+
 if (!isset($FI))
 	$FI = wb_load_library('freeimage');
 
@@ -156,5 +158,7 @@ function FreeImage_Save($type, $dib, $filename, $flags=0) {
 }
 
 //-------------------------------------------------------------------------- END
+
+//echo FreeImage_Load(FIF_PNG, 'e:\\lunea\\data\\maps_img\\alberta.png');
 
 ?>
