@@ -104,6 +104,8 @@
 						if ($_x != $e->x || $_y != $e->y) $this->onMoving($e);
 
 						if ($cp == sizeof($e->path) - 1) {
+							$e->path = array();
+							$e->setXY($e->x, $e->y);
 							$e->moving = false;
 							$this->onMoveEnd($e);
 						}
@@ -320,21 +322,50 @@
 			sendMove($this, $x, $y);
 		}
 
-		function moveNear(Entity &$entity, $near = 2) {
-			//$path = $this->map->getPath($entity->x, $entity->y, $this->player->x, $this->player->y);
-			$path = $this->map->getPath($this->player->x, $this->player->y, $entity->x, $entity->y) ;
+		function moveNearTo($x, $y, $near = 2) {
+			$path = $this->map->getPath($x, $y, $this->player->x, $this->player->y) ;
 
 			if (sizeof($path) > $near) {
-				$pos = $path[$near + 1];
+				$pos = $path[$near];
 			} else if (sizeof($path) > 0) {
 				$pos = $path[0];
 			} else {
 				return;
 			}
 
-			echo ': (' . $entity->x . ', ' . $entity->y . ') - (' . $pos[0] . ', ' . $pos[1] . ")\n";
+			echo ': (' . $x . ', ' . $y . ') - (' . $pos[0] . ', ' . $pos[1] . ")\n";
 
 			$this->moveAt($pos[0], $pos[1]);
 		}
+
+		function moveNear(Entity &$entity, $near = 2) {
+			moveNearTo($entity->x, $entity->y, $near);
+		}
+
+// ----------------------------------------------------------------------------
+// CALLBACKS
+// ----------------------------------------------------------------------------
+
+		// Login
+		function onDisconnect()       { }
+		function onMasterLogin()      { }
+		function onMasterLoginError() { }
+		function onCharaLogin()       { }
+		function onMasterCharaError() { }
+		function onCharaSelect()      { }
+		function onMapStart()         { }
+		function onCharaInfoUpdate()  { }
+
+		// Interact
+		function onSay($type, $text, &$from = NULL, $from_name = NULL) { }
+
+		// Moving
+		function onAppear(Entity &$e)    { }
+		function onMoving(Entity &$e)    { }
+		function onMoveStart(Entity &$e) { }
+		function onMoveEnd(Entity &$e)   { }
+
+		// Dealing
+		function onDeal(Entity &$e)      { }
 	}
 ?>

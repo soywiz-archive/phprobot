@@ -127,10 +127,13 @@
 			$monster_names[$e->view_id] = $name;
 		}
 
+		$appear = !isset($e->_name);
+
 		$e->name = $name;
 
+		if ($appear) $o->onAppear($e);
+
 		//echo "[{$id}] = '{$name}';\n";
-		if (isset($e->_name)) $o->onAppear($e);
 	}
 
 	// 0194 - Character Name
@@ -387,7 +390,9 @@
 	function parse_recv_0078_0079(GenericBot &$o, $p, $d) {
 		$entity = Entity::getEntityByIdCreate($o, $d['id']);
 
-		$entity->setXY($d['pos'][0], $d['pos'][1]);
+		if (isset($d['pos']) && sizeof($d['pos']) >= 2) {
+			$entity->setXY($d['pos'][0], $d['pos'][1]);
+		}
 
 		foreach (array('speed', 'opt1', 'opt2', 'option', 'view_class', 'hair', 'weapon', 'head_bottom',
 		'shield', 'head_top', 'head_mid', 'hair_color', 'clothes_color', 'head_dir',
@@ -403,7 +408,7 @@
 		//$entity->trace();
 		sendGetEntityName($o, $d['id']);
 
-		if (isset($entity->_name)) $o->onAppear($entity);
+		if (isset($entity->_name) && $entity->_name) $o->onAppear($entity);
 
 	}
 
@@ -498,11 +503,50 @@
 	}
 
 	// 0195 - Player Guild Info
-	function parse_recv_0195($o, $p, $d) {
+	function parse_recv_0195(GenericBot &$o, $p, $d) {
 		$d = parse_str_packet($d, 'a[id;name;guild_name;title]lz[24]z[24]-z[24]z[24]');
 	}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+	// 00fb - Party Users List
+	function parse_recv_00fb(GenericBot &$o, $p, $d) {
+		$party = &Party::getPartyByIdCreate($o, 0);
+		if (!isset($o->party) || !($o->party instanceof Party)) $o->party = &$party;
+		$d = parse_str_packet($d, 'a[name;players]z[24]x[rest][a[id;name;map_name;leader;online]lz[24]z[16]bb]');
+		$party->name = $d['name'];
+		foreach ($d['players'] as $zm) {
+			$player = &Entity::getEntityByIdCreate($o, $zm['id']);
+			$player->name         = $zm['name'];
+			$player->map_name     = $zm['map_name'];
+			$player->online       = !$zm['online'];
+			$player->party        = $party;
+			$player->party_leader = !$zm['leader'];
+			$party->member_list[$player->id] = &$player;
+		}
+
+		//if (!isset($player_data['party'])) $player_data['party'] = array();
+
+		//$player_data['party'] = array_merge($player_data['party'], );
+	}
+
+	// 0101 - Party Share
+	function parse_recv_0101(GenericBot &$o, $p, $d) {
+		$d = parse_str_packet($d, 'a[share_exp;share_item]ww');
+		$party = &Party::getPartyByIdCreate($o, 0);
+		$party->share_exp  = $d['share_exp'];
+		$party->share_item = $d['share_item'];
+		//echo sizeof($party);
+		print_r($party->getMemberNameList());
+		$party->trace();
+	}
+
+	// 0152 - ??
+	function parse_recv_0152 ($p, $d) {
+		echo "Unparsed packet: 0x0152\n";
+	}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 ?>

@@ -104,6 +104,24 @@
 		public $group;
 		public $speed;
 
+		public $guild  = NULL;
+		public $emblem = NULL;
+		public $party  = NULL;
+		public $party_leader = false;
+		public $map_name;
+
+		function trace() {
+			$o1 = &$this->emblem; $this->emblem = NULL;
+			$o2 = &$this->guild;  $this->guild  = NULL;
+			$o4 = &$this->party;  $this->party  = NULL;
+
+			parent::trace();
+
+			$this->emblem = $o1;
+			$this->guild  = $o2;
+			$this->party  = $o3;
+		}
+
 		function setXY($x, $y) {
 			$this->to_x = $this->from_x = $this->x = $x;
 			$this->to_y = $this->from_y = $this->y = $y;
@@ -250,12 +268,44 @@
 	class Guild extends IdList {
 		public $name;
 		public $emblem;
+		public $member_list = array();
 
-		public $member_list;
+		function trace() {
+			$o1 = &$this->emblem;      $this->emblem      = NULL;
+			$o2 = &$this->member_list; $this->member_list = NULL;
+			parent::trace();
+			$this->emblem = $o1;
+			$this->member_list = $o2;
+		}
 
 		static function getGuildByIdCreate(GenericBot &$o, $id) {
 			$z = &$o->lists['Guild_memo'][$id];
 			if (!isset($z)) $z = new Guild($o, $id);
+			return $z;
+		}
+	}
+
+	class Party extends IdList {
+		public $name;
+		public $share_exp;
+		public $share_item;
+		public $member_list = array();
+
+		function getMemberNameList() {
+			$list = array();
+			foreach ($this->member_list as $member) $list[] = $member->name;
+			return $list;
+		}
+
+		function trace() {
+			$o2 = &$this->member_list; $this->member_list = NULL;
+			parent::trace();
+			$this->member_list = $o2;
+		}
+
+		static function getPartyByIdCreate(GenericBot &$o, $id) {
+			$z = &$o->lists['Party_memo'][$id];
+			if (!isset($z)) $z = new Party($o, $id);
 			return $z;
 		}
 	}
@@ -277,6 +327,8 @@
 		public $flee;
 		public $head;
 		public $body;
+
+		public $party;
 	}
 
 ///////////////////////////////////////////////////////////////////////////////

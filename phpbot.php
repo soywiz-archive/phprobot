@@ -2,11 +2,14 @@
 	require_once(dirname(__FILE__) . '/src/class.GenericBot.php');
 
 	class Bot extends GenericBot {
+
+
 //-----------------------------------------------------------------------------
 // CONSTRUCTOR
 //-----------------------------------------------------------------------------
 
 		function __construct() {
+			echo "* __contruct();\n";
 			parent::__construct();
 		}
 
@@ -15,6 +18,7 @@
 //-----------------------------------------------------------------------------
 
 		function onDisconnect() {
+			echo "* onDisconnect();\n";
 			//echo "Ha sido desconectado del servidor...\nReconectando dentro de 10 segundos...\n"; sleep(10);
 			$this->reconnect();
 		}
@@ -24,10 +28,12 @@
 //-----------------------------------------------------------------------------
 
 		function onMasterLogin() {
+			echo "* onMasterLogin();\n";
 			$this->masterConnect('localhost:6900', 'test2', 'test2');
 		}
 
 		function onMasterLoginError() {
+			echo "* onMasterLoginError();\n";
 			$this->disconnect();
 		}
 
@@ -36,15 +42,18 @@
 //-----------------------------------------------------------------------------
 
 		function onCharaLogin() {
+			echo "* onCharaLogin();\n";
 			// $this->serverList
 			$this->serverCharaSelect('wiz_server');
 		}
 
 		function onMasterCharaError() {
+			echo "* onMasterCharaError();\n";
 			$this->disconnect();
 		}
 
 		function onCharaSelect() {
+			echo "* onCharaSelect();\n";
 			// $this->characterList
 			//$this->charaSelect('Nena');
 			$this->charaSelect('Nena');
@@ -90,12 +99,7 @@
 			if (isset($from) && !($from instanceof Entity)) return;
 			if (!isset($from_name) && isset($from)) $from_name = $from->name;
 
-			echo "TYPE: $type, TEXT: $text";
-			if (isset($from)) {
-				echo ", FROM: (" . $from_name . ")";
-			}
-
-			echo "\n";
+			//echo "TYPE: $type, TEXT: $text"; if (isset($from)) echo ", FROM: (" . $from_name . ")"; echo "\n";
 
 			if (strtolower(trim($from_name)) == 'thewiz') {
 				$data = explode(' ', $text, 2);
@@ -117,19 +121,30 @@
 			echo "* onMoving();\n";
 			//echo $e->id . ': ' . $e->x . ', ' . $e->y . ' - (' . $e->name . ')' . "\n";
 			//$this->lookAt($e);
-			$this->moveNear($e);
+			//$this->moveNear($e);
+			$this->lookAt($e);
 		}
 
 		function onMoveStart(Entity &$e) {
 			echo "* onMoveStart();\n";
+			//$this->moveNearTo($e->to_x, $e->to_y);
+			//$this->moveNearTo($e->to_x, $e->to_y, 1);
 			//echo $e->id . ': Moving Start (' . $e->x . ', ' . $e->y . ')'. "\n";
 		}
 
 		function onMoveEnd(Entity &$e) {
 			echo "* onMoveEnd();\n";
-			echo $e->id . ': Moving Start End (' . $e->x . ', ' . $e->y . ')'. "\n";
+			//echo $e->id . ': Moving Start End (' . $e->x . ', ' . $e->y . ')'. "\n";
 			// Mira al personaje
 			//$this->lookAt($e);
+			//$this->moveNearTo($e->to_x, $e->to_y, 1);
+		}
+
+		function onDeal(Entity &$e) {
+			$this->dealAccept();
+			//$this->dealCancel();
+
+			//$this->dealRequest($e);
 		}
 	}
 
@@ -139,7 +154,11 @@
 
 	$mybot = new Bot();
 	while (true) {
-		$mybot->process();
+		try {
+			$mybot->process();
+		} catch (Exception $e) {
+			echo $e;
+		}
 	}
 
 	exit;
