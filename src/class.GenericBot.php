@@ -312,9 +312,15 @@
 
 			if (!($skill instanceof Skill)) $skill = Skill::getSkillById($this, $skill);
 
-			$skill->trace();
+			//$skill->trace();
 
-			sendSkillUse($this, $skill->id, min($level, $skill->level_max), $e->id);
+			if ($skill->target & SkillConst::TARGET_MAP) {
+				echo "SKILL USE ON MAP: " . $e->x . ', ' . $e->y . "\n";
+				sendSkillUseMap($this, $skill->id, min($level, $skill->level_max), $e->x, $e->y);
+			} else {
+				echo "SKILL USE ON ENTITY: " . $e->id . "\n";
+				sendSkillUse($this, $skill->id, min($level, $skill->level_max), $e->id);
+			}
 		}
 
 		function sayTo($type, $text, &$to = NULL) {
@@ -456,5 +462,6 @@
 		function onStand(Entity &$e) { }
 
 		function onEffect(Entity &$e, $type) { }
+		function onServerTick($tick) { }
 	}
 ?>

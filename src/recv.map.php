@@ -752,34 +752,17 @@
 			case 0x0b: break; // Perfect Evade
 			default:   throw(new Exception("008a type unknown (" . $d['type'] . ")")); break;
 		}
-
-/*
-	type=00 param1=0 miss
-			param1=0 miss
-	type=00 param1:ダメージ(の合計?) param2:分割数 param3:アサシン2刀流逆手ダメージ
-			param1:damage(of total?) param2:number of division  param3:damage of assasin's left hand
-		NPCからの攻撃の場合、param2,param3はゴミデータ
-		if the attack was by npc, param2 and param3 are not used
-		speedはPCの場合内部ASPDと一致
-		speed match the aspd if it's player character
-	type=01 itemを拾う ID*2以外ゴミ
-			pick up item, unused data except ID*2
-	type=02 座る src ID以外ゴミ
-			sit down, unused data except src ID
-	type=03 立つ src ID以外ゴミ
-			stand up, unused data except src ID
-	type=08 複数攻撃
-			multiple attack
-	type=0a クリティカル
-			critical attack
-	type=0b 完全回避
-			perfect evade
-*/
-
-		//echo $d['index'] . ': ' . $d['mes'] . "\n";
 	}
 
-	//R 008a <src ID>.l <dst ID>.l <server tick>.l <src speed>.l <dst speed>.l <param1>.w <param2>.w <type>.B <param3>.w
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+	// 007f - Server Tick
+	function parse_recv_007f(GenericBot &$o, $p, $d) {
+		$d = parse_str_packet($d, 'a[tick]l');
+
+		$o->onServerTick($d['tick']);
+	}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

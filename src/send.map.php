@@ -29,6 +29,15 @@
 		$o->sock->send(maker16(0x0113) . maker8($level) . maker8(0) . maker16($skillId) . maker32($id));
 	}
 
+	function sendSkillUseMap(GenericBot &$o, $skillId, $level, $x, $y) {
+		//sendTick($o);
+		//echo "------\n";
+		$o->sock->send(maker16(0x0116) . maker16($level) . maker16($skillId) . maker16($x) . maker16($y));
+		//$o->rawSendData = (maker16(0x0116) . maker16($level) . maker16($skillId) . maker16($x) . maker16($y));
+		//echo "++++++\n";
+		//<level>.w <skill ID>.w <X>.w <Y>.w
+	}
+
 	function sendChangeView(GenericBot &$o, $pos_head, $pos_body) {
 		if ($pos_head < 0) $pos_head = 8 - (-$pos_head % 8);
 		if ($pos_body < 0) $pos_body = 8 - (-$pos_body % 8);
@@ -65,5 +74,9 @@
 	function sendTradeFinish(GenericBot &$o) {
 		echo "sendTradeFinish(GenericBot &$o)\n";
 		$o->sock->send(maker16(0x00ef));
+	}
+
+	function sendTick(GenericBot &$o) {
+		$o->sock->send(maker16(0x007e) . maker32(getTickCount()));
 	}
 ?>
