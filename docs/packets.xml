@@ -1,30 +1,159 @@
 <?xml version="1.0" ?>
 <packets>
-	<packet id="0x0081" description="Disconnected from Server">
+	<packet id="0x0081" length="1" description="Disconnected from Server">
 		<entry name="error" type="uint8" />
 	</packet>
 
-	<packet id="0x0073" description="Enter Map">
+	<packet id="0x0073" length="9" description="Enter Map">
 		<entry name="Tick" type="uint32" />
 		<entry name="Position" type="pos24" />
 		<entry name="Unused1" type="uint16" unused />
 	</packet>
 
-	<packet id="0x0095" description="Player Status Info">
+	<packet id="0x0095" length="28" description="Entity Name (1)">
 		<entry name="Id" type="uint32" />
 		<entry name="Name" type="stringz" length="24" />
 	</packet>
 
-	<packet id="0x00b0" description="Update Status Long (1)">
+	<packet id="0x0097" length="-" description="Private Message From Player">
+		<entry name="Name" type="stringz" length="24" />
+		<entry name="Text" type="stringz" length="rest" />
+	</packet>
+
+	<packet id="0x008d" length="-" description="Global Message From Player">
+		<entry name="Id" type="uint32" />
+		<entry name="Text" type="stringz" length="rest" />
+	</packet>
+
+	<packet id="0x008e" length="-" description="Global Message">
+		<entry name="Text" type="stringz" length="rest" />
+	</packet>
+
+	<packet id="0x009c" length="-" description="Unit Look">
+		<entry name="Id" type="uint32" />
+		<entry name="Direction1" type="uint16" />
+		<entry name="Direction2" type="uint8" />
+	</packet>
+
+	<packet id="0x00b0" length="6" description="Update Status Long (1)">
 		<entry name="Type" type="uint16" />
 		<entry name="Value" type="uint32" />
 	</packet>
 
-	<packet id="0x00b1" description="Update Status Long (2)">
+	<packet id="0x00b1" length="6" description="Update Status Long (2)">
 		<entry name="Type" type="uint16" />
 		<entry name="Value" type="uint32" />
 	</packet>
 
-	<packet id="0x00bd" description="Player Status Info">
+	<packet id="0x00bd" length="42" description="Player Status Info">
+		<entry name="StatusPoints" type="uint16" />
+		<entry name="Str" type="uint8" />
+		<entry name="StrBonus" type="uint8" />
+		<entry name="Agi" type="uint8" />
+		<entry name="AgiBonus" type="uint8" />
+		<entry name="Vit" type="uint8" />
+		<entry name="VitBonus" type="uint8" />
+		<entry name="Int" type="uint8" />
+		<entry name="IntBonus" type="uint8" />
+		<entry name="Dex" type="uint8" />
+		<entry name="DexBonus" type="uint8" />
+		<entry name="Luk" type="uint8" />
+		<entry name="LukBonus" type="uint8" />
+		<entry name="Atack" type="uint16" />
+		<entry name="AtackPercent" type="uint16" />
+		<entry name="MagicAtack" type="uint16" />
+		<entry name="MagicAtackMax" type="uint16" />
+		<entry name="Defense" type="uint16" />
+		<entry name="DefensePercent" type="uint16" />
+		<entry name="MagicDefense" type="uint16" />
+		<entry name="MagicDefensePercent" type="uint16" />
+		<entry name="Hit" type="uint16" />
+		<entry name="Flee" type="uint16" />
+		<entry name="FleePercent" type="uint16" />
+		<entry name="Critical" type="uint16" />
+		<entry name="Karma" type="uint16" />
+		<entry name="Manner" type="uint16" />
+	</packet>
+
+	<packet id="0x00c3" length="48" description="Change Equipment Display">
+		<entry name="Id" type="uint32" />
+		<entry name="Type" type="uint8" />
+		<entry name="Value" type="uint8" />
+	</packet>
+
+	<packet id="0x010f" length="-" description="Skill List">
+		<!-- a[id;target;level_max;sp_max;range;name;canup]www-wwwz[24]b !-->
+		<entry name="List" type="group" length="rest">
+			<entry name="Id" type="uint16" />
+			<entry name="Target" type="uint16" />
+			<entry name="Unused1" type="uint16" unused />
+			<entry name="MaxLevel" type="uint16" />
+			<entry name="MaxSp" type="uint16" />
+			<entry name="Range" type="uint16" />
+			<entry name="Name" type="stringz" length="24" />
+			<entry name="CanUp" type="uint8" />
+		</entry>
+	</packet>
+
+	<packet id="0x0110" length="10" description="Skill Use Failed">
+		<entry name="Id" type="uint16" />
+		<entry name="BType" type="uint16" />
+		<entry name="Unused1" type="uint16" unused />
+		<entry name="Unused2" type="uint16" unused />
+		<entry name="Type" type="uint8" />
+	</packet>
+
+	<packet id="0x0119" length="10" description="Unit Status">
+		<entry name="Id" type="uint32" />
+		<entry name="Option1" type="uint16" />
+		<entry name="Option2" type="uint16" />
+		<entry name="Option" type="uint16" />
+	</packet>
+
+	<packet id="0x013a" length="2" description="Update Attack Range">
+		<entry name="Range" type="uint16" />
+	</packet>
+
+	<packet id="0x013d" length="4" description="Update HP/SP">
+		<entry name="Type" type="uint16" />
+		<entry name="Value" type="uint16" />
+	</packet>
+
+	<packet id="0x0141" length="12" description="Update Status+Bonus">
+		<entry name="Type" type="uint32" />
+		<entry name="Value1" type="uint32" />
+		<entry name="Value2" type="uint32" />
+	</packet>
+
+	<packet id="0x0194" length="28" description="Entity Name (2)">
+		<entry name="Id" type="uint32" />
+		<entry name="Name" type="stringz" length="24" />
+	</packet>
+
+	<packet id="0x0196" length="7" description="Unit Effects">
+		<entry name="Type" type="uint16" />
+		<entry name="Id" type="uint32" />
+		<entry name="Flag" type="uint8" />
+	</packet>
+
+	<packet id="0x01aa" length="8" description="Pet Talk">
+		<!-- TODO !-->
+	</packet>
+
+	<packet id="0x01d0" length="6" description="Spirit Spheres (1)">
+		<entry name="Id" type="uint32" />
+		<entry name="Count" type="uint16" />
+	</packet>
+
+	<packet id="0x01d7" length="6" description="Update Weapon/Armor Display">
+		<entry name="Id" type="uint32" />
+		<entry name="Type" type="uint8" />
+		<entry name="Value1" type="uint16" />
+		<entry name="Value2" type="uint16" />
+	</packet>
+
+	<packet id="0x01e1" length="28" description="Spirit Spheres (2)">
+		<entry name="Id" type="uint32" />
+		<entry name="Count" type="uint16" />
 	</packet>
 </packets>
