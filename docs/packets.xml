@@ -9,4 +9,9 @@
 		<entry name="position" type="pos24" />
 		<entry name="unused1" type="uint16" unused />
 	</packet>
+
+	<packet id="0x00b1" description="Update Status Long">
+		<entry name="type" type="uint16" />
+		<entry name="value" type="uint32" />
+	</packet>
 </packets>
