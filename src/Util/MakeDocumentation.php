@@ -23,13 +23,18 @@ EOD;
 	$DocumentAliases = array();
 
 	function PregReplaceForLinkAliase($Match) {
+		global $CurrentFile;
 		global $DocumentAliases;
 
 		$Key = $Match[2];
 
 		while (isset($DocumentAliases[$Key])) $Key = $DocumentAliases[$Key];
 
-		return '<a href="' . str_replace(' ', '%20', $Key) . '.html">' . $Match[2] . '</a>';
+		if (basename($CurrentFile) == $Key . '.html') {
+			return '<font color=red><b>' . $Match[2] . '</b></font>';
+		} else {
+			return '<a href="' . str_replace(' ', '%20', $Key) . '.html">' . $Match[2] . '</a>';
+		}
 	}
 
 	function MakeDocumentationParseDocument(SimpleXMLElement $Entry, $Dir) {
@@ -70,14 +75,19 @@ EOD;
 
 		//preg_replace('/<(k)>/i', mixed replacement, mixed subject)
 
+		MakeDir($Dir);
+		$File = $Dir . '/' . $Name . '.html';
+
+		global $CurrentFile;
+
+		$CurrentFile = $File;
+
 		//$Data = preg_replace('/(<k>)([a-z0-9\\x20]*)(<\\/k>)/i', '<a href="\\2">\\2</a>', SimpleXMLGetChildrenAsXML($Entry));
 		$Data = preg_replace_callback('/(<k>)([^<]*)(<\\/k>)/i', 'PregReplaceForLinkAliase', SimpleXMLGetChildrenAsXML($Entry));
 		//$Data = $Entry->asXML();
 
 
-		MakeDir($Dir);
-
-		if ($fd = fopen($Dir . '/' . $Name . '.html', 'wb')) {
+		if ($fd = fopen($File, 'wb')) {
 			fwrite($fd, '<html><head><link rel="stylesheet" href="../documentation.css"/><title>' . $Description . '</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head>');
 			fwrite($fd, '<body>');
 			fwrite($fd, $Data);
