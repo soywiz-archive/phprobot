@@ -2,9 +2,26 @@
 	require_once(dirname(__FILE__) . '/src/class.GenericBot.php');
 
 	class Bot extends GenericBot {
+//-----------------------------------------------------------------------------
+// CONSTRUCTOR
+//-----------------------------------------------------------------------------
+
+		function __construct() {
+			parent::__construct();
+		}
+
+//-----------------------------------------------------------------------------
+// CONNECTION
+//-----------------------------------------------------------------------------
+
 		function onDisconnect() {
+			//echo "Ha sido desconectado del servidor...\nReconectando dentro de 10 segundos...\n"; sleep(10);
 			$this->reconnect();
 		}
+
+//-----------------------------------------------------------------------------
+// MASTER
+//-----------------------------------------------------------------------------
 
 		function onMasterLogin() {
 			$this->masterConnect('localhost:6900', 'test2', 'test2');
@@ -13,6 +30,10 @@
 		function onMasterLoginError() {
 			$this->disconnect();
 		}
+
+//-----------------------------------------------------------------------------
+// CHARA
+//-----------------------------------------------------------------------------
 
 		function onCharaLogin() {
 			// $this->serverList
@@ -28,6 +49,10 @@
 			//$this->charaSelect('Nena');
 			$this->charaSelect('Nena');
 		}
+
+//-----------------------------------------------------------------------------
+// MAP
+//-----------------------------------------------------------------------------
 
 		function onMapStart() {
 			echo "Iniciar Mapa\n";
@@ -52,7 +77,15 @@
 				$this->useSkill(SKILL_PR_IMPOSITIO, 5, $e);
 			}
 		}
+
+		function onSay($type, $text, &$from = NULL) {
+			if (isset($from) && !($from instanceof Entity)) return;
+		}
 	}
+
+//-----------------------------------------------------------------------------
+// MAIN
+//-----------------------------------------------------------------------------
 
 	$mybot = new Bot();
 	while (true) {
@@ -60,66 +93,4 @@
 	}
 
 	exit;
-//-----------------------------------------------------------------------------
-/*
-	require_once(dirname(__FILE__) . '/core/src/main.php');
-
-	class Bot extends GenericBot {
-// ----------------------------------------------------------------------------
-// GLOBAL
-// ----------------------------------------------------------------------------
-		function onDisconnect($error_id = NULL, $error_msg = NULL) {
-			// Overwrite ip?
-			$this->connect('localhost:6900', false);
-		}
-
-// ----------------------------------------------------------------------------
-// MASTER
-// ----------------------------------------------------------------------------
-
-		function onLoginMasterFailed($error_id, $error_msg) {
-			// Disconnect
-			$this->disconnect();
-		}
-
-		function onLoginMaster($server_list, $sex) {
-			$this->selectMasterServer('wiz_server');
-		}
-
-// ----------------------------------------------------------------------------
-// CHARACTER
-// ----------------------------------------------------------------------------
-
-		function onLoginCharaFailed($error_id, $error_msg) {
-			// Disconnect
-			$this->disconnect();
-		}
-
-		function onLoginChara($chara_list) {
-			$this->selectCharacter('-wiz-');
-		}
-
-// ----------------------------------------------------------------------------
-// MAP
-// ----------------------------------------------------------------------------
-
-		function onLoginMapFailed($error_id, $error_msg) {
-			// Disconnect
-			$this->disconnect();
-		}
-
-		function onLoginMap($map_name) {
-		}
-
-		function onTick() {
-		}
-
-// ----------------------------------------------------------------------------
-// /
-// ----------------------------------------------------------------------------
-
-	}
-
-	$mybot = new Bot(); $mybot->run();
-*/
 ?>
