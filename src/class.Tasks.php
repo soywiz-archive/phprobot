@@ -1,8 +1,6 @@
 <?php
 	require_once(dirname(__FILE__) . '/system.php');
 
-	require_class('Exception');
-
 	class Tasks {
 		protected $task_list = array();
 

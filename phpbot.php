@@ -76,6 +76,10 @@
 			//print_r($this->characterSelected);
 		}
 
+		function onDisAppear(Entity &$e) {
+			echo "* onDisAppear();\n";
+		}
+
 		function onAppear(Entity &$e) {
 			echo "* onAppear();\n";
 			$name = strtolower(trim($e->name));

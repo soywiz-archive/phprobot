@@ -1,5 +1,4 @@
 <?php
-	//require_once(dirname(__FILE__) . '/class.Exception.php');
 
 class Grf { }
 // PHP_FFI 0.3 no permite obtener el puntero de una estructura para comprobar si enlaza

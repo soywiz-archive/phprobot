@@ -1,8 +1,6 @@
 <?php
 	require_once(dirname(__FILE__) . '/system.php');
 
-	require_class('Exception');
-
 	define('PATH_MAP', dirname(dirname(__FILE__)) . '/maps/');
 
 	class Map {

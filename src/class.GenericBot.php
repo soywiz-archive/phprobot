@@ -3,7 +3,6 @@
 
 	//echo 'Waiting'; for ($n = 0; $n < 5; $n++) { echo '.'; sleep(1); } echo "\n";
 
-	require_class('Exception');
 	require_class('Tasks');
 	require_class('TasksTime');
 	require_class('Timer');

@@ -1,7 +1,6 @@
 <?php
 	require_once(dirname(__FILE__) . '/system.php');
 
-	require_class('Exception');
 	require_class('Tasks');
 	require_class('Timer');
 
