@@ -135,6 +135,13 @@
 		public $party_leader = false;
 		public $map_name;
 
+		// Check name from list
+		function is($namel) {
+			if (!is_array($namel)) $namel = array($namel);
+			foreach ($namel as $name) if (strcasecmp($name, $this->name) == 0) return true;
+			return false;
+		}
+
 		function trace() {
 			$o1 = &$this->emblem; $this->emblem = NULL;
 			$o2 = &$this->guild;  $this->guild  = NULL;

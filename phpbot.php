@@ -194,8 +194,11 @@
 		}
 
 		function onDealRequest(Entity &$e) {
-			$this->dealRequestAccept();
-			//$this->dealCancel();
+			if ($e->is('thewiz')) {
+				$this->dealRequestAccept();
+			} else {
+				$this->dealCancel();
+			}
 
 			//$this->dealRequest($e);
 		}
