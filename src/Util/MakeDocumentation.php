@@ -3,18 +3,20 @@
 
 /*
 	$xslt = <<<EOD
+
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
- <xsl:output method="html" encoding="iso-8859-1" indent="no"/>
- <xsl:template match="collection">
-  Hey! Welcome to my sweet CD collection!
-  <xsl:apply-templates/>
- </xsl:template>
- <xsl:template match="cd">
-  <h1><xsl:value-of select="title"/></h1>
-  <h2>by <xsl:value-of select="artist"/></h2>
-  <h3> - <xsl:value-of select="year"/></h3>
- </xsl:template>
+	<xsl:output method="html" encoding="iso-8859-1" indent="no" />
+	<xsl:template match="document">
+		<xsl:apply-templates/>
+	</xsl:template>
+	<xsl:template match="k">
+		<a href=""><b><xsl:apply-templates/></b></a>
+	</xsl:template>
+	<xsl:template match="p">
+		<p><xsl:apply-templates/></p>
+	</xsl:template>
 </xsl:stylesheet>
+
 EOD;
 */
 
@@ -31,12 +33,32 @@ EOD;
 			return;
 		}
 
+		/*
+		$xml = new DomDocument();
+		$xml->loadXML($Entry->asXML());
+		//die($Entry->asXML());
+
+		global $xslt;
+
+		$xsl = new DomDocument();
+		$xsl->loadXML($xslt);
+
+		$proc = new xsltprocessor();
+		$proc->importStyleSheet($xsl);
+		$Data = $proc->transformToXML($xml);
+		*/
+
+		//$Data = SimpleXMLGetChildrenAsXML($Entry);
+		/*
 		$Data = ''; foreach ($Entry as $e1) {
-			foreach ($e1 as $k => &$v) {
+			foreach ($e1 as $k => $v) {
 				$v = '<b>' . $v[0] . '</b>';
 			}
 			$Data .= $e1->asXML();
 		}
+		*/
+
+		//preg_replace('/<(k)>/i', mixed replacement, mixed subject)
 
 		MakeDir($Dir);
 
