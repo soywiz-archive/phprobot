@@ -33,6 +33,10 @@
 			$this->online  = true;
 		}
 
+		function appear() {
+			$this->setOnList(true);
+		}
+
 		function disappear() {
 			$this->setOnList(false);
 		}
@@ -159,7 +163,11 @@
 			$this->from_y    = $this->y = $from_y;
 			$this->to_x      = $to_x;
 			$this->to_y      = $to_y;
-			$this->to_y      = $to_y;
+			$this->visible   = true;
+
+			$this->map_y     = $this->map_x = -1;
+
+			$this->appear();
 
 			if (isset($this->o)) $this->o->onMoveStart($this);
 

@@ -110,6 +110,7 @@
 					case 'exit': exit; break;
 					case 'say':  $this->say($data[1]); break;
 					case 'move': $this->moveAt($from->x, $from->y); break;
+					case 'move_near': $this->moveNear($from, 4); break;
 					case 'where':
 						$to_say = $this->map->name . ' : ' . $this->player->x . ', ' . $this->player->y;
 						echo $to_say . "\n";
@@ -125,12 +126,17 @@
 
 		function onMoving(Entity &$e) {
 			echo "* onMoving();\n";
-			echo $e->id . ': ' . $e->x . ', ' . $e->y . ' - (' . $e->name . ')' . "\n";
+			//echo $e->id . ': ' . $e->x . ', ' . $e->y . ' - (' . $e->name . ')' . "\n";
 			//$this->lookAt($e);
 			//$this->moveNear($e);
 			if ($e->visible) {
-				$this->lookAt($e);
+				if (strtolower($e->name) == 'thewiz') {
+					$this->moveNear($e, 4);
+				}
 			} else {
+				if (strtolower($e->name) == 'thewiz') {
+					$this->moveNear($e, 4);
+				}
 				//$e->trace();
 			}
 		}
@@ -147,6 +153,15 @@
 		}
 
 		function onMoveEnd(Entity &$e) {
+			// Si ya ha acabado su propio movimiento
+			if ($e === $this->player) {
+				if ($e = &Entity::getEntityByName($this, 'TheWiz')) {
+					if ($e->visible) $this->lookAt($e);
+				}
+			} else if (strtolower($e->name) == 'thewiz') {
+				if ($e->visible) $this->lookAt($e);
+			}
+
 			echo "* onMoveEnd();\n";
 			//echo $e->id . ': Moving Start End (' . $e->x . ', ' . $e->y . ')'. "\n";
 			// Mira al personaje

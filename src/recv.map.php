@@ -461,17 +461,18 @@
 
 		$entity = &Entity::getEntityByIdCreate($o, $d['id']);
 
+		//echo 'UNIT MOVE: - ' . $entity->id . ' : ' . $p . "\n";
+
 		foreach (array('speed', 'opt1', 'opt2', 'option', 'view_class', 'hair', 'weapon', 'shield',
 		'head_bottom', 'tick', 'head_top', 'head_mid', 'hair_color', 'clothes_color', 'head_dir',
 		'manner', 'karma', 'sex', 'max_level') as $k) $entity->$k == $d[$k];
 
-		$entity->setXY($d['pos_m'][0], $d['pos_m'][1]);
+		//$entity->visible = true; $entity->setXY($pm[0], $pm[1]);
 
 		//$entity->emblem = &Emblem::getEmblemByIdCreate($o, $d['emblem_id']);
 		//$entity->guild  = &Guild::getGuildByIdCreate($o, $d['guild_id']);
 
 		$entity->move($pm[0], $pm[1], $pm[2], $pm[3], $d['speed']);
-		$entity->visible = true;
 	}
 
 	// 0087 - You Move
@@ -480,6 +481,7 @@
 		$pm = &$d['pos_m'];
 		//$o->player->trace(); exit;
 		$o->player->move($pm[0], $pm[1], $pm[2], $pm[3], $o->player->speed);
+		$o->player->visible = true;
 		/*
 		$p['pos'] = array($d['pos_m'][0], $d['pos_m'][1]);
 		$p['moving'] = true;
@@ -499,6 +501,7 @@
 		$d = parse_str_packet($d, 'a[id;type]lb');
 
 		$entity = Entity::getEntityByIdCreate($o, $d['id']);
+		$entity->visible = false;
 		$entity->disappear();
 		$o->onDisappear($entity);
 
@@ -639,8 +642,8 @@
 
 		$entity = &Entity::getEntityByIdCreate($o, $d['id']);
 
-		if (!$entity->visible) $entity->setXY($d['x'], $d['y']);
 		$entity->setXYMap($d['x'], $d['y']);
+		if (!$entity->visible) $entity->setXY($d['x'], $d['y']);
 
 		$o->onMoving($entity);
 

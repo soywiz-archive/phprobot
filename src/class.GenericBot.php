@@ -57,6 +57,7 @@
 		public $player;
 
 		public $trackPath;
+		public $trackLast;
 
 		public $tasks;
 		public $sock;
@@ -105,9 +106,10 @@
 						list($e->x, $e->y) = $e->path[$cp];
 
 						// Si ha cambiado de posición "onMoving"
+						//$e->visible = true;
 						if ($_x != $e->x || $_y != $e->y) $this->onMoving($e);
 
-						if ($cp == sizeof($e->path) - 1) {
+						if ($cp >= sizeof($e->path) - 1) {
 							$e->path = array();
 							$e->setXY($e->x, $e->y);
 							$e->moving = false;
@@ -122,10 +124,11 @@
 
 						if ($e === $this->player) {
 							if (sizeof($this->trackPath) && (($this->requestMoveTimeNext < 0) || (time() >= $this->requestMoveTimeNext))) {
+								if (($this->requestMoveTimeNext >= 0) && ((time() >= $this->requestMoveTimeNext) && isset($this->trackLast) && is_array($this->trackLast) && (sizeof($this->trackLast) == 2))) array_unshift($this->trackPath, $this->trackLast);
+
 								$this->requestMoveTimeNext = time() + 6;
-								list($x, $y) = array_shift($this->trackPath);
+								list($x, $y) = $this->trackLast = array_shift($this->trackPath);
 								if ($x && $y) {
-									echo "-- SENDMOVE ($x, $y)\n";
 									sendMove($this, $x, $y);
 								}
 							}
@@ -339,43 +342,40 @@
 			sendSay($this, $text, $to);
 		}
 
-		function moveAt($x, $y, $add = false, $mov_dist = 10) {
+		function moveAt($x, $y, $add = false, $mov_dist = 12) {
 			if (sizeof($path = $this->map->getPath($this->player->x, $this->player->y, $x, $y))) {
 				if ($this->player->x != $x || $this->player->y != $y) {
-					echo 'MOVE: ' . $this->player->x . ', ' . $this->player->y . ', ' . $x . ', ' . $y . "\n";
-
 					$t = floor(sizeof($path) / $mov_dist);
 					$end = array();
 
-					for ($n = 0; $n < $t; $n++) $end[] = $path[$n * $t];
+					for ($n = 0; $n < $t; $n++) $end[] = $path[$n * $mov_dist];
 
 					if ((sizeof($end) == 0) || ($end[sizeof($end) - 1] != $path[sizeof($path) - 1])) $end[] = $path[sizeof($path) - 1];
 
 					while ($end[0][0] == $this->player->x && $end[0][1] == $this->player->y) array_shift($end);
 
 					$this->trackPath = $end;
-
-					print_r($this->trackPath);
 				} else {
-					echo "AT SAME POS\n";
+					//echo "AT SAME POS\n";
 				}
 			} else {
-				echo "CANT MOVE\n";
+				//echo "CANT MOVE\n";
 			}
 		}
 
 		function moveNearTo($x, $y, $near = 2, $add = false) {
 			$path = $this->map->getPath($x, $y, $this->player->x, $this->player->y) ;
+			//$path = $this->map->getPath($this->player->x, $this->player->y, $x, $y);
 
 			if (sizeof($path) > $near) {
 				$pos = $path[$near];
-			} else if (sizeof($path) > 0) {
+			} else /*if (sizeof($path) > 0) {
 				$pos = $path[0];
-			} else {
+			} else */{
 				return;
 			}
 
-			echo ': (' . $x . ', ' . $y . ') - (' . $pos[0] . ', ' . $pos[1] . ")\n";
+			//echo ': (' . $x . ', ' . $y . ') - (' . $pos[0] . ', ' . $pos[1] . ")\n";
 
 			$this->moveAt($pos[0], $pos[1], $add);
 		}
