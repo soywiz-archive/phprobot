@@ -169,11 +169,11 @@
 		function __destruct() {
 			if ($this->register) {
 				if (isset($this->view_class)) {
-					unset($this->o->lists['entity_view_class_name'][$this->view_class]);
+					unset($this->o->lists['Entity_view_class_name'][$this->view_class]);
 				}
 
 				if (isset($this->_name)) {
-					unset($this->o->lists['entity_name'][strtolower(trim($this->_name))]);
+					unset($this->o->lists['Entity_name'][strtolower(trim($this->_name))]);
 				}
 
 				parent::__destruct();
@@ -184,7 +184,7 @@
 			if ($this->register) {
 				switch ($name) {
 					case 'name':
-						$entity_name_list = &$this->o->lists['entity_name_list']; $entity_view_class_name_list = &$this->o->lists['entity_view_class_name_list'];
+						$entity_name_list = &$this->o->lists['Entity_name_list']; $entity_view_class_name_list = &$this->o->lists['Entity_view_class_name_list'];
 						if ($this->view_class > 1000) {
 							$entity_view_class_name_list[$this->view_class] = $val;
 						} else {
@@ -235,9 +235,10 @@
 		}
 
 		static function getEntityByName(GenericBot &$o, $name) {
-			if (isset($o->lists['Entity_name'][strtolower(trim($name))])) {
+			if (isset($o->lists['Entity_name_list'][strtolower(trim($name))])) {
 				return entity::getEntityById(
-					$o->lists['Entity_name'][strtolower(trim($name))]
+					$o,
+					$o->lists['Entity_name_list'][strtolower(trim($name))]
 				);
 			}
 
@@ -347,6 +348,14 @@
 		public $body;
 
 		public $party;
+
+		function trace() {
+			$o1 = &$this->items; $this->items = NULL;
+			$o2 = &$this->equip; $this->equip = NULL;
+			parent::trace();
+			$this->items = $o1;
+			$this->equip = $o2;
+		}
 	}
 
 ///////////////////////////////////////////////////////////////////////////////

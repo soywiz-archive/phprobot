@@ -108,7 +108,13 @@
 				$command = $data[0];
 				switch (strtolower(trim($command))) {
 					case 'exit': exit; break;
-					case 'say': $this->say($data[1]); break;
+					case 'say':  $this->say($data[1]); break;
+					case 'move': $this->moveAt($from->x, $from->y); break;
+					case 'where':
+						$to_say = $this->map->name . ' : ' . $this->player->x . ', ' . $this->player->y;
+						echo $to_say . "\n";
+						$this->say($to_say);
+					break;
 				}
 			}
 		}

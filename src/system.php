@@ -115,6 +115,36 @@
 
 	// Other
 
+	/*
+
+	function getXY($str) {
+		$x = ((ord($str[0]) << 2) | ((ord($str[1]) & 0xC0) >> 6));
+		$y = (((ord($str[1]) & 0x3f) << 4) | ((ord($str[2]) & 0xf0) >> 4));
+
+		return array($x - 1, $y - 1);
+	}
+
+	function getXY2($str) {
+		$x1 = (((ord($str[0]) & 0xff) << 2) | ((ord($str[1]) & 0xC0) >> 6));
+		$y1 = (((ord($str[1]) & 0x3f) << 4) | ((ord($str[2]) & 0xf0) >> 4));
+
+		$x2 = (((ord($str[3]) & 0xfc) >> 2) | ((ord($str[2]) & 0x0f) << 6));
+		$y2 = (((ord($str[3]) & 0x03) << 8) | (ord($str[4]) & 0xff));
+
+		return array($x1 - 1, $y1 - 1, $x2 - 1, $y2 - 1);
+	}
+
+	function makeXY($x, $y) {
+		//$x++; $y++;
+		$ret = '';
+		adr8($ret, (int)($x >> 2));
+		adr8($ret, (int)((($x % 4) << 6) | (int)($y >> 4)));
+		adr8($ret, (int)(($y % 16) << 4));
+
+		return $ret;
+	}
+	*/
+
 	function getXY($str) {
 		$x = ((ord($str[0]) << 2) | ((ord($str[1]) & 0xC0) >> 6));
 		$y = (((ord($str[1]) & 0x3f) << 4) | ((ord($str[2]) & 0xf0) >> 4));

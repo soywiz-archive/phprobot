@@ -52,7 +52,7 @@
 		$c = $o->player;
 
 		switch ($type) {
-			case 0x0000: $c->walk_speed    = $value; break;
+			case 0x0000: $c->speed         = $value; break;
 
 			case 0x0001: $c->base_exp      = $value; break;
 			case 0x0002: $c->job_exp       = $value; break;
@@ -116,7 +116,7 @@
 		$id       = &$d['id']; $name = &$d['name'];
 		$names    = &$o->lists['names'];
 		$names_id = &$o->lists['names_id'];
-		$e        = &$o->lists['Entity'][$id];
+		$e        = &Entity::getEntityByIdCreate($o, $id);
 
 		$monster_names = &$o->lists['monster_names'];
 
@@ -231,6 +231,22 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+	// 0098 - Private Message (From Other)
+	function parse_recv_0097(GenericBot &$o, $p, $d) {
+		$d = parse_str_packet($d, 'a[from;text]z[24]z[rest]');
+
+		//echo "-----\n"; foreach ($o->lists['Entity_memo'] as $k => $v) echo $v->id . ' - ' . $v->name . "\n"; echo "-----\n";
+		//print_r($o->lists['Entity_name_list']); echo "DEBUG: PRIVATE MENSAJAE FROM: " . $d['from'] . "\n";
+
+		if ($entity = &Entity::getEntityByName($o, $d['from'])) {
+			$o->onSay(GB_SAY_TYPE_PRIVATE, $d['text'], $entity, $d['from']);
+		} else {
+			// Se envía a sí mismo (PATH) (REVISE)
+			$o->onSay(GB_SAY_TYPE_PRIVATE, $d['text'], $o->player, $d['from']);
+		}
+		//$entity->trace();
+	}
 
 	// 008d - Global Message (From Other)
 	function parse_recv_008d(GenericBot &$o, $p, $d) {
@@ -461,6 +477,9 @@
 	// 0087 - You Move
 	function parse_recv_0087(GenericBot &$o, $p, $d) {
 		$d = parse_str_packet($d, 'a[tick;pos_m]lqb-');
+		$pm = &$d['pos_m'];
+		//$o->player->trace(); exit;
+		$o->player->move($pm[0], $pm[1], $pm[2], $pm[3], $o->player->speed);
 		/*
 		$p['pos'] = array($d['pos_m'][0], $d['pos_m'][1]);
 		$p['moving'] = true;

@@ -87,6 +87,8 @@
 		// Error fields
 		protected $errorId = false;
 		protected $errorText;
+
+		protected $requestMoveTimeNext = -1;
 // ----------------------------------------------------------------------------
 // PROCESS
 // ----------------------------------------------------------------------------
@@ -110,10 +112,24 @@
 							$e->setXY($e->x, $e->y);
 							$e->moving = false;
 							$this->onMoveEnd($e);
+							$this->requestMoveTimeNext = -1;
 						}
-					} else if (($e->map_x >= 0) || ($e->map_y >= 0)) {
-						$e->x = $e->map_x;
-						$e->y = $e->map_y;
+					} else {
+						if (($e->map_x >= 0) || ($e->map_y >= 0)) {
+							$e->x = $e->map_x;
+							$e->y = $e->map_y;
+						}
+
+						if ($e === $this->player) {
+							if (sizeof($this->trackPath) && (($this->requestMoveTimeNext < 0) || (time() >= $this->requestMoveTimeNext))) {
+								$this->requestMoveTimeNext = time() + 6;
+								list($x, $y) = array_shift($this->trackPath);
+								if ($x && $y) {
+									echo "-- SENDMOVE ($x, $y)\n";
+									sendMove($this, $x, $y);
+								}
+							}
+						}
 					}
 				}
 			}
@@ -323,11 +339,32 @@
 			sendSay($this, $text, $to);
 		}
 
-		function moveAt($x, $y) {
-			sendMove($this, $x, $y);
+		function moveAt($x, $y, $add = false, $mov_dist = 10) {
+			if (sizeof($path = $this->map->getPath($this->player->x, $this->player->y, $x, $y))) {
+				if ($this->player->x != $x || $this->player->y != $y) {
+					echo 'MOVE: ' . $this->player->x . ', ' . $this->player->y . ', ' . $x . ', ' . $y . "\n";
+
+					$t = floor(sizeof($path) / $mov_dist);
+					$end = array();
+
+					for ($n = 0; $n < $t; $n++) $end[] = $path[$n * $t];
+
+					if ((sizeof($end) == 0) || ($end[sizeof($end) - 1] != $path[sizeof($path) - 1])) $end[] = $path[sizeof($path) - 1];
+
+					while ($end[0][0] == $this->player->x && $end[0][1] == $this->player->y) array_shift($end);
+
+					$this->trackPath = $end;
+
+					print_r($this->trackPath);
+				} else {
+					echo "AT SAME POS\n";
+				}
+			} else {
+				echo "CANT MOVE\n";
+			}
 		}
 
-		function moveNearTo($x, $y, $near = 2) {
+		function moveNearTo($x, $y, $near = 2, $add = false) {
 			$path = $this->map->getPath($x, $y, $this->player->x, $this->player->y) ;
 
 			if (sizeof($path) > $near) {
@@ -340,11 +377,11 @@
 
 			echo ': (' . $x . ', ' . $y . ') - (' . $pos[0] . ', ' . $pos[1] . ")\n";
 
-			$this->moveAt($pos[0], $pos[1]);
+			$this->moveAt($pos[0], $pos[1], $add);
 		}
 
-		function moveNear(Entity &$entity, $near = 2) {
-			moveNearTo($entity->x, $entity->y, $near);
+		function moveNear(Entity &$entity, $near = 2, $add = false) {
+			$this->moveNearTo($entity->x, $entity->y, $near, $add);
 		}
 
 // ----------------------------------------------------------------------------
