@@ -7,6 +7,7 @@
 		private $SockBuffer = '';
 
 		function __construct(PacketList $PacketList) {
+			print_r($this);
 			$this->PacketList = $PacketList;
 		}
 

@@ -12,6 +12,7 @@
 			if (!isset($Host) && !isset($Port)) {
 				$this->Connected       = true;
 				$this->Simulated       = true;
+
 				return true;
 			}
 

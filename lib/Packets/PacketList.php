@@ -6,6 +6,8 @@
 		private $PacketStructures = array();
 
 		static public function LoadFromFile($ProtocolVersion, $FileName = null) {
+			//echo "ProtocolVersion: $ProtocolVersion\n";
+
 			$Return = new PacketList();
 
 			do {

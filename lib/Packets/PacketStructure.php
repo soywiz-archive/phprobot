@@ -95,7 +95,7 @@
 			return $Structure;
 		}
 
-		public function Extract(string $String) {
+		public function Extract($String) {
 			return ParseStrPacket($String, $this->Structure);
 		}
 	}

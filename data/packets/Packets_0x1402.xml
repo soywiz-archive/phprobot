@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
-<packets protocolVersion="0x1402">		
-	<packet id="0x0069" length="9" description="Account Info">
+<packets protocolVersion="0x02">		
+	<packet id="0x0069" length="-" description="Account Info">
 		<!-- a[id_login1;id_account;id_login2;date_last_login;sex;servers]llll-z[24]w-bx[rest][
 				a[ip;port;name;users]rlnf[ip]wz[20]w-w-w
 			] !-->
@@ -11,7 +11,7 @@
 		<entry name="DateLastLogin" type="stringz" length="24" />
 		<entry name="UnUsed1"       type="uint16" unused="true" />
 		<entry name="Sex"           type="uint8" />
-		<entry name="List" type="group" length="rest">
+		<entry name="Servers" type="group" length="rest">
 			<entry name="IpRaw"     type="uint32"   reverse="true" />
 			<entry name="Ip"        type="function" param="ip" />
 			<entry name="Port"      type="uint16" />
@@ -19,8 +19,71 @@
 			<entry name="UnUsed2"   type="uint16" unused="true" />
 			<entry name="UnUsed3"   type="uint16" unused="true" />
 			<entry name="Users"     type="uint16" />
-		</entry>		
+		</entry>
 	</packet>
+
+	<packet id="0x006a" length="21" description="Connection Failed">
+		<entry name="Error" type="uint8" />
+		<entry name="Unused1" type="stringz" length="20" unused="true" />
+	</packet>
+	
+	<packet id="0x006b" length="-" description="Pet Talk">
+		<entry name="Unused1" type="string" length="20" unused="true" />
+		<entry name="Charas" type="group" length="rest">
+			<entry name="Id" type="uint32" />
+			<entry name="ExpBase" type="uint32" />
+			<entry name="Zeny" type="uint32" />
+			<entry name="ExpJob" type="uint32" />
+			<entry name="Option" type="uint32" />
+			<entry name="Unused2" type="uint32" unused="true" />
+			<entry name="Unused3" type="uint32" unused="true" />
+			<entry name="Karma" type="uint32" />
+			<entry name="Manner" type="uint32" />
+			<entry name="PointsStatus" type="uint16" />
+			<entry name="Hp" type="uint16" />
+			<entry name="HpMax" type="uint16" />
+			<entry name="Sp" type="uint16" />
+			<entry name="SpMax" type="uint16" />
+			<entry name="WalkSpeed" type="uint16" />
+			<entry name="Class" type="uint16" />
+			<entry name="HairType" type="uint16" />
+			<entry name="Weapon" type="uint16" />
+			<entry name="BaseLevel" type="uint16" />
+			<entry name="PointsSkill" type="uint16" />
+			<entry name="HeadBottom" type="uint16" />
+			<entry name="Shield" type="uint16" />
+			<entry name="HeadTop" type="uint16" />
+			<entry name="HeadMid" type="uint16" />
+			<entry name="HairColor" type="uint16" />
+			<entry name="ClothesColor" type="uint16" />
+			<entry name="Name" type="stringz" length="24" />
+			<entry name="Str" type="uint8" />
+			<entry name="Agi" type="uint8" />
+			<entry name="Vit" type="uint8" />
+			<entry name="Int" type="uint8" />
+			<entry name="Dex" type="uint8" />
+			<entry name="Luk" type="uint8" />
+			<entry name="Position" type="uint8" />
+			<entry name="Unused4" type="uint8" unused="true" />
+		</entry>
+	</packet>	
+
+	<packet id="0x006c" length="1" description="Error logging into Game Login Server (invalid character specified)">
+		<entry name="Unused1" type="uint8" unused="true" />
+	</packet>
+
+	<packet id="0x006e" length="1" description="?????????">
+		<entry name="Unused1" type="uint8" unused="true" />
+	</packet>
+	
+	<packet id="0x0071" length="0" description="Recieved character ID and Map IP from Game Login Server">
+		<!-- a[id;map;ip;port]lz[16]rlnf[ip]w !-->
+		<entry name="Id"        type="uint32" />
+		<entry name="Map"       type="stringz"  length="16" />
+		<entry name="IpRaw"     type="uint32"   reverse="true" />
+		<entry name="Ip"        type="function" param="ip" />
+		<entry name="Port"      type="uint16" />
+	</packet>	
 	
 	<packet id="0x0073" length="9" description="Enter Map">
 		<entry name="Tick" type="uint32" />

@@ -5,13 +5,13 @@
 	Import('Ragnarok.RecivePackets.*');
 
 	abstract class GenericBot extends EntityMoveablePlayerMain {
-		public    $SocketPacket;
-		protected $ConnectionStep;
-		protected $ConnectionStatus;
-		protected $ConnectionServer;
+		public $SocketPacket;
+		public $ConnectionStep;
+		public $ConnectionStatus;
+		public $ConnectionServer;
 
-		private $ClientCode                     = 0x14;
-		private $ClientProtocolVersion          = 0x02;
+		public $ClientCode              = 0x14;
+		public $ClientProtocolVersion   = 0x02;
 
 		const SERVER_NONE                = 0;
 		const SERVER_MASTER              = 1;
@@ -34,7 +34,7 @@
 
 		function __construct() {
 			$this->ConnectionServer = self::SERVER_NONE;
-			$this->SocketPacket     = new SocketPacket(new PacketList($this->ClientProtocolVersion));
+			$this->SocketPacket     = new SocketPacket(PacketList::LoadFromFile($this->ClientProtocolVersion));
 			$this->ConnectionStatus = self::STATUS_OK;
 			$this->ConnectionStep   = self::STEP_DISCONNECTED;
 		}
@@ -43,7 +43,8 @@
 		function SetClientVersion($ProtocolVersion = null, $Code = null) {
 			if (isset($ProtocolVersion)) $this->ClientProtocolVersion = $ProtocolVersion;
 			if (isset($Code))            $this->ClientCode            = $Code;
-			$this->SocketPacket          = new SocketPacket(new PacketList($this->ClientProtocolVersion));
+
+			$this->SocketPacket = new SocketPacket(new PacketList($this->ClientProtocolVersion));
 		}
 
 		function Check() {
@@ -62,20 +63,19 @@
 					$this->ProcessMoving();
 
 				case self::STEP_MASTER_PROCESS: case self::STEP_CHARA_PROCESS:
-					while ($packet = $this->SocketPacket->ExtractPacket()) {
-						list($id, $data, $data_raw) = $packet;
+					while ($Packet = $this->SocketPacket->ExtractPacket()) {
+						list($Id, $Data, $DataRaw) = $Packet;
 
-						$hex = str_pad(dechex($p), 4, '0', STR_PAD_LEFT);
+						$hex = str_pad(dechex($Id), 4, '0', STR_PAD_LEFT);
 
-						$f = "parse_recv_{$hex}";
-						//echo "+ $f\n";
+						$f = "RecivePacket0x{$hex}";
+
 						if (!function_exists($f)) {
 							throw(new Exception("La función '{$f}' no está definida\n"));
 						} else {
-							$f($this, $p, $d);
+							// GenericBot &$Bot, $PId, $Data, $DataRaw
+							$f($this, $Id, $Data, $DataRaw);
 						}
-
-						$this->tasks->run($this);
 					}
 				break;
 
@@ -92,7 +92,7 @@
 
 		public function ConnectMaster($Host, $User, $Password) {
 			echo "this->Connect($Host, 6900);\n";
-			$this->Connect($Host, 6900);
+			$this->SocketPacket->Connect($Host, 6900);
 
 			echo "SendMasterLogin($this, $User, $Password, $this->ClientCode, $this->ClientProtocolVersion);\n";
 			SendMasterLogin($this, $User, $Password, $this->ClientCode, $this->ClientProtocolVersion);

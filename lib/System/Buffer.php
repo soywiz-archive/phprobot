@@ -94,12 +94,12 @@
 	function ParseStrPacket(&$d, $fmt) {
 		$return = array();
 
-		$fl = strlen($fmt = strtolower(trim($fmt)));
+		$fl = strlen($fmt = trim($fmt));
 		$reverse = false;
 
 		for ($n = 0; $n < $fl; $n++) {
 			$cl = strlen($d);
-			switch ($c = $fmt[$n]) {
+			switch (strtolower($c = $fmt[$n])) {
 				case 'a':
 					if ($fmt[++$n] == '[') {
 						$n++;
@@ -108,7 +108,7 @@
 							return false;
 						}
 
-						$ls = strtolower(trim(substr($fmt, $n, $p - $n))); $n = $p;
+						$ls = trim(substr($fmt, $n, $p - $n)); $n = $p;
 
 						$pname = explode(';', $ls);
 					}
@@ -131,21 +131,21 @@
 				break;
 				case 'l': // long
 					if ($cl >= 4) {
-						$return[] = $reverse ? ex32($d) : exr32($d);
+						$return[] = $reverse ? Ext32($d) : ExtR32($d);
 					} else {
 						trigger_error('ParseStrPacket : ("l") string buffer extract overflow', E_USER_WARNING);
 					}
 				break;
 				case 'w': // word
 					if ($cl >= 2) {
-						$return[] = $reverse ? ex16($d) : exr16($d);
+						$return[] = $reverse ? ex16($d) : ExtR16($d);
 					} else {
 						trigger_error('ParseStrPacket : ("w") string buffer extract overflow', E_USER_WARNING);
 					}
 				break;
 				case 'b': // byte
 					if ($cl >= 1) {
-						$return[] = $reverse ? ex8($d) : exr8($d);
+						$return[] = $reverse ? ex8($d) : ExtR8($d);
 					} else {
 						trigger_error('ParseStrPacket : ("b") string buffer extract overflow', E_USER_WARNING);
 					}
@@ -234,7 +234,7 @@
 						switch($c) {
 							case 'z':
 								if ($cl >= $ls) {
-									$return[] = exZS($d, (int)$ls);
+									$return[] = ExtZS($d, (int)$ls);
 								} else {
 									trigger_error('ParseStrPacket : ("z") string buffer extract overflow', E_USER_WARNING);
 								}

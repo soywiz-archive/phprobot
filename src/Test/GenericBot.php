@@ -4,9 +4,15 @@
 	class TestBot extends GenericBot {
 		function OnDisconnect() {
 			echo "OnDisconnect()\n";
-			$this->ConnectMaster('localhost', 'test2', 'test2');
+			$this->ConnectMaster('localhost', 'Test', 'Test2');
+		}
+
+		function OnMasterLoginError() {
+			$this->Disconnect();
 		}
 	}
+
+	//sleep(10);
 
 	$gb = new TestBot();
 
