@@ -17,12 +17,11 @@
 		protected function SetName($Name) { $this->Name = $Name; $this->Update(); }
 
 		public function Dump() {
-			$EntityList = &$this->EntityList;
-			$this->EntityList = null;
+			$__Acquire = $this->__ListAcquire(array('EntityList'));
 
 			print_r($this);
 
-			$this->EntityList = &$EntityList;
+			$this->__ListRelease($__Acquire);
 		}
 
 		public function Update() {
@@ -37,7 +36,8 @@
 		}
 
 		protected function EntityDestroy() {
-			if (isset($this->EntityList)) $this->EntityList->Unregister($this);
+			if (isset($this->EntityList) && $this->EntityList instanceof EntityList)
+				$this->EntityList->UnRegister($this);
 		}
 
 		function __construct($EntityList, $Id) {
@@ -47,6 +47,20 @@
 
 		function __destruct() {
 			$this->EntityDestroy();
+		}
+
+		protected function __ListAcquire($List) {
+			$Return = array();
+			foreach ($List as $v) {
+				$Return[$v] = &$this->$v;
+				//$this->$v   = null;
+				$this->$v   = '{' . $v . '}';
+			}
+			return $Return;
+		}
+
+		protected function __ListRelease($List) {
+			foreach ($List as $k => $v) $this->$k = &$v;
 		}
 	}
 

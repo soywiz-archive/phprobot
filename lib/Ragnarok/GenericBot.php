@@ -5,6 +5,7 @@
 	Import('Ragnarok.RecivePackets.*');
 	Import('Ragnarok.Server');
 	Import('Ragnarok.EntityList');
+	Import('Ragnarok.ItemList');
 	Import('System.Ragnarok');
 
 	abstract class GenericBot extends EntityMoveablePlayerMain {
@@ -42,22 +43,20 @@
 		public  $ServerCharaList          = array();
 		public  $ServerZone;
 
+		public  $SkillList;
+		public  $ItemList;
+
+		public  $Cart;
+
 		public function Dump() {
-			$EntityList             = $this->EntityList;
-			$SocketPacket           = $this->SocketPacket;
-			$ServerCharaList        = $this->ServerCharaList;
-			$Map                    = $this->Map;
-			$this->EntityList       = null;
-			$this->SocketPacket     = null;
-			$this->ServerCharaList  = null;
-			$this->Map              = null;
+			$__Acquire = $this->__ListAcquire(array(
+				'EntityList', 'SocketPacket', 'ServerCharaList', 'Map',
+				'SkillList', 'ItemList', 'Cart'
+			));
 
 			print_r($this);
 
-			$this->EntityList       = $EntityList;
-			$this->SocketPacket     = $SocketPacket;
-			$this->ServerCharaList  = $ServerCharaList;
-			$this->Map              = $Map;
+			$this->__ListRelease($__Acquire);
 		}
 
 		function __construct() {
@@ -66,6 +65,9 @@
 			$this->ConnectionStatus  = self::STATUS_OK;
 			$this->StepCallbackQueue = array();
 			$this->WaitMilliseconds  = 0;
+			$this->ItemList          = new ItemList();
+			$this->Cart              = new ItemList();
+			$this->Entities          = new EntityList();
 			$this->SetStepCallBack('OnBegin');
 
 			$this->EntityInit(new EntityList());

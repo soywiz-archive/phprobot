@@ -15,7 +15,7 @@
 		public $PointsSkill;
 		public $PointsStatus;
 
-		public $WalkSpeed;
+		public $Speed;
 		public $Aspd;
 	}
 ?>

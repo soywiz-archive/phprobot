@@ -41,6 +41,18 @@
 			return isset($this->ListId[$Id]) ? $this->ListId[$Id] : false;
 		}
 
+		function GetEntityByIdCreate($Id, $Type = EntityType::UNKNOWN) {
+			if (!isset($this->ListId[$Id])) {
+				$Entity = new Entity($this, $Id);
+				$Entity->Type = $Type;
+				$this->ListId[$Id] = $Entity;
+			} else {
+				$Entity = $this->ListId[$Id];
+			}
+
+			return $Entity;
+		}
+
 		// Entity
 		function Register(Entity &$Entity) {
 			$this->ListId[$Entity->Id]                  = &$Entity;

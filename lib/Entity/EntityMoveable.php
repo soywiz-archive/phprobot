@@ -24,11 +24,12 @@
 		public $HairColor;
 
 		public $HeadTop;
-		public $HeadMid;
+		public $HeadMiddle;
+		public $HeadBottom;
 
 		public $Weapon;
 		public $Shield;
 
-		public $Class;
+		public $ViewClass;
 	}
 ?>

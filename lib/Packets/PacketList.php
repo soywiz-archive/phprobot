@@ -1,5 +1,5 @@
 <?php
-	import('Packets.PacketStructure');
+	Import('Packets.PacketStructure');
 	Import('System.Buffer');
 
 	class PacketList {
