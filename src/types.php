@@ -14,6 +14,8 @@
 		public $o;
 		public $id;
 		public $register;
+		public $visible;
+		public $online = false;
 
 		function trace() {
 			$o = &$this->o;
@@ -24,11 +26,11 @@
 
 		function __construct(GenericBot &$o, $id, $register = true) {
 			$this->id = $id;
-			if ($this->register = $register) {
-				$this->o  = $o;
-			}
+			if ($this->register = $register) $this->o = $o;
 
 			$this->setOnList(true);
+			$this->visible = false;
+			$this->online  = true;
 		}
 
 		function disappear() {
@@ -36,6 +38,8 @@
 		}
 
 		function setOnList($flag) {
+			$this->visible = $flag;
+
 			if ($this->register) {
 				if ($flag) {
 					// Añade a la lista de visibles y de memorizados
@@ -98,11 +102,19 @@
 		public $to_y = 0;
 		public $to_time_t;
 
+		public $map_x = -1;
+		public $map_y = -1;
+
 		public $x;
 		public $y;
 		public $view_class;
 		public $group;
 		public $speed;
+
+		public $hp     = -1;
+		public $hp_max = -1;
+		public $sp     = -1;
+		public $sp_max = -1;
 
 		public $guild  = NULL;
 		public $emblem = NULL;
@@ -113,7 +125,7 @@
 		function trace() {
 			$o1 = &$this->emblem; $this->emblem = NULL;
 			$o2 = &$this->guild;  $this->guild  = NULL;
-			$o4 = &$this->party;  $this->party  = NULL;
+			$o3 = &$this->party;  $this->party  = NULL;
 
 			parent::trace();
 
@@ -125,6 +137,12 @@
 		function setXY($x, $y) {
 			$this->to_x = $this->from_x = $this->x = $x;
 			$this->to_y = $this->from_y = $this->y = $y;
+			$this->map_y = $this->map_x = -1;
+		}
+
+		function setXYMap($x, $y) {
+			$this->map_x = $x;
+			$this->map_y = $y;
 		}
 
 		function move($from_x = NULL, $from_y = NULL, $to_x, $to_y, $speed = NULL) {

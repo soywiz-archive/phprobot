@@ -119,10 +119,18 @@
 
 		function onMoving(Entity &$e) {
 			echo "* onMoving();\n";
-			//echo $e->id . ': ' . $e->x . ', ' . $e->y . ' - (' . $e->name . ')' . "\n";
+			echo $e->id . ': ' . $e->x . ', ' . $e->y . ' - (' . $e->name . ')' . "\n";
 			//$this->lookAt($e);
 			//$this->moveNear($e);
-			$this->lookAt($e);
+			if ($e->visible) {
+				$this->lookAt($e);
+			} else {
+				//$e->trace();
+			}
+		}
+
+		function onUpdateHP(Entity &$e) {
+			echo $e->name . ' - ' . $e->hp . "/" . $e->hp_max . "\n";
 		}
 
 		function onMoveStart(Entity &$e) {
@@ -140,8 +148,8 @@
 			//$this->moveNearTo($e->to_x, $e->to_y, 1);
 		}
 
-		function onDeal(Entity &$e) {
-			$this->dealAccept();
+		function onDealRequest(Entity &$e) {
+			$this->dealRequestAccept();
 			//$this->dealCancel();
 
 			//$this->dealRequest($e);

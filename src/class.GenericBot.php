@@ -56,6 +56,8 @@
 		public $lists = array();
 		public $player;
 
+		public $trackPath;
+
 		public $tasks;
 		public $sock;
 		public $step;
@@ -109,6 +111,9 @@
 							$e->moving = false;
 							$this->onMoveEnd($e);
 						}
+					} else if (($e->map_x >= 0) || ($e->map_y >= 0)) {
+						$e->x = $e->map_x;
+						$e->y = $e->map_y;
 					}
 				}
 			}
@@ -354,18 +359,26 @@
 		function onMasterCharaError() { }
 		function onCharaSelect()      { }
 		function onMapStart()         { }
-		function onCharaInfoUpdate()  { }
 
 		// Interact
 		function onSay($type, $text, &$from = NULL, $from_name = NULL) { }
 
 		// Moving
-		function onAppear(Entity &$e)    { }
-		function onMoving(Entity &$e)    { }
-		function onMoveStart(Entity &$e) { }
-		function onMoveEnd(Entity &$e)   { }
+		function onAppear(Entity &$e)       { }
+		function onDisappear(Entity &$e)    { }
+		function onMoving(Entity &$e)       { }
+		function onMoveStart(Entity &$e)    { }
+		function onMoveEnd(Entity &$e)      { }
+
+		// Update
+		function onCharaInfoUpdate()        { }
+		function onUpdateHP(Entity &$e)     { }
+		function onUpdateSP(Entity &$e)     { }
 
 		// Dealing
-		function onDeal(Entity &$e)      { }
+		function onDealRequest(Entity &$e)  { }
+		function onDealStart(Entity &$e)    { }
+		function onDealCancel(Entity &$e)   { }
+		function onDealSuccess(Entity &$e)  { }
 	}
 ?>

@@ -57,10 +57,10 @@
 			case 0x0001: $c->base_exp      = $value; break;
 			case 0x0002: $c->job_exp       = $value; break;
 
-			case 0x0005: $c->hp            = $value; break;
-			case 0x0006: $c->hp_max        = $value; break;
-			case 0x0007: $c->sp            = $value; break;
-			case 0x0008: $c->sp_max        = $value; break;
+			case 0x0005: $c->hp            = $value; $o->onUpdateHP($o->player); break;
+			case 0x0006: $c->hp_max        = $value; $o->onUpdateHP($o->player); break;
+			case 0x0007: $c->sp            = $value; $o->onUpdateSP($o->player); break;
+			case 0x0008: $c->sp_max        = $value; $o->onUpdateSP($o->player); break;
 			case 0x0009: $c->status_points = $value; break;
 			case 0x000b: $c->base_level    = $value; break;
 			case 0x000c: $c->skill_points  = $value; break;
@@ -169,8 +169,8 @@
 		$c = &$o->player;
 
 		switch($type) {
-			case 5: $c->hp = $value; break;
-			case 7: $c->sp = $value; break;
+			case 5: $c->hp = $value; $o->onUpdateHP($o->player); break;
+			case 7: $c->sp = $value; $o->onUpdateSP($o->player); break;
 			default: echo "Unknown 0x013D type: {$type} : {$value}\n"; break;
 		}
 
@@ -380,6 +380,17 @@
 		//echo "Guild Topic:  " . $d['text1'] . "\n"; echo "Guild Notice: " . $d['text2'] . "\n";
 	}
 
+	// 016d - Guild Member Online Status
+	function parse_recv_016d(GenericBot &$o, $p, $d) {
+		$d = parse_str_packet($d, 'a[id;account_id;status]lll');
+
+		$entity = Entity::getEntityByIdCreate($o, $d['id']);
+
+		// visible/online
+		$entity->online = $d['status'];
+		//print_r($d);
+	}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -410,16 +421,21 @@
 
 		if (isset($entity->_name) && $entity->_name) $o->onAppear($entity);
 
+		$entity->visible = true;
 	}
 
 	// 0078 - Unit Exists
 	function parse_recv_0078(GenericBot &$o, $p, $d) {
 		parse_recv_0078_0079($o, $p, parse_str_packet($d, 'a[id;speed;opt1;opt2;option;view_class;hair;weapon;head_bottom;shield;head_top;head_mid;hair_color;clothes_color;head_dir;guild_id;emblem_id;manner;karma;sex;pos;dead_sit;base_level]lwwwwwwwwwwwwwwllwbbpw-bw'));
+
+		//$entity->visible = true;
 	}
 
 	// 0079 - Unit Connected
 	function parse_recv_0079(GenericBot &$o, $p, $d) {
 		parse_recv_0078_0079($o, $p, parse_str_packet($d, 'a[id;speed;opt1;opt2;option;view_class;hair;weapon;head_bottom;shield;head_top;head_mid;hair_color;clothes_color;head_dir;guild_id;emblem_id;manner;karma;sex;pos;dead_sit]lwwwwwwwwwwwwwwllwbbpw-b'));
+
+		//$entity->visible = true;
 	}
 
 	// 007b - Unit Move
@@ -439,6 +455,7 @@
 		//$entity->guild  = &Guild::getGuildByIdCreate($o, $d['guild_id']);
 
 		$entity->move($pm[0], $pm[1], $pm[2], $pm[3], $d['speed']);
+		$entity->visible = true;
 	}
 
 	// 0087 - You Move
@@ -461,6 +478,12 @@
 	// 0080 - Unit Lost (Died, Disappeared, Disconnected)
 	function parse_recv_0080(GenericBot &$o, $p, $d) {
 		$d = parse_str_packet($d, 'a[id;type]lb');
+
+		$entity = Entity::getEntityByIdCreate($o, $d['id']);
+		$entity->disappear();
+		$o->onDisappear($entity);
+
+
 		/*
 		ia_lost($d['id']);
 
@@ -487,6 +510,7 @@
 	// 01d8 - Unit Exists : 0078
 	function parse_recv_01d8(GenericBot &$o, $p, $d) {
 		parse_recv_0078_0079($o, $p, parse_str_packet($d, 'a[id;speed;opt1;opt2;option;view_class;viewid1;viewid2;head_bottom;head_top;head_mid;hair_color;clothes_color;head_dir;guild_id;emblem_id;manner;karma;sex;pos;dead_sit;base_level]lwwwwwwwwwwwwwllwbbpw-bw'));
+		//$entity->visible = true;
 	}
 
 	// 01d9 - Unit Connected : 0079
@@ -494,12 +518,16 @@
 		//echo "Using 0x01D9 (Check correct)\n";
 		parse_recv_0078_0079($o, $p, $d);
 		//echo "Rest: " . strlen($d) . "\n";
+
+		//$entity->visible = true;
 	}
 
 	// 01da - Unit Move : 007B
 	function parse_recv_01da(GenericBot &$o, $p, $d) {
 		parse_recv_007b($o, $p, $d);
 		//echo "Unparsed packet: 0x01da\n";
+
+		//$entity->visible = true;
 	}
 
 	// 0195 - Player Guild Info
@@ -507,6 +535,10 @@
 		$d = parse_str_packet($d, 'a[id;name;guild_name;title]lz[24]z[24]-z[24]z[24]');
 	}
 
+	// 019b - Unit Gained Level
+	function parse_recv_019b(GenericBot &$o, $p, $d) {
+		echo "Unparsed packet: 0x019b\n";
+	}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -538,15 +570,76 @@
 		$party->share_exp  = $d['share_exp'];
 		$party->share_item = $d['share_item'];
 		//echo sizeof($party);
-		print_r($party->getMemberNameList());
-		$party->trace();
+		//print_r($party->getMemberNameList()); $party->trace();
 	}
 
 	// 0152 - ??
-	function parse_recv_0152 ($p, $d) {
+	function parse_recv_0152(GenericBot &$o, $p, $d) {
 		echo "Unparsed packet: 0x0152\n";
+	}
+
+	// 00fa - Party Create Failed
+	function parse_recv_00fa(GenericBot &$o, $p, $d) {
+		echo "Unparsed packet: 0x00fa\n";
+	}
+
+	// 00fd - Party Join Request (From You)
+	function parse_recv_00fd(GenericBot &$o, $p, $d) {
+		echo "Unparsed packet: 0x00fd\n";
+	}
+
+	// 00fe - Party Join Request (From Other)
+	function parse_recv_00fe(GenericBot &$o, $p, $d) {
+		echo "Unparsed packet: 0x00fe\n";
+	}
+
+	// 0104 - Party User Info
+	function parse_recv_0104(GenericBot &$o, $p, $d) {
+		echo "Unparsed packet: 0x0104\n";
+	}
+
+	// 0105 - Party User Left
+	function parse_recv_0105(GenericBot &$o, $p, $d) {
+		echo "Unparsed packet: 0x0105\n";
+	}
+
+	// 0106 - Party HP
+	function parse_recv_0106(GenericBot &$o, $p, $d) {
+		$d = parse_str_packet($d, 'a[id;hp;hp_max]lww');
+
+		$entity = &Entity::getEntityByIdCreate($o, $d['id']);
+		$entity->hp = $d['hp'];
+		$entity->hp_max = $d['hp_max'];
+
+		$o->onUpdateHP($entity);
+	}
+
+	// 0107 - Party Move
+	function parse_recv_0107(GenericBot &$o, $p, $d) {
+		$d = parse_str_packet($d, 'a[id;x;y]lww');
+
+		$entity = &Entity::getEntityByIdCreate($o, $d['id']);
+
+		if (!$entity->visible) $entity->setXY($d['x'], $d['y']);
+		$entity->setXYMap($d['x'], $d['y']);
+
+		$o->onMoving($entity);
+
+		//print_r($d);
+		//echo "Unparsed packet: 0x0107\n";
+	}
+
+	// 0109 - Party Message
+	function parse_recv_0109(GenericBot &$o, $p, $d) {
+		echo "Unparsed packet: 0x0109\n";
 	}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 ?>
