@@ -1,5 +1,6 @@
 <?php
 	Import('System.Buffer');
+	Import('Map.Map');
 
 	class MapRagnarok extends Map {
 		public $name;
