@@ -7,7 +7,7 @@
 	<packet id="0x0073" length="9" description="Enter Map">
 		<entry name="Tick" type="uint32" />
 		<entry name="Position" type="pos24" />
-		<entry name="Unused1" type="uint16" unused />
+		<entry name="Unused1" type="uint16" unused="true" />
 	</packet>
 
 	<packet id="0x0078" length="52" description="Unit Exists">
@@ -32,7 +32,7 @@
 		<entry name="Karma" type="uint8" />
 		<entry name="Sex" type="uint8" />
 		<entry name="Position" type="pos24" />
-		<entry name="Unused1" type="uint16" unused />
+		<entry name="Unused1" type="uint16" unused="true" />
 		<entry name="Status" type="uint8" />
 		<entry name="Level" type="uint16" />
 	</packet>
@@ -60,7 +60,7 @@
 		<entry name="Karma" type="uint8" />
 		<entry name="Sex" type="uint8" />
 		<entry name="Position" type="pos24" />
-		<entry name="Unused1" type="uint16" unused />
+		<entry name="Unused1" type="uint16" unused="true" />
 		<entry name="Status" type="uint8" />
 	</packet>
 
@@ -90,9 +90,9 @@
 		<entry name="Karma" type="uint8" />
 		<entry name="Sex" type="uint8" />
 		<entry name="PositionMove" type="pos40" />
-		<entry name="Unused1" type="uint8" unused />
-		<entry name="Unused2" type="uint8" unused />
-		<entry name="Unused3" type="uint8" unused />
+		<entry name="Unused1" type="uint8" unused="true" />
+		<entry name="Unused2" type="uint8" unused="true" />
+		<entry name="Unused3" type="uint8" unused="true" />
 		<entry name="Level" type="uint16" />
 	</packet>
 
@@ -108,7 +108,7 @@
 	<packet id="0x0087" length="10" description="You Move">
 		<entry name="Tick" type="uint32" />
 		<entry name="PositionMove" type="pos40" />
-		<entry name="Unused1" type="uint8" unused />
+		<entry name="Unused1" type="uint8" unused="true" />
 	</packet>
 
 	<packet id="0x0088" length="8" description="Unit Position">
@@ -261,7 +261,7 @@
 	<packet id="0x00fb" length="-" description="Party List">
 		<!-- a[name;players]z[24]x[rest][a[id;name;map_name;leader;online]lz[24]z[16]bb] !-->
 		<entry name="Name" type="stringz" length="24" />
-		<entry name="List" type="group" length="rest" />
+		<entry name="List" type="group" length="rest">
 			<!-- a[id;name;map_name;leader;online]lz[24]z[16]bb !-->
 			<entry name="Id" type="uint32" />
 			<entry name="Name" type="stringz" length="24" />
@@ -293,7 +293,7 @@
 		<entry name="List" type="group" length="rest">
 			<entry name="Id" type="uint16" />
 			<entry name="Target" type="uint16" />
-			<entry name="Unused1" type="uint16" unused />
+			<entry name="Unused1" type="uint16" unused="true" />
 			<entry name="MaxLevel" type="uint16" />
 			<entry name="MaxSp" type="uint16" />
 			<entry name="Range" type="uint16" />
@@ -305,8 +305,8 @@
 	<packet id="0x0110" length="10" description="Skill Use Failed">
 		<entry name="Id" type="uint16" />
 		<entry name="BType" type="uint16" />
-		<entry name="Unused1" type="uint16" unused />
-		<entry name="Unused2" type="uint16" unused />
+		<entry name="Unused1" type="uint16" unused="true" />
+		<entry name="Unused2" type="uint16" unused="true" />
 		<entry name="Type" type="uint8" />
 	</packet>
 
@@ -362,7 +362,7 @@
 		<entry name="Id" type="uint32" />
 		<entry name="Name" type="stringz" length="24" />
 		<entry name="GuildName" type="stringz" length="24" />
-		<entry name="Unused1" type="stringz" length="24" unused />
+		<entry name="Unused1" type="stringz" length="24" unused="true" />
 		<entry name="Title" type="stringz" length="24" />
 	</packet>
 
@@ -415,7 +415,7 @@
 		<entry name="Karma" type="uint8" />
 		<entry name="Sex" type="uint8" />
 		<entry name="Position" type="pos24" />
-		<entry name="Unused1" type="uint16" unused />
+		<entry name="Unused1" type="uint16" unused="true" />
 		<entry name="Status" type="uint8" />
 		<entry name="Level" type="uint16" />
 	</packet>
@@ -455,8 +455,8 @@
 		<entry name="Id" type="uint32" />
 		<entry name="Emblem" type="uint32" />
 		<entry name="Count" type="uint32" />
-		<entry name="Unused1" type="uint32" unused />
-		<entry name="Unused2" type="uint8" unused />
+		<entry name="Unused1" type="uint32" unused="true" />
+		<entry name="Unused2" type="uint8" unused="true" />
 		<entry name="Name" type="stringz" length="24" />
 	</packet>
 
@@ -469,7 +469,7 @@
 
 	<packet id="0x016f" length="120" description="Guild Notice">
 		<!-- a[text1;text2]z[60]z[60] !-->
-		<entry name="Test1" type="stringz" length="60" />
-		<entry name="Test2" type="stringz" length="60" />
+		<entry name="Text1" type="stringz" length="60" />
+		<entry name="Text2" type="stringz" length="60" />
 	</packet>
 </packets>
