@@ -51,17 +51,7 @@
 		<hr />
 		<p>
 			El servidor tiene una serie de paquetes asociados:<br />
-			<ul>
-				<li /><k>Paquetes Recibidos</k>
-				<ul>
-					<li /><k>0x0069</k> - Login Correcto - Información
-					<li /><k>0x006a</k> - Login Incorrecto
-				</ul>
-				<li /><k>Paquetes Enviados</k>
-				<ul>
-					<li /><k>0x0064</k> - Login Master Server
-				</ul>
-			</ul>
+			{packets_master}
 		</p>	
 		<hr />
 		<p>
@@ -78,6 +68,11 @@
 		</p>
 		<hr />
 		<p>
+			El servidor tiene una serie de paquetes asociados:<br />
+			{packets_chara}
+		</p>	
+		<hr />
+		<p>
 			Vea también: <k>Master</k> <k>Zone</k>
 		</p>
 		<p>
@@ -91,6 +86,11 @@
 			<k>Mapas</k>, enviar la información de lo que pasa a todos los <k>Jugadores</k>
 			que estén en ese mapa y reaccionar ante las acciones que realicen.		
 		</p>
+		<hr />
+		<p>
+			El servidor tiene una serie de paquetes asociados:<br />
+			{packets_zone}
+		</p>			
 		<hr />
 		<p>
 			Vea también: <k>Master</k> <k>Character</k>

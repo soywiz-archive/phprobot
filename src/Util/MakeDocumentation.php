@@ -3,6 +3,83 @@
 
 	$DocumentAliases = array();
 
+/*
+<ul>
+	<li /><k>Paquetes Recibidos</k>
+	<ul>
+		<li /><k>0x0069</k> - Login Correcto - Información
+		<li /><k>0x006a</k> - Login Incorrecto
+	</ul>
+	<li /><k>Paquetes Enviados</k>
+	<ul>
+		<li /><k>0x0064</k> - Login Master Server
+	</ul>
+</ul>
+*/
+	$Packets       = array();
+	$PacketsUpdate = array();
+
+	function MakeDocumentationUpdate() {
+		global $Packets;
+		global $PacketsUpdate;
+
+		$PacketsProc = array();
+
+		foreach ($Packets as $cln => $cls) {
+			$PacketsProc[$cln] = '';
+			$k = &$PacketsProc[$cln];
+
+			$k .= '<ul>';
+
+			if (isset($cls['server'])) {
+				$k .= '<li /><k>Paquetes Recibidos</k>';
+				$k .= '<ul>';
+				foreach ($cls['server'] as $pid => $pnm) {
+					$k .= '<li />';
+					$k .= '<k>0x' . str_pad(dechex($pid), 4, '0', STR_PAD_LEFT) . '</k> - ' . $pnm;
+					// $pid, $pnm
+				}
+				$k .= '</ul>';
+			}
+
+			if (isset($cls['client'])) {
+				$k .= '<li /><k>Paquetes Enviados</k>';
+				$k .= '<ul>';
+				foreach ($cls['client'] as $pid => $pnm) {
+					$k .= '<li />';
+					$k .= '<k>0x' . str_pad(dechex($pid), 4, '0', STR_PAD_LEFT) . '</k> - ' . $pnm;
+					// $pid, $pnm
+				}
+				$k .= '</ul>';
+			}
+
+			$k .= '</ul>';
+		}
+
+		unset($k);
+
+		//print_r($PacketsProc);
+
+		foreach ($PacketsUpdate as $file) {
+			//if (strpos($file, 'Zone') === false) continue;
+			$data = file_get_contents($file);
+
+			foreach ($PacketsProc as $k => $pp) {
+				$data = str_ireplace('{packets_' . $k . '}', $pp, $data);
+			}
+
+			global $CurrentFile;
+			$CurrentFile = $file;
+
+			file_put_contents($file, MakeDocumentationFormat($data));
+		}
+
+		//print_r($PacketsProc);
+
+		//print_r($Packets);
+		//print_r($PacketsUpdate);
+	}
+
 	function PregReplaceForLinkAliase($Match) {
 		global $CurrentFile;
 		global $DocumentAliases;
@@ -57,6 +134,10 @@
 
 		if ($fd = fopen($File, 'wb')) {
 			fwrite($fd, MakeDocumentationGetHeader($Description));
+			if (strpos($Data, '{packets_') !== false) {
+				global $PacketsUpdate;
+				$PacketsUpdate[] = $File;
+			}
 			fwrite($fd, $Data);
 			fwrite($fd, MakeDocumentationGetFoot());
 			fclose($fd);
@@ -65,6 +146,11 @@
 
 	function MakeDocumentationParseParameters(SimpleXMLElement $Entries) {
 		$Return = '<table border="1">';
+		$Return .= '<tr>';
+		$Return .= '<th>Nombre:</th>';
+		$Return .= '<th>Tipo:</th>';
+		$Return .= '<th>Long.:</th>';
+		$Return .= '</tr>';
 		foreach ($Entries as $k => $Entry) {
 			if (strtolower($k) == 'entry') {
 				$Type = SimpleXMLKeyValue($Entry, 'type');
@@ -110,15 +196,19 @@
 	}
 
 	function MakeDocumentationParsePacket(SimpleXMLElement $Entry, $Dir) {
-		global $CurrentFile;
+		global $CurrentFile, $Packets;
 
-		$IdHex       = '0x' . str_pad(dechex(GetInteger(SimpleXMLKeyValue($Entry, 'id'))), 4, '0', STR_PAD_LEFT);
+		$IdHex       = '0x' . str_pad(dechex($Id = GetInteger(SimpleXMLKeyValue($Entry, 'id'))), 4, '0', STR_PAD_LEFT);
 		$File        = $Dir . '/' . $IdHex . '.html';
 		$CurrentFile = $File;
 		$Length      = SimpleXMLKeyValue($Entry, 'length');
 		$Server      = SimpleXMLKeyValue($Entry, 'server');
 		$Sender      = SimpleXMLKeyValue($Entry, 'sender');
 		$Description = SimpleXMLKeyValue($Entry, 'shortdescription');
+
+
+		$Packets[trim(strtolower($Server))][trim(strtolower($Sender))][$Id] = $Description;
+
 		$Data        = '';
 
 		//$Data .= "<h2><k>{$IdHex}</k> - $Description</h2>";
@@ -197,7 +287,6 @@
 
 		foreach (scandir($Path) as $FileName) {
 			if (strcasecmp(substr($FileName, -4, 4), '.xml') == 0) {
-
 				$o = simplexml_load_file($Path . $FileName);
 
 				foreach ($o->attributes() as $k => $v) {
@@ -226,6 +315,8 @@
 
 			}
 		}
+
+		MakeDocumentationUpdate();
 	}
 
 	function SimpleXMLKeyValue(SimpleXMLElement $entry, $key) {
