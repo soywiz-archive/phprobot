@@ -503,7 +503,7 @@
 		$entity = Entity::getEntityByIdCreate($o, $d['id']);
 		$entity->visible = false;
 		$entity->disappear();
-		$o->onDisappear($entity);
+		$o->onDisAppear($entity);
 
 
 		/*

@@ -402,7 +402,7 @@
 
 		// Moving
 		function onAppear(Entity &$e)       { }
-		function onDisappear(Entity &$e)    { }
+		function onDisAppear(Entity &$e)    { }
 		function onMoving(Entity &$e)       { }
 		function onMoveStart(Entity &$e)    { }
 		function onMoveEnd(Entity &$e)      { }
