@@ -1,6 +1,0 @@
-class Grf {
-	function __construct($file_name) { /* ... */ }
-	function Find($pattern)          { /* ... */ }
-	function Read($file)             { /* ... */ }
-	function ReadIndex($index)       { /* ... */ }
-}
