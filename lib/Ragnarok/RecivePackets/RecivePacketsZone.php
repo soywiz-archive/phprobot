@@ -7,7 +7,7 @@
 
 	// 0073 - Enter Map
 	function RecivePacket0x0073(GenericBot &$Bot, $PId, $Data, $DataRaw) {
-		$Bot->Position = new Position($Data['Position'][0], $Data['Position'][1]);
+		$Bot->Position = new Position($Data['Position']->X, $Data['Position']->Y);
 		$Bot->Map      = new MapRagnarok($Bot->ServerZone->MapName);
 
 		SendZoneLoaded($Bot);

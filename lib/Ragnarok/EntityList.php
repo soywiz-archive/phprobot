@@ -3,7 +3,7 @@
 	Import('Entity.*');
 
 	class EntityList {
-		private $ListId      = array();
+		public  $ListId      = array();
 		private $ListName    = array();
 		private $ListVisible = array();
 		private $ListType    =
@@ -17,6 +17,10 @@
 			);
 
 		const ENTITYLIST_SIMILAR_NAME = 50;
+
+		function Dump() {
+			echo 'EntityList { ' . implode(', ', array_keys($this->ListId)) . " } \n";
+		}
 
 		function __construct() {
 		}
@@ -61,7 +65,11 @@
 			if (isset($Entity->Name) && strlen($Entity->Name)) $this->ListName[$Entity->Name]       = &$Entity;
 		}
 
-		function Update(Entity &$Entity) {
+		function Update(Entity &$Entity, $LId = null) {
+			if (isset($LId)) {
+				unset($this->ListId[$LId]);
+				$this->ListId[$Entity->Id] = $Entity;
+			}
 		}
 
 		function UnRegister(Entity &$Entity) {
@@ -120,6 +128,21 @@
 			foreach ($Percents as $k => $Percent) $Return[] = array(&$Entities[$k], $Percent);
 
 			return $Return;
+		}
+
+		// Acquire, Release for Dump
+		protected function __ListAcquire($List) {
+			$Return = array();
+			foreach ($List as $v) {
+				$Return[$v] = $this->$v;
+				//$this->$v   = null;
+				$this->$v   = '{' . $v . '}';
+			}
+			return $Return;
+		}
+
+		protected function __ListRelease($List) {
+			foreach ($List as $k => $v) $this->$k = $v;
 		}
 	}
 ?>

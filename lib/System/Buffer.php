@@ -117,14 +117,14 @@
 				case 'n': $reverse = false;	break;
 				case 'q': // position XY-XY (5 bytes) Array (x,y,x_to,y_to)
 					if ($cl >= 5) {
-						$return[] = getXY2(StrShift($d, 5));
+						$return[] = getXYP2(StrShift($d, 5));
 					} else {
 						trigger_error('ParseStrPacket : ("q") buffer overflow', E_USER_WARNING);
 					}
 				break;
 				case 'p': // position XY (3 bytes) Array (x,y)
 					if ($cl >= 3) {
-						$return[] = getXY(StrShift($d, 3));
+						$return[] = GetXYP(StrShift($d, 3));
 					} else {
 						trigger_error('ParseStrPacket : ("p") buffer overflow', E_USER_WARNING);
 					}

@@ -22,6 +22,7 @@
 	}
 
 	function SendZoneMove(GenericBot &$Bot, Position $Position) {
+		echo "- Send Position (" . $Position->X . ', ' . $Position->Y . ")\n";
 		$Bot->SocketPacket->Send(
 			MakeR16(0x0085)    .
 			MakeXYP($Position)
@@ -29,22 +30,34 @@
 	}
 
 	function SendZoneGetEntityName(GenericBot &$Bot, $Id) {
+		// El Id no es correcto?
 		$Bot->SocketPacket->Send(
 			MakeR16(0x0094)    .
 			MakeR32($Id)
 		);
 	}
 
+	function SendZoneSkillUse(GenericBot &$Bot, $SkillId, $Level, $Id) {
+		$Bot->SocketPacket->Send(
+			MakeR16(0x0113)   .
+			MakeR8($Level)    .
+			MakeR8(0)         .
+			MakeR16($SkillId) .
+			MakeR32($Id)
+		);
+	}
+
+	function SendZoneSkillUseMap(GenericBot &$Bot, $SkillId, $Level, Position $Position) {
+		$Bot->SocketPacket->Send(
+			MakeR16(0x0116) .
+			MakeR16($Level) .
+			MakeR16($SkillId) .
+			MakeR16($Position->X) .
+			MakeR16($Position->Y)
+		);
+	}
 
 /*
-	function sendGetEntityName(GenericBot &$o, $id) {
-		$o->sock->send(maker16(0x0094) . maker32($id));
-	}
-
-	function sendSkillUse(GenericBot &$o, $skillId, $level, $id) {
-		$o->sock->send(maker16(0x0113) . maker8($level) . maker8(0) . maker16($skillId) . maker32($id));
-	}
-
 	function sendSkillUseMap(GenericBot &$o, $skillId, $level, $x, $y) {
 		//sendTick($o);
 		//echo "------\n";

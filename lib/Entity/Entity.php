@@ -3,8 +3,10 @@
 	Import('Ragnarok.EntityList');
 
 	class Entity {
+		static public $EntityIdCt = 0;
+		public $EntityId;
 		public $EntityList = null;
-		public $Id;
+		public $__Id;
 		public $Name;
 		public $Map;
 		public $MapName;
@@ -16,6 +18,30 @@
 		protected function SetType()      { $this->Type = EntityType::UNKNOWN; }
 		protected function SetName($Name) { $this->Name = $Name; $this->Update(); }
 
+		public function __set($k, $v) {
+			switch (strtolower($k)) {
+				case 'id':
+					$bid = $this->Id;
+					$this->Id = $v;
+					$this->Update($bid);
+				break;
+				default:
+					$this->$k = $v;
+				break;
+			}
+		}
+
+		public function __get($k) {
+			switch (strtolower($k)) {
+				case 'id':
+					return $this->__Id;
+				break;
+				default:
+					return $this->$k;
+				break;
+			}
+		}
+
 		public function Dump() {
 			$__Acquire = $this->__ListAcquire(array('EntityList'));
 
@@ -24,8 +50,8 @@
 			$this->__ListRelease($__Acquire);
 		}
 
-		public function Update() {
-			$this->EntityList->Update($this);
+		public function Update($Id = null) {
+			$this->EntityList->Update($this, $Id);
 		}
 
 		protected function EntityInit(EntityList &$EntityList) {
@@ -41,7 +67,8 @@
 		}
 
 		function __construct($EntityList, $Id) {
-			$this->Id = $Id;
+			$this->EntityId = Entity::$EntityIdCt++;
+			$this->__Id = $Id;
 			if ($EntityList instanceof EntityList) $this->EntityInit($EntityList);
 		}
 
