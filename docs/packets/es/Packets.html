@@ -1,7 +1,19 @@
 <html><head><link rel="stylesheet" href="../documentation.css"/><title>Paquetes</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head><body><p>
-			En el Ragnarok hay 2 tipos de paquetes. Los que envía el cliente y los que
+			En el Ragnarok hay 2 tipos de <font color=red><b>Paquetes</b></font>. Los que envía el cliente y los que
 			envía el servidor. A su vez se pueden categorizar en 2 formas diferentes. Los
 			paquetes de tamaño fijo y los paquetes de tamaño variable.
+		</p><p>
+			Los paquetes fijos al igual que los variables empiezan por 2 bytes (1 word), que indica
+			el Id del paquete. Ésto hace que, con el protocolo actual, el máximo de paquetes
+			principales diferentes que podría haber 2<sup>16</sup> (65536). Exceptuando las Ips
+			todos los tipos que se envían son BigEndian al menos que se especifique lo contrario.
+		</p><p>
+			Los paquetes variables son como los fijos, empiezan por el Id del paquete, pero justo
+			después se envía otros 2 bytes (1 word) con la longitud total del paquete (incluyendo
+			el propio Id y Longitudes), es decir, el resto más 4.
+		</p><p>
+			El tamaño de los paquetes de tamaño fijo se puede obtener de unas tablas hechas por
+			otras personas.
 		</p><hr/><p>
 			Vea también: <a href="Receive%20Packets.html">Paquetes Recibidos</a> <a href="Send%20Packets.html">Paquetes Enviados</a>
 		</p><p>

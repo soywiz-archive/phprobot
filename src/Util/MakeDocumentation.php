@@ -1,25 +1,6 @@
 <?php
 	Import('System.Buffer');
 
-/*
-	$xslt = <<<EOD
-
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:output method="html" encoding="iso-8859-1" indent="no" />
-	<xsl:template match="document">
-		<xsl:apply-templates/>
-	</xsl:template>
-	<xsl:template match="k">
-		<a href=""><b><xsl:apply-templates/></b></a>
-	</xsl:template>
-	<xsl:template match="p">
-		<p><xsl:apply-templates/></p>
-	</xsl:template>
-</xsl:stylesheet>
-
-EOD;
-*/
-
 	$DocumentAliases = array();
 
 	function PregReplaceForLinkAliase($Match) {
@@ -28,13 +9,30 @@ EOD;
 
 		$Key = $Match[2];
 
-		while (isset($DocumentAliases[$Key])) $Key = $DocumentAliases[$Key];
+		while (isset($DocumentAliases[$Key])) {
+			if (basename($CurrentFile) == $Key . '.html') {
+				return '<font color=red><b>' . $Match[2] . '</b></font>';
+			}
+			$Key = $DocumentAliases[$Key];
+		}
 
 		if (basename($CurrentFile) == $Key . '.html') {
 			return '<font color=red><b>' . $Match[2] . '</b></font>';
 		} else {
 			return '<a href="' . str_replace(' ', '%20', $Key) . '.html">' . $Match[2] . '</a>';
 		}
+	}
+
+	function MakeDocumentationGetHeader($Description) {
+		return '<html><head><link rel="stylesheet" href="../documentation.css"/><title>' . $Description . '</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head><body>';
+	}
+
+	function MakeDocumentationGetFoot() {
+		return '</body></html>';
+	}
+
+	function MakeDocumentationFormat($Data) {
+		return preg_replace_callback('/(<k>)([^<]*)(<\\/k>)/i', 'PregReplaceForLinkAliase', $Data);
 	}
 
 	function MakeDocumentationParseDocument(SimpleXMLElement $Entry, $Dir) {
@@ -48,33 +46,6 @@ EOD;
 			return;
 		}
 
-		/*
-		$xml = new DomDocument();
-		$xml->loadXML($Entry->asXML());
-		//die($Entry->asXML());
-
-		global $xslt;
-
-		$xsl = new DomDocument();
-		$xsl->loadXML($xslt);
-
-		$proc = new xsltprocessor();
-		$proc->importStyleSheet($xsl);
-		$Data = $proc->transformToXML($xml);
-		*/
-
-		//$Data = SimpleXMLGetChildrenAsXML($Entry);
-		/*
-		$Data = ''; foreach ($Entry as $e1) {
-			foreach ($e1 as $k => $v) {
-				$v = '<b>' . $v[0] . '</b>';
-			}
-			$Data .= $e1->asXML();
-		}
-		*/
-
-		//preg_replace('/<(k)>/i', mixed replacement, mixed subject)
-
 		MakeDir($Dir);
 		$File = $Dir . '/' . $Name . '.html';
 
@@ -82,21 +53,66 @@ EOD;
 
 		$CurrentFile = $File;
 
-		//$Data = preg_replace('/(<k>)([a-z0-9\\x20]*)(<\\/k>)/i', '<a href="\\2">\\2</a>', SimpleXMLGetChildrenAsXML($Entry));
-		$Data = preg_replace_callback('/(<k>)([^<]*)(<\\/k>)/i', 'PregReplaceForLinkAliase', SimpleXMLGetChildrenAsXML($Entry));
-		//$Data = $Entry->asXML();
-
+		$Data = MakeDocumentationFormat(SimpleXMLGetChildrenAsXML($Entry));
 
 		if ($fd = fopen($File, 'wb')) {
-			fwrite($fd, '<html><head><link rel="stylesheet" href="../documentation.css"/><title>' . $Description . '</title><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head>');
-			fwrite($fd, '<body>');
+			fwrite($fd, MakeDocumentationGetHeader($Description));
 			fwrite($fd, $Data);
-			fwrite($fd, '</body></html>');
-
+			fwrite($fd, MakeDocumentationGetFoot());
 			fclose($fd);
 		}
+	}
 
-		//echo "Document: $Name\n";
+	function MakeDocumentationParsePacket(SimpleXMLElement $Entry, $Dir) {
+		global $CurrentFile;
+
+		$IdHex       = '0x' . str_pad(dechex(GetInteger(SimpleXMLKeyValue($Entry, 'id'))), 4, '0', STR_PAD_LEFT);
+		$File        = $Dir . '/' . $IdHex . '.html';
+		$CurrentFile = $File;
+		$Length      = SimpleXMLKeyValue($Entry, 'id');
+		$Server      = SimpleXMLKeyValue($Entry, 'server');
+		$Sender      = SimpleXMLKeyValue($Entry, 'sender');
+		$Description = SimpleXMLKeyValue($Entry, 'shortdescription');
+		$Data        = '';
+
+		//$Data .= "<h2><k>{$IdHex}</k> - $Description</h2>";
+		$Data .= "<h2>{$IdHex} - $Description</h2>";
+		if (strtolower(trim($Sender)) == 'client') {
+			$Data .= "<p><b>Env&iacute;a:</b> Cliente - Servidor (<k>Paquetes Enviados</k>)</p>";
+		} else {
+			$Data .= "<p><b>Env&iacute;a:</b> Servidor - Cliente (<k>Paquetes Recibidos</k>)</p>";
+		}
+
+		$Data .= '<p><b>Par&aacute;metros:</b><br />';
+
+		$Data .= '</p>';
+
+		$Data .= '<p><b>Notas:</b><br />';
+
+		$Data .= '</p>';
+
+		$Data .= '<hr /><p>Volver a: <k>Principal</k> ';
+		switch (strtolower(trim($Server))) {
+			case 'master':
+				$Data .= '<k>Master</k>';
+			break;
+			case 'chara':
+				$Data .= '<k>Character</k>';
+			break;
+			case 'zone':
+				$Data .= '<k>Zone</k>';
+			break;
+		}
+		$Data .= '</p>';
+
+		$Data = MakeDocumentationFormat($Data);
+
+		if ($fd = fopen($File, 'wb')) {
+			fwrite($fd, MakeDocumentationGetHeader($Description));
+			fwrite($fd, $Data);
+			fwrite($fd, MakeDocumentationGetFoot());
+			fclose($fd);
+		}
 	}
 
 	function MakeDocumentation($ProtocolVersion = 0x06, $Language = 'es') {
@@ -104,7 +120,8 @@ EOD;
 
 		$DocumentAliases = array();
 
-		$Path = LUNEA_DATA . '/packets/';
+		$Path     = LUNEA_DATA . '/packets/';
+		$PathHtml = LUNEA_DOCS . '/packets/' . $Language;
 
 		foreach (scandir($Path) as $FileName) {
 			if (strcasecmp(substr($FileName, -4, 4), '.xml') == 0) {
@@ -125,8 +142,12 @@ EOD;
 					switch (strtolower($k)) {
 						case 'document':
 							if (SimpleXMLKeyValue($Entry, 'language') == $Language) {
-								MakeDocumentationParseDocument($Entry, LUNEA_DOCS . '/packets/' . $Language);
+								MakeDocumentationParseDocument($Entry, $PathHtml);
 							}
+						break;
+						case 'packet':
+							MakeDocumentationParsePacket($Entry, $PathHtml);
+							//echo GetInteger(SimpleXMLKeyValue($Entry, 'id')) . "\n";
 						break;
 					}
 				}

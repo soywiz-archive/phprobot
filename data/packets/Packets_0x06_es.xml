@@ -102,7 +102,7 @@
 	
 	<document name="Mail" language="es" shortdescription="Mail">
 		<p>
-			Cada <k>Jugador</k> tiene asociado una dirección de correo. La dirección de correo tiene
+			Cada <k>Jugador</k> tiene asociado una <k>Dirección de Correo</k>. La dirección de correo tiene
 			una longitud máxima de 40 caracteres y es utilizada a la hora de borrar un <k>Personaje</k>.
 		</p>
 		<hr />
@@ -116,7 +116,7 @@
 
 	<document name="Player" language="es" shortdescription="Jugadores">
 		<p>
-			Se entiende por jugador a cada conexión establecida con el Servidor <k>Master</k>, sea
+			Se entiende por <k>Jugador</k> a cada conexión establecida con el Servidor <k>Master</k>, sea
 			ésta un bot o un cliente del ragnarok.
 		</p>
 		<hr />
@@ -128,9 +128,9 @@
 		</p>		
 	</document>
 	
-	<document name="Receive Packets" language="es" shortdescription="Paquetes recibidos">
+	<document name="Receive Packets" language="es" shortdescription="Paquetes Recibidos">
 		<p>
-			Los Paquetes Recibidos son referentes al cliente, los paquetes que recibe el cliente
+			Los <k>Paquetes Recibidos</k> son referentes al cliente, los paquetes que recibe el cliente
 			y que manda el servidor.
 		</p>
 		<hr />
@@ -142,11 +142,40 @@
 		</p>		
 	</document>
 
+	<document name="Send Packets" language="es" shortdescription="Paquetes Enviados">
+		<p>
+			Los <k>Paquetes Enviados</k> son referentes al cliente, los paquetes que envía el cliente
+			y que recibe el servidor.
+		</p>
+		<hr />
+		<p>
+			Vea también: <k>Paquetes</k> <k>Paquetes Recibidos</k>
+		</p>
+		<p>
+			Volver a: <k>Principal</k>
+		</p>		
+	</document>
+	
 	<document name="Packets" language="es" shortdescription="Paquetes">
 		<p>
-			En el Ragnarok hay 2 tipos de paquetes. Los que envía el cliente y los que
+			En el Ragnarok hay 2 tipos de <k>Paquetes</k>. Los que envía el cliente y los que
 			envía el servidor. A su vez se pueden categorizar en 2 formas diferentes. Los
 			paquetes de tamaño fijo y los paquetes de tamaño variable.
+		</p>
+		<p>
+			Los paquetes fijos al igual que los variables empiezan por 2 bytes (1 word), que indica
+			el Id del paquete. Ésto hace que, con el protocolo actual, el máximo de paquetes
+			principales diferentes que podría haber 2<sup>16</sup> (65536). Exceptuando las Ips
+			todos los tipos que se envían son BigEndian al menos que se especifique lo contrario.
+		</p>
+		<p>
+			Los paquetes variables son como los fijos, empiezan por el Id del paquete, pero justo
+			después se envía otros 2 bytes (1 word) con la longitud total del paquete (incluyendo
+			el propio Id y Longitudes), es decir, el resto más 4.
+		</p>
+		<p>
+			El tamaño de los paquetes de tamaño fijo se puede obtener de unas tablas hechas por
+			otras personas.
 		</p>
 		<hr />
 		<p>
@@ -159,8 +188,7 @@
 	
 	<category name="MasterServer" shortdescription="Master Server">
 		<description language="es">
-			<p>This packets
-			</p>
+			<p>Estos</p>
 		</description>
 	</category>
 	
@@ -195,7 +223,7 @@
 		</description>
 	</packet>
 
-	<packet id="0x006a" length="21" server="chara" sender="server" shortdescription="Hubo un fallo al conectar">
+	<packet id="0x006a" length="21" server="master" sender="server" shortdescription="Hubo un fallo al conectar">
 		<entry name="Error"   type="uint8" />
 		<entry name="Unused1" type="stringz" length="20" unused="true" />
 		
