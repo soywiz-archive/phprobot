@@ -35,9 +35,9 @@
 
 	//sleep(10);
 
-	$gb = new TestBot();
+    $gb = new TestBot();
 
-	while (true) {
-		$gb->Check();
-	}
+    while (true) {
+      $gb->Check();
+    }
 ?>

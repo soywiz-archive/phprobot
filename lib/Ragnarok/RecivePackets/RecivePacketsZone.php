@@ -6,7 +6,7 @@
 	// 0073 - Enter Map
 	function RecivePacket0x0073(GenericBot &$Bot, $PId, $Data, $DataRaw) {
 		$Bot->Dump();
-		exit;
+		//exit;
   	}
 
 	// 0081 - Disconnect
