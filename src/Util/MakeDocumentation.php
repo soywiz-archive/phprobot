@@ -63,13 +63,59 @@
 		}
 	}
 
+	function MakeDocumentationParseParameters(SimpleXMLElement $Entries) {
+		$Return = '<table border="1">';
+		foreach ($Entries as $k => $Entry) {
+			if (strtolower($k) == 'entry') {
+				$Type = SimpleXMLKeyValue($Entry, 'type');
+
+				//if ($Type != 'function')
+
+				$Return .= '<tr>';
+				$Return .= '<td width="120" valign="top">';
+				$Return .= SimpleXMLKeyValue($Entry, 'name');
+				$Return .= '</td><td valign="top">';
+
+				$Return .= $Type;
+
+				$Return .= '</td><td valign="top">';
+
+				//if (trim(strtolower($Type)) != 'function') {
+				$Length = SimpleXMLKeyValue($Entry, 'length');
+
+				if ($Length === false) {
+					switch (trim(strtolower($Type))) {
+						case 'uint8':  case 'int8':  $Length = 1; break;
+						case 'uint16': case 'int16': $Length = 2; break;
+						case 'pos24':                $Length = 3; break;
+						case 'uint32': case 'int32': $Length = 4; break;
+						case 'pos40':                $Length = 5; break;
+					}
+				}
+				//}
+
+				$Return .= $Length;
+
+				if (trim(strtolower($Type)) == 'group') {
+					$Return .= '<br /><br />';
+					$Return .= MakeDocumentationParseParameters($Entry);
+				}
+
+				$Return .= '</td>';
+				$Return .= '</tr>';
+			}
+		}
+		$Return .= '</table>';
+		return $Return;
+	}
+
 	function MakeDocumentationParsePacket(SimpleXMLElement $Entry, $Dir) {
 		global $CurrentFile;
 
 		$IdHex       = '0x' . str_pad(dechex(GetInteger(SimpleXMLKeyValue($Entry, 'id'))), 4, '0', STR_PAD_LEFT);
 		$File        = $Dir . '/' . $IdHex . '.html';
 		$CurrentFile = $File;
-		$Length      = SimpleXMLKeyValue($Entry, 'id');
+		$Length      = SimpleXMLKeyValue($Entry, 'length');
 		$Server      = SimpleXMLKeyValue($Entry, 'server');
 		$Sender      = SimpleXMLKeyValue($Entry, 'sender');
 		$Description = SimpleXMLKeyValue($Entry, 'shortdescription');
@@ -77,13 +123,39 @@
 
 		//$Data .= "<h2><k>{$IdHex}</k> - $Description</h2>";
 		$Data .= "<h2>{$IdHex} - $Description</h2>";
+
+		$Data .= '<p><b>Servidor: </b>';
+		switch (strtolower(trim($Server))) {
+			case 'master':
+				$Data .= '<k>Master</k>';
+			break;
+			case 'chara':
+				$Data .= '<k>Character</k>';
+			break;
+			case 'zone':
+				$Data .= '<k>Zone</k>';
+			break;
+		}
+		$Data .= '</p>';
+
 		if (strtolower(trim($Sender)) == 'client') {
 			$Data .= "<p><b>Env&iacute;a:</b> Cliente - Servidor (<k>Paquetes Enviados</k>)</p>";
 		} else {
 			$Data .= "<p><b>Env&iacute;a:</b> Servidor - Cliente (<k>Paquetes Recibidos</k>)</p>";
 		}
 
+		$Data .= '<p><b>Longitud del paquete: </b>';
+		if ($Length == '-') {
+			$Data .= '4 + Variable';
+		} else {
+			$Data .= '2 + ' . $Length;
+		}
+		$Data .= '</p>';
+
 		$Data .= '<p><b>Par&aacute;metros:</b><br />';
+
+		$Data .= MakeDocumentationParseParameters($Entry);
+		// MakeDocumentationParseDocument
 
 		$Data .= '</p>';
 
@@ -108,7 +180,7 @@
 		$Data = MakeDocumentationFormat($Data);
 
 		if ($fd = fopen($File, 'wb')) {
-			fwrite($fd, MakeDocumentationGetHeader($Description));
+			fwrite($fd, MakeDocumentationGetHeader("{$IdHex} - " . $Description));
 			fwrite($fd, $Data);
 			fwrite($fd, MakeDocumentationGetFoot());
 			fclose($fd);

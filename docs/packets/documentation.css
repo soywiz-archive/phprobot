@@ -1,15 +1,15 @@
- body, a, p, ul, il {
- 	font-family: Verdana; font-size: 14px;
- }
- 
- a:link {
- 	color: #2222ff;
- }
- 
- a:visited, a:active {
- 	color: #444499;
- }
- 
- a:hover {
- 	color: red;
- }
+td, body, a, p, ul, il {
+	font-family: Verdana; font-size: 14px;
+}
+
+a:link {
+	color: #2222ff;
+}
+
+a:visited, a:active {
+	color: #444499;
+}
+
+a:hover {
+	color: red;
+}
