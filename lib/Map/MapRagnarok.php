@@ -2,9 +2,13 @@
 	Import('System.Buffer');
 
 	class MapRagnarok extends Map {
+		public $name;
+
 		// Constructor
 		public function __construct($name) {
 			list($name) = explode('.', $name, 2);
+
+			$this->name = $name = strtolower(trim($name));
 
 			// alberta.map.bz2
 
