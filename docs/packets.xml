@@ -1,0 +1,9 @@
+<packet id="0x0081" description="Disconnected from Server">
+	<entry name="error" type="uint8" />
+</packet>
+
+<packet id="0x0073" description="Enter Map">
+	<entry name="tick" type="uint32" />
+	<entry name="position" type="pos24" />
+	<entry name="unused1" type="uint16" unused />
+</packet>
