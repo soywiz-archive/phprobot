@@ -22,7 +22,7 @@ void PATHFIND::check_node(short x, short y, unsigned long g) {
 	long tmp = y_table[y] + x;
 
 	if ((x < 0 || x >= pf_width) || ((y < 0) || (y >= pf_height))) return;
-  	
+
 	if (nodes[tmp].status == NODE_BLANK) {
 		nodes[tmp].status = NODE_OPENED;
 		opened_nodes++;
@@ -30,7 +30,7 @@ void PATHFIND::check_node(short x, short y, unsigned long g) {
 		nodes[tmp].h = get_dist(x, y, now_x, now_y);
 		nodes[tmp].f = g + nodes[tmp].h;
 		insert_heap_element(x, y);
-	} else if ((nodes[tmp].status == NODE_OPENED) && (nodes[tmp].g > g)) {		
+	} else if ((nodes[tmp].status == NODE_OPENED) && (nodes[tmp].g > g)) {
 		nodes[tmp].g = g;
 		nodes[tmp].f = g + nodes[tmp].h;
 	}
@@ -45,14 +45,14 @@ void PATHFIND::close_node(unsigned long element) {
 
 	// Se debe borrar?
 	///*
-	if ((lasty > 0) && (lastx > 0)) check_node(lastx - 1, lasty - 1, lastg);  
+	if ((lasty > 0) && (lastx > 0)) check_node(lastx - 1, lasty - 1, lastg);
 	if ((lasty > 0) && (lastx < (pf_width - 1))) check_node(lastx + 1, lasty - 1, lastg);
-	if ((lasty < (pf_height - 1)) && (lastx > 0)) check_node(lastx - 1, lasty + 1, lastg);  
+	if ((lasty < (pf_height - 1)) && (lastx > 0)) check_node(lastx - 1, lasty + 1, lastg);
 	if ((lasty < (pf_height - 1)) && (lastx < (pf_width - 1))) check_node(lastx + 1, lasty + 1, lastg);
 	//*/
 
 	if (lasty > 0) check_node(lastx, lasty - 1, lastg);
-	if (lasty < (pf_height - 1)) check_node(lastx, lasty + 1, lastg);  
+	if (lasty < (pf_height - 1)) check_node(lastx, lasty + 1, lastg);
 	if (lastx > 0) check_node(lastx - 1, lasty, lastg);
 	if (lastx < (pf_width - 1)) check_node(lastx + 1, lasty, lastg);
 }
@@ -96,13 +96,13 @@ unsigned long PATHFIND::get_best_heap_element(void) {
 
 PATHFIND::PATHFIND(short src_x, short src_y, short dst_x, short dst_y, char *walkarea, int width, int height) {
 	long tmp, element = 0;
-	char goal = 0;	
+	char goal = 0;
 
 	pf_width  = width;
 	pf_height = height;
 
 	if (src_y < 0) src_y = 0; else if (src_y >= pf_height) src_y = pf_height - 1;
-	if (src_x < 0) src_x = 0; else if (src_x >= pf_width)  src_x = pf_width - 1;	
+	if (src_x < 0) src_x = 0; else if (src_x >= pf_width)  src_x = pf_width - 1;
 
 	// allocate memory
 	nodes = (NODE *)malloc(sizeof(NODE) * pf_width * pf_height);
@@ -113,15 +113,15 @@ PATHFIND::PATHFIND(short src_x, short src_y, short dst_x, short dst_y, char *wal
 	// get our y_table to avoid many multiplications
 	for (int yt = 0, val = 0; yt < pf_height; yt++, val += pf_width) y_table[yt] = val;
 
-	// transform the walkarea array to our nodes format	
+	// transform the walkarea array to our nodes format
 	tmp = 0;
 	for (int y = 0; y < pf_height; y++) {
-		for (int x = 0; x < pf_width; x++, tmp++) {		
+		for (int x = 0; x < pf_width; x++, tmp++) {
 			//nodes[tmp].status = (getpixel(walkarea, x, y) == freecol) ? NODE_BLANK : NODE_BLOCKED;
-			nodes[tmp].status = (walkarea[x + y * pf_width]) ? NODE_BLOCKED : NODE_BLANK;
+			nodes[tmp].status = (walkarea[x + y * pf_width] == 1) ? NODE_BLOCKED : NODE_BLANK;
 		}
 	}
-  
+
 	// check our src point
 	if (nodes[y_table[src_y] + src_x].status == NODE_BLOCKED) {
 		free(heap);
@@ -214,16 +214,16 @@ int PATHFIND::next_node(void) {
 	short x, y;
 
 	///*
-	if ((now_y > 0) && (now_x > 0)) check_back_node(now_x - 1, now_y - 1, tmpg, tmp_minh, x, y); // up-left  
-	if ((now_y > 0) && (now_x < (pf_width - 1))) check_back_node(now_x + 1, now_y - 1, tmpg, tmp_minh, x, y); // up-right  
+	if ((now_y > 0) && (now_x > 0)) check_back_node(now_x - 1, now_y - 1, tmpg, tmp_minh, x, y); // up-left
+	if ((now_y > 0) && (now_x < (pf_width - 1))) check_back_node(now_x + 1, now_y - 1, tmpg, tmp_minh, x, y); // up-right
 	if ((now_y < (pf_height - 1)) && (now_x > 0)) check_back_node(now_x - 1, now_y + 1, tmpg, tmp_minh, x, y); // down-left
-	if ((now_y < (pf_height - 1)) && (now_x < (pf_width - 1))) check_back_node(now_x + 1, now_y + 1, tmpg, tmp_minh, x, y); // down-right  		
+	if ((now_y < (pf_height - 1)) && (now_x < (pf_width - 1))) check_back_node(now_x + 1, now_y + 1, tmpg, tmp_minh, x, y); // down-right
 	//*/
 
-	if (now_y > 0) check_back_node(now_x, now_y - 1, tmpg, tmp_minh, x, y); // up  
-	if (now_y < (pf_height - 1)) check_back_node(now_x, now_y + 1, tmpg, tmp_minh, x, y); // down  
-	if (now_x > 0) check_back_node(now_x - 1, now_y, tmpg, tmp_minh, x, y); // left  
-	if (now_x < (pf_width - 1)) check_back_node(now_x + 1, now_y, tmpg, tmp_minh, x, y); // right	
+	if (now_y > 0) check_back_node(now_x, now_y - 1, tmpg, tmp_minh, x, y); // up
+	if (now_y < (pf_height - 1)) check_back_node(now_x, now_y + 1, tmpg, tmp_minh, x, y); // down
+	if (now_x > 0) check_back_node(now_x - 1, now_y, tmpg, tmp_minh, x, y); // left
+	if (now_x < (pf_width - 1)) check_back_node(now_x + 1, now_y, tmpg, tmp_minh, x, y); // right
 
 	now_x = x;
 	now_y = y;
@@ -258,14 +258,14 @@ DLL_EXPORT char *path_get(char *map_data, int map_w, int map_h, int x_src, int y
 	pos *pos_list; int pos_list_count = 0, n, p, d;
 	pos myp;
 	char *retval = "";
-	
+
 	PATHFIND *pf = new PATHFIND(x_dst, y_dst, x_src, y_src, map_data, map_w, map_h);
 
 	if (pf->get_error() == PF_OK) {
-		pos_list = (pos *)malloc(sizeof(pos) * 2500);	
+		pos_list = (pos *)malloc(sizeof(pos) * 2500);
 
 		do {
-			pf->get_actual_node(myp.x, myp.y);			
+			pf->get_actual_node(myp.x, myp.y);
 			pos_list[pos_list_count++] = myp;
 		} while (pf->next_node() == PF_OK);
 
@@ -273,10 +273,10 @@ DLL_EXPORT char *path_get(char *map_data, int map_w, int map_h, int x_src, int y
 		d = 0;
 
 		for (n = 0; n < pos_list_count; n++) {
-			p = pos_list_count - n - 1;			
+			p = pos_list_count - n - 1;
 
 			sprintf(&retval[d], "%i,%i\n", pos_list[p].x, pos_list[p].y);
-			d += strlen(&retval[d]);			
+			d += strlen(&retval[d]);
 		}
 		retval[d] = 0;
 
