@@ -85,6 +85,32 @@
 		// Error fields
 		protected $errorId = false;
 		protected $errorText;
+// ----------------------------------------------------------------------------
+// PROCESS
+// ----------------------------------------------------------------------------
+
+		final private function processMoving() {
+			if (isset($this->lists['Entity']) && is_array($this->lists['Entity'])) {
+				//echo sizeof($this->lists['Entity']) . "\n";
+
+				foreach ($this->lists['Entity'] as $k => $v) {
+					$e = &$this->lists['Entity'][$k];
+					if ($e->moving) {
+						$cp = floor(max(0, min(1, $e->from_time->dist() / $e->to_time_t)) * (sizeof($e->path) - 1));
+						$_x = $e->x; $_y = $e->y;
+						list($e->x, $e->y) = $e->path[$cp];
+
+						// Si ha cambiado de posición "onMoving"
+						if ($_x != $e->x || $_y != $e->y) $this->onMoving($e);
+
+						if ($cp == sizeof($e->path) - 1) {
+							$e->moving = false;
+							$this->onMoveEnd($e);
+						}
+					}
+				}
+			}
+		}
 
 // ----------------------------------------------------------------------------
 // GENERAL
@@ -134,7 +160,11 @@
 				case GB_STEP_CHARA_LOGIN_ERROR:   $this->onCharaLoginError();  break;
 				case GB_STEP_CHARA_LOGIN_SUCCESS: $this->onCharaSelect();      break;
 
-				case GB_STEP_MAP_PROCESS: case GB_STEP_MASTER_PROCESS: case GB_STEP_CHARA_PROCESS:
+				case GB_STEP_MAP_PROCESS:
+					// Proceso de movimiento
+					$this->processMoving();
+
+				case GB_STEP_MASTER_PROCESS: case GB_STEP_CHARA_PROCESS:
 					while ($pk = $this->sock->extractPacket()) {
 						list($p, $d) = $pk;
 						$hex = str_pad(dechex($p), 4, '0', STR_PAD_LEFT);
@@ -253,8 +283,8 @@
 			sendSkillUse($this, $skill->id, min($level, $skill->level_max), $e->id);
 		}
 
-		function say($type, $text, &$to = NULL) {
-			if (isset($from) && !($from instanceof Entity)) throw(new Exception(''));
+		function sayTo($type, $text, &$to = NULL) {
+			if (isset($to) && !($to instanceof Entity)) throw(new Exception(''));
 
 			switch ($type) {
 				case GB_SAY_TYPE_GLOBAL:  break;
@@ -263,6 +293,48 @@
 				case GB_SAY_TYPE_PUBLIC:  break;
 				case GB_SAY_TYPE_PRIVATE: break;
 			}
+		}
+
+		function lookAt(Entity &$e) {
+			$this->lookAtMap($e->x, $e->y);
+		}
+
+		function lookAtMap($x, $y) {
+			$a = get_angle($this->player->x, $this->player->y, $x, $y);
+			if (($z = (-90 - $a)) < 0) $z = 360 + $z;
+			$pos = $z / 45;
+			/* if (($m = $pos - (int)$pos) == 0) { $mz = 0;
+			} else if ($m > 0.5) { $mz = 1;
+			} else { $mz = 2; } */ $mz = 0;
+
+			sendChangeView($this, $mz, round($pos));
+		}
+
+		function say($text, &$to = NULL) {
+			if (isset($to) && !($to instanceof Entity)) throw(new Exception(''));
+
+			sendSay($this, $text, $to);
+		}
+
+		function moveAt($x, $y) {
+			sendMove($this, $x, $y);
+		}
+
+		function moveNear(Entity &$entity, $near = 2) {
+			//$path = $this->map->getPath($entity->x, $entity->y, $this->player->x, $this->player->y);
+			$path = $this->map->getPath($this->player->x, $this->player->y, $entity->x, $entity->y) ;
+
+			if (sizeof($path) > $near) {
+				$pos = $path[$near + 1];
+			} else if (sizeof($path) > 0) {
+				$pos = $path[0];
+			} else {
+				return;
+			}
+
+			echo ': (' . $entity->x . ', ' . $entity->y . ') - (' . $pos[0] . ', ' . $pos[1] . ")\n";
+
+			$this->moveAt($pos[0], $pos[1]);
 		}
 	}
 ?>

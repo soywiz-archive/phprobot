@@ -10,7 +10,7 @@
 		$o->characterList = array();
 
 		foreach ($d['charas'] as $c) {
-			$id = &$c['id']; $z = &new MainPlayer($o, $d['charas'][0]['id'], false);
+			$id = &$c['id']; $z = new MainPlayer($o, $d['charas'][0]['id'], false);
 			$o->characterList[] = $z;
 			foreach ($c as $k => $v) $z->$k = $v;
 		}

@@ -4,6 +4,20 @@
 	class Common {
 	}
 
+	/*
+	function get_angle($x1, $y1, $x2, $y2) {
+		return (($x = $x2 - $x1) != 0) ? ((atan(($y2 - $y1) / $x) * 180) / M_PI) : (($y2 - $y1 > 0) ? -90 : 90);
+	}
+	*/
+
+	function get_angle($x1, $y1, $x2, $y2) {
+		list($dx, $dy) = array($x2 - $x1, $y2 - $y1);
+		if ($dx == 0) return ($dy > 0) ? -90 : 90;
+		$a = -((atan($dy / $dx) * 180) / M_PI);
+		if ($dx < 0) $a += (($dy < 0) ? 180 : -180);
+		return $a;
+	}
+
 	function require_class($className) {
 		//echo "Require... $className\n";
 		require_once(PATH_SYSTEM . '/class.' . $className . '.php');

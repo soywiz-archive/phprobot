@@ -1,6 +1,11 @@
 <?php
 	if (!defined('GB_SYSTEM_LODADED')) die('Se requiere el sistema de GenericBot');
 
+	require_once(dirname(__FILE__) . '/system.php');
+
+	require_class('Exception');
+	require_class('Timer');
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -23,14 +28,14 @@
 				$this->o  = $o;
 			}
 
-			$this->set_on_list(true);
+			$this->setOnList(true);
 		}
 
 		function disappear() {
-			$this->set_on_list(false);
+			$this->setOnList(false);
 		}
 
-		function set_on_list($flag) {
+		function setOnList($flag) {
 			if ($this->register) {
 				if ($flag) {
 					// Añade a la lista de visibles y de memorizados
@@ -83,11 +88,47 @@
 		public $_name;
 		//protected $_name;
 
+		// Movimiento de la entidad
+		public $path = array();
+		public $moving = false;
+		public $from_x = 0;
+		public $from_y = 0;
+		public $from_time;
+		public $to_x = 0;
+		public $to_y = 0;
+		public $to_time_t;
+
 		public $x;
 		public $y;
 		public $view_class;
 		public $group;
 		public $speed;
+
+		function setXY($x, $y) {
+			$this->to_x = $this->from_x = $this->x = $x;
+			$this->to_y = $this->from_y = $this->y = $y;
+		}
+
+		function move($from_x = NULL, $from_y = NULL, $to_x, $to_y, $speed = NULL) {
+			if (!isset($from_x)) $from_x = $this->x;
+			if (!isset($from_y)) $from_y = $this->y;
+			if (!isset($speed))  $speed  = $this->speed;
+
+			$this->path = (isset($this->o) && isset($this->o->map)) ? $this->o->map->getPath($from_x, $from_y, $to_x, $to_y) : array();
+
+			$this->from_time = new Timer();
+			$this->to_time_t = ($speed * sizeof($this->path));
+			$this->moving    = true;
+			$this->from_x    = $this->x = $from_x;
+			$this->from_y    = $this->y = $from_y;
+			$this->to_x      = $to_x;
+			$this->to_y      = $to_y;
+			$this->to_y      = $to_y;
+
+			if (isset($this->o)) $this->o->onMoveStart($this);
+
+			//$this->trace(); exit; // Debug
+		}
 
 		function __destruct() {
 			if ($this->register) {
@@ -142,7 +183,7 @@
 					break;
 				}
 
-				return $this->$name;
+				return isset($this->$name) ? $this->$name : false;
 			}
 		}
 

@@ -22,12 +22,12 @@
 		'group', 'speed', 'base_exp', 'zeny', 'job_exp', 'job_level', 'option', 'karma',
 		'manner', 'status_points', 'walk_speed', 'class', 'hair_type', 'weapon', 'base_level',
 		'skill_points', 'head_bottom', 'shield', 'head_top', 'head_mid', 'hair_color',
-		'clothes_color', /*'name',*/ 'str', 'agi', 'vit', 'int', 'dex', 'luk') as $p) {
+		'clothes_color', 'name', 'str', 'agi', 'vit', 'int', 'dex', 'luk') as $p) {
 			$o->player->$p = $z->$p;
 		}
 		//$o->player->trace();
 
-		list($o->player->x, $o->player->y) = $d['pos'];
+		$o->player->setXY($d['pos'][0], $d['pos'][1]);
 
 		// Mapa Cargado correctamente
 		sendMapLoaded($o);
@@ -117,6 +117,7 @@
 		$names    = &$o->lists['names'];
 		$names_id = &$o->lists['names_id'];
 		$e        = &$o->lists['Entity'][$id];
+
 		$monster_names = &$o->lists['monster_names'];
 
 		$names[$id] = $name;
@@ -228,10 +229,22 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+	// 008d - Global Message (From Other)
+	function parse_recv_008d(GenericBot &$o, $p, $d) {
+		$d = parse_str_packet($d, 'a[id;text]lz[rest]');
+
+		$entity = &Entity::getEntityByIdCreate($o, $d['id']);
+
+		list($from, $message) = explode(' : ', $d['text'], 2);
+
+		$o->onSay(GB_SAY_TYPE_PUBLIC, $message, $entity, $from);
+	}
+
 	// 008e - Global Message
 	function parse_recv_008e(GenericBot &$o, $p, $d) {
 		$d = parse_str_packet($d, 'a[text]z[rest]');
-		echo "::" . $d['text'] . "\n";
+		//echo "::" . $d['text'] . "\n";
+		$o->onSay(GB_SAY_TYPE_GLOBAL, $d['text']);
 	}
 
 	// 009c - Unit Look
@@ -359,8 +372,9 @@
 	// 016f - Guild Notice
 	function parse_recv_016f(GenericBot &$o, $p, $d) {
 		$d = parse_str_packet($d, 'a[text1;text2]z[60]z[60]');
-		echo "Guild Topic:  " . $d['text1'] . "\n";
-		echo "Guild Notice: " . $d['text2'] . "\n";
+		$o->onSay(GB_SAY_TYPE_GUILD, $d['text1']);
+		$o->onSay(GB_SAY_TYPE_GUILD, $d['text2']);
+		//echo "Guild Topic:  " . $d['text1'] . "\n"; echo "Guild Notice: " . $d['text2'] . "\n";
 	}
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -373,7 +387,7 @@
 	function parse_recv_0078_0079(GenericBot &$o, $p, $d) {
 		$entity = Entity::getEntityByIdCreate($o, $d['id']);
 
-		list($entity->x, $entity->y) = $d['pos'];
+		$entity->setXY($d['pos'][0], $d['pos'][1]);
 
 		foreach (array('speed', 'opt1', 'opt2', 'option', 'view_class', 'hair', 'weapon', 'head_bottom',
 		'shield', 'head_top', 'head_mid', 'hair_color', 'clothes_color', 'head_dir',
@@ -406,17 +420,20 @@
 	// 007b - Unit Move
 	function parse_recv_007b(GenericBot &$o, $p, $d) {
 		$d = parse_str_packet($d, 'a[id;speed;opt1;opt2;option;view_class;hair;weapon;shield;head_bottom;tick;head_top;head_mid;hair_color;clothes_color;head_dir;guild_id;emblem_id;manner;karma;sex;pos_m;max_level]lwwwwwwwwwlwwwwwllwbbqb-b-b-w');
-		/*
-		$d['pos'] = array($d['pos_m'][0], $d['pos_m'][1]);
-		$d['moving'] = true;
-		$d['moving_p'] = call_user_func_array('map_get_path', $d['pos_m']);
+		$pm = &$d['pos_m'];
 
+		$entity = &Entity::getEntityByIdCreate($o, $d['id']);
 
-		$moving_list[$d['id']] = getMTime();
+		foreach (array('speed', 'opt1', 'opt2', 'option', 'view_class', 'hair', 'weapon', 'shield',
+		'head_bottom', 'tick', 'head_top', 'head_mid', 'hair_color', 'clothes_color', 'head_dir',
+		'manner', 'karma', 'sex', 'max_level') as $k) $entity->$k == $d[$k];
 
-		__update_entities($d['id'], $d, $d['view_class']);
-		ia_moving($d['id']);
-		*/
+		$entity->setXY($d['pos_m'][0], $d['pos_m'][1]);
+
+		//$entity->emblem = &Emblem::getEmblemByIdCreate($o, $d['emblem_id']);
+		//$entity->guild  = &Guild::getGuildByIdCreate($o, $d['guild_id']);
+
+		$entity->move($pm[0], $pm[1], $pm[2], $pm[3], $d['speed']);
 	}
 
 	// 0087 - You Move

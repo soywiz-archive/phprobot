@@ -109,14 +109,6 @@
 		}
 
 	}
-	class test {
-		function __construct() { }
-
-		function test($a, $b) {
-			echo "$a, $b\n";
-		}
-	}
-
 	/*
 
 	$o = new test();
