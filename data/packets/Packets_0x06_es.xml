@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-15" ?>
-<packets protocolVersion="0x02">
+<packets protocolVersion="0x06">
 	<document name="Jugador" alias="Player" language="es" />
 	<document name="Jugadores" alias="Jugador" language="es" />
-	<document name="Cuenta de Correo" alias="Mail" language="es" />
+	<document name="Dirección de Correo" alias="Mail" language="es" />
+	<document name="Cuentas" alias="Accounts" language="es" />
+	<document name="Principal" alias="Main" language="es" />
+	<document name="Personaje" alias="PlayerCharacter" language="es" />
+	<document name="Personajes" alias="Personaje" language="es" />
+	<document name="Mapas" alias="Maps" language="es" />
+	<document name="Tabla de Contenidos" alias="Contents" language="es" />
 
 	<document name="Main" language="es" shortdescription="Introducción">
 		<p>
@@ -17,11 +23,92 @@
 		</p>
 		<p>
 			Las <k>Cuentas</k> de los <k>Jugadores</k> tienen un <k>Nombre</k> y una <k>Contraseña</k> de 24 caracteres
-			de longitud como mucho. Y el nombre de una <k>Cuenta de Correo</k> de una longitud máxima de 40 caracteres.
+			de longitud como mucho. Y el nombre de una <k>Dirección de Correo</k> de una longitud máxima de 40 caracteres.
 			Además se registra la fecha del último acceso del usuario a la cuenta.
 			Cada <k>Jugador</k> tiene un <k>Account Id</k>, y dispone de 3, 5 o 9 <k>Personajes</k> según el
 			servidor. Cada <k>Jugador</k> tiene un <k>Id</k> asociado y está enlazado a la cuenta de un jugador.
 		</p>
+		<hr />
+		<p>
+			Vea también: <k>Tabla de Contenidos</k>
+		</p>
+	</document>
+
+	<document name="Master" language="es" shortdescription="Master Server">
+		<p>
+			El servidor <k>Master</k> es el encargado de loguear al usuario en todos sus
+			<k>Character</k> servers.
+		</p>
+		<hr />
+		<p>
+			El servidor tiene una serie de paquetes asociados:<br />
+			<ul>
+				<li>
+			</ul>
+		</p>	
+		<hr />
+		<p>
+			Vea también: <k>Zone</k> <k>Character</k>
+		</p>	
+		<p>
+			Volver a: <k>Principal</k>
+		</p>		
+	</document>
+
+	<document name="Character" language="es" shortdescription="Character Server">
+		<p>
+			El servidor <k>Character</k> es el encargado de mostrar los <k>Personajes</k>
+		</p>
+		<hr />
+		<p>
+			Vea también: <k>Master</k> <k>Zone</k>
+		</p>
+		<p>
+			Volver a: <k>Principal</k>
+		</p>
+	</document>
+
+	<document name="Zone" language="es" shortdescription="Zone Server">
+		<p>
+			El servidor <k>Zone</k> es el encargado de mover uno o varios
+			<k>Mapas</k>, enviar la información de lo que pasa a todos los <k>Jugadores</k>
+			que estén en ese mapa y reaccionar ante las acciones que realicen.		
+		</p>
+		<hr />
+		<p>
+			Vea también: <k>Master</k> <k>Character</k>
+		</p>
+		<p>
+			Volver a: <k>Principal</k>
+		</p>		
+	</document>
+	
+	<document name="Mail" language="es" shortdescription="Mail">
+		<p>
+			Cada <k>Jugador</k> tiene asociado una dirección de correo. La dirección de correo tiene
+			una longitud máxima de 40 caracteres y es utilizada a la hora de borrar un <k>Personaje</k>.
+		</p>
+		<hr />
+		<p>
+			Vea también: <k>Cuentas</k>
+		</p>
+		<p>
+			Volver a: <k>Principal</k>
+		</p>		
+	</document>
+
+	<document name="Player" language="es" shortdescription="Jugadores">
+		<p>
+			Se entiende por jugador a cada conexión establecida con el Servidor <k>Master</k>, sea
+			ésta un bot o un cliente del ragnarok.
+		</p>
+		<hr />
+		<p>
+			Vea también: <k>Cuentas</k> <k>Mail</k>
+		</p>
+		<p>
+			Volver a: <k>Principal</k>
+		</p>		
 	</document>
 	
 	<category name="MasterServer" shortdescription="Master Server">
