@@ -2,6 +2,6 @@
 	Import('Entity.Entity');
 
 	class EntityPortal extends Entity {
-		private SetType() { parent::SetType(EntityType::PORTAL); }
+		protected function SetType($Type = EntityType::PORTAL) { parent::SetType($Type); }
 	}
 ?>

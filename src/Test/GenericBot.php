@@ -21,6 +21,13 @@
 		}
 
 		function OnTick() {
+			//echo 'tick';
+		}
+
+		function OnCharaSelect(EntityList &$EntityList) {
+			print_r($EntityList->GetListBySimilarName('Test'));
+			$this->CharaSelect();
+			exit;
 		}
 	}
 

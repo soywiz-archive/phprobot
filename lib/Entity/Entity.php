@@ -1,28 +1,39 @@
 <?php
 	Import('Ragnarok.Status');
-	Import('Entity.EntityType');
+	Import('Ragnarok.EntityList');
 
 	class Entity {
 		public $EntityList;
 		public $Id;
 		public $Name;
 		public $Map;
+		public $MapName;
 		public $Position;
 		public $Sex        = Sex::UNKNOWN;
 		public $Visible    = false;
 		public $Type;
 
-		private SetType() { parent::SetType(EntityType::UNKNOWN); }
-		private SetName() { $this->EntityList->Update($this); }
+		protected function SetType()      { $this->Type = EntityType::UNKNOWN; }
+		protected function SetName($Name) { $this->Name = $Name; $this->EntityList->Update($this); }
 
-		function __construct(EntityList &$EntityList) {
-			$this->SetType();
+		protected function EntityInit(EntityList &$EntityList) {
 			$this->EntityList = &$EntityList;
+			$this->SetType();
+
 			$EntityList->Register($this);
 		}
 
+		protected function EntityDestroy() {
+			if (isset($this->EntityList)) $this->EntityList->Unregister($this);
+		}
+
+		function __construct(EntityList &$EntityList, $Id) {
+			$this->Id = $Id;
+			$this->EntityInit($EntityList);
+		}
+
 		function __destruct() {
-			$this->EntityList->Unregister($this);
+			$this->EntityDestroy();
 		}
 	}
 

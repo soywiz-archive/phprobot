@@ -4,37 +4,38 @@
 	Import('Ragnarok.SendPackets.*');
 	Import('Ragnarok.RecivePackets.*');
 	Import('Ragnarok.Server');
+	Import('Ragnarok.EntityList');
 	Import('System.Ragnarok');
 
 	abstract class GenericBot extends EntityMoveablePlayerMain {
-		public $SocketPacket;
-		public $ConnectionStep;
-		public $ConnectionStatus;
-		public $ConnectionServer;
+		public  $SocketPacket;
+		public  $ConnectionStep;
+		public  $ConnectionStatus;
+		public  $ConnectionServer;
 
-		public $StepCallback;
-		public $StepCallbackParameters;
-		public $StepCallbackQueue;
+		public  $StepCallback;
+		public  $StepCallbackParameters;
+		public  $StepCallbackQueue;
 
 		private $WaitMilliseconds;
 
-		public $ClientCode               = 0x14;
-		public $ClientProtocolVersion    = 0x02;
+		public  $ClientCode               = 0x14;
+		public  $ClientProtocolVersion    = 0x02;
 
-		const SERVER_NONE                = 0;
-		const SERVER_MASTER              = 1;
-		const SERVER_CHARA               = 2;
-		const SERVER_ZONE                = 3;
+		const   SERVER_NONE                = 0;
+		const   SERVER_MASTER              = 1;
+		const   SERVER_CHARA               = 2;
+		const   SERVER_ZONE                = 3;
 
-		const STATUS_OK                  = 0;
-		const STATUS_ERROR               = 1;
+		const   STATUS_OK                  = 0;
+		const   STATUS_ERROR               = 1;
 
-		public $IdLogin1                 = 0x00000000;
-		public $IdLogin2                 = 0x00000000;
+		public  $IdLogin1                 = 0x00000000;
+		public  $IdLogin2                 = 0x00000000;
 
-		public $DateLastLogin            = '';
+		public  $DateLastLogin            = '';
 
-		public $ServerCharaList          = array();
+		public  $ServerCharaList          = array();
 
 		function __construct() {
 			$this->ConnectionServer  = self::SERVER_NONE;
@@ -43,6 +44,8 @@
 			$this->StepCallbackQueue = array();
 			$this->WaitMilliseconds  = 0;
 			$this->SetStepCallBack('OnBegin');
+
+			$this->EntityInit(new EntityList());
 		}
 
 		// Set information
@@ -139,6 +142,22 @@
 			SendCharaLogin($this);
 
 			$this->IdAccount2 = GetR32($this->SocketPacket->Extract(4));
+		}
+
+		public function CharaSelect($Chara) {
+			if (!($Chara instanceof Entity)) {
+				$List = $this->ServerCharaList->GetListById();
+				if (isset($List[$Chara])) {
+					$Chara = &$List[$Chara];
+				} else {
+					$Chara = $EntityList->GetListBySimilarName($Chara)
+				}
+			}
+
+			// $Chara instanceof Entity
+			if (!($Chara instanceof Entity)) {
+				throw(new Exception('No se pudo elegir el character "' . $Chara . '"'));
+			}
 		}
 
 		public function Disconnect() {

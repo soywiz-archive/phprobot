@@ -24,9 +24,19 @@ R 0071 <charactor ID>.l <map name>.16B <ip>.l <port>.w
 
 	// 006b - Recieved characters from Game Login Server
 	function RecivePacket0x006b(GenericBot &$Bot, $PId, $Data, $DataRaw) {
-		print_r($Data);
-		$Bot->SetStepCallBack('OnCharaSelect');
-		exit;
+		$EntityList = new EntityList();
+
+		$CharaList = array();
+		foreach ($Data['Charas'] as $Chara) {
+			//print_r($Chara);
+			$Entity = new EntityMoveablePlayerMain($EntityList, $Chara['Id']);
+			foreach ($Chara as $k => $v) $Entity->$k = $v;
+			$Entity->Visible = true;
+		}
+
+		Bot->ServerCharaList = &$EntityList;
+
+		$Bot->SetStepCallBack('OnCharaSelect', $EntityList);
   	}
 
   	// 006c - Failed to Select Character

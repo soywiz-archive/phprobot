@@ -86,7 +86,7 @@
 			<entry name="Class"        type="uint16" />
 			<entry name="HairType"     type="uint16" />
 			<entry name="Weapon"       type="uint16" />
-			<entry name="BaseLevel"    type="uint16" />
+			<entry name="LevelBase"    type="uint16" />
 			<entry name="PointsSkill"  type="uint16" />
 			<entry name="HeadBottom"   type="uint16" />
 			<entry name="Shield"       type="uint16" />
