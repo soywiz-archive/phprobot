@@ -180,6 +180,13 @@
 					RelativePath=".\grf\zlib\zutil.c">
 				</File>
 			</Filter>
+			<Filter
+				Name="GPattern"
+				Filter="">
+				<File
+					RelativePath=".\gpattern\gpattern.c">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -233,6 +240,13 @@
 				</File>
 				<File
 					RelativePath=".\grf\zlib\zutil.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="GPattern"
+				Filter="">
+				<File
+					RelativePath=".\gpattern\gpattern.h">
 				</File>
 			</Filter>
 		</Filter>
