@@ -18,22 +18,26 @@
 
     define('MW_FRAME',               1001);
 
-	$mainwin = wb_create_window(NULL, 101, 'Lunea', WBC_CENTER, WBC_CENTER, 320, 240, WBC_VISIBLE, 0);
+	$mainwin = wb_create_window(NULL, 101, 'Lunea', WBC_CENTER, WBC_CENTER, 320, 240, WBC_VISIBLE);
+	//$mainwin = wb_create_window(NULL, PopupWindow, APPNAME, WBC_CENTER, WBC_CENTER, 300, 200, WBC_NOTIFY | WBC_DBLCLICK | WBC_MOUSEDOWN | WBC_MOUSEUP | WBC_MOUSEMOVE, 0);
+	wb_set_image($mainwin, dirname(dirname(__FILE__)) . '/bin/lunea.ico');
+	wb_set_visible($mainwin, true);
 
-    $mapwin = wb_create_window(NULL, PopupWindow, "Map", WBC_CENTER, WBC_CENTER, 200, 200, WBC_INVISIBLE);
+    //$mapwin = wb_create_window(NULL, PopupWindow, "Map", WBC_CENTER, WBC_CENTER, 200, 200, WBC_INVISIBLE | WBC_NOTIFY | WBC_DBLCLICK | WBC_MOUSEDOWN | WBC_MOUSEUP | WBC_MOUSEMOVE, 0);
+    $mapwin = wb_create_window(NULL, PopupWindow, "Map", WBC_CENTER, WBC_CENTER, 200, 200, WBC_INVISIBLE | WBC_NOTIFY | WBC_MOUSEDOWN | WBC_MOUSEUP, 0);
+    wb_set_visible($mapwin, false);
     $mapwinframe = wb_create_control($mapwin, Frame, '', 0, 0, 50, 50, 101, WBC_IMAGE);
 	wb_set_handler($mapwin, 'process_map');
-
-	wb_set_image($mainwin, dirname(dirname(__FILE__)) . '/bin/lunea.ico');
 	wb_set_image($mapwin, dirname(dirname(__FILE__)) . '/bin/lunea.ico');
+
 
 	$Box = wb_create_control($mainwin, EditBox, "", 0, 0, 313, 213, IDC_RESULT, WBC_VISIBLE | WBC_ENABLED | WBC_LINES);
 
 	$mainmenu = wb_create_control($mainwin, Menu, array(
 	"&File",
-		array(ID_SELECT,	"Select &Bot...\tCtrl+B", "", "", "Ctrl+B"),
+		array(ID_SELECT,	"Select &Bot...\tCtrl+B", '', "", "Ctrl+B"),
 		null,
-		//array(IDCLOSE,		"E&xit\tAlt+F4", "", PATH_RES . "menu_exit.bmp"),
+		//array(IDCLOSE,		"E&xit\tAlt+F4", '', PATH_RES . "menu_exit.bmp"),
 		array(IDCLOSE,		"E&xit\tAlt+F4", '', ''),
 	"&View",
 		array(ID_VIEW_MAP,	"&Map...\tCtrl+M", '', '', 'Ctrl+M'),
@@ -52,11 +56,14 @@
     //wb_create_timer($mainwin, ID_APP_TIMER, 1000);
 	wb_main_loop();
 
-	function process_main($window, $id) {
+	function process_main($window, $id, $ctrl = 0, $lparam = 0, $lparam2 = 0) {
 		global $Bot;
 		global $Box;
 
-		switch($id) {
+		switch ($id) {
+			case 0:
+				echo "$ctrl, $lparam, $lparam2\n";
+			break;
 			case ID_APP_TIMER:
 				// Show the current time in hours, minutes and seconds
 				//wb_set_text($window, date("h:i:s A"));
@@ -98,11 +105,21 @@
 		}
 	}
 
-	function process_map($window, $id) {
+	function process_map($window, $id, $ctrl = 0, $lparam = 0, $lparam2 = 0) {
 		global $Bot;
 		global $Box;
 
 		switch($id) {
+			case 0:
+				$left = ($lparam & WBC_LBUTTON);
+				$down = ($lparam & WBC_MOUSEDOWN);
+				$x = $lparam2 & 0xFFFF;
+				$y = ($lparam2 & 0xFFFF0000) >> 16;
+
+				if ($down && $left) {
+					echo "$x, $y\n";
+				}
+			break;
 			case IDCLOSE:
 				map_show(false);
 			break;
