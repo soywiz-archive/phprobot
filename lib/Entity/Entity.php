@@ -52,7 +52,7 @@
 		protected function __ListAcquire($List) {
 			$Return = array();
 			foreach ($List as $v) {
-				$Return[$v] = &$this->$v;
+				$Return[$v] = $this->$v;
 				//$this->$v   = null;
 				$this->$v   = '{' . $v . '}';
 			}
@@ -60,7 +60,7 @@
 		}
 
 		protected function __ListRelease($List) {
-			foreach ($List as $k => $v) $this->$k = &$v;
+			foreach ($List as $k => $v) $this->$k = $v;
 		}
 	}
 

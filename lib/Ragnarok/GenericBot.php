@@ -67,7 +67,6 @@
 			$this->WaitMilliseconds  = 0;
 			$this->ItemList          = new ItemList();
 			$this->Cart              = new ItemList();
-			$this->Entities          = new EntityList();
 			$this->SetStepCallBack('OnBegin');
 
 			$this->EntityInit(new EntityList());
@@ -196,6 +195,14 @@
 			// $Chara instanceof Entity
 			if (!($Chara instanceof Entity)) {
 				throw(new Exception('No se pudo elegir el character "' . $Chara . '"'));
+			}
+
+			foreach ($Chara as $k => $v) {
+				if (!isset($v) || !@strlen($v)) continue;
+				if ($k == 'EntityList') continue;
+				if ($k == 'Id') continue;
+				if ($k == 'Sex') continue;
+				$this->$k = $v;
 			}
 
 			SendCharaSelect($this, $Chara->Position);

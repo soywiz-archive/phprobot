@@ -586,11 +586,61 @@ kind of cart, weight and max weight.
 	</packet>
 
 	<packet id="0x01d9" length="53" server="zone" sender="server" shortdescription="Unit Connected">
-		<!-- TODO !-->
+		<entry name="Id"            type="uint32" />
+		<entry name="Speed"         type="uint16" />
+		<entry name="Option1"       type="uint16" />
+		<entry name="Option2"       type="uint16" />
+		<entry name="Option"        type="uint16" />
+		<entry name="ViewClass"     type="uint16" />
+		<entry name="HairType"      type="uint16" />
+		<entry name="Weapon"        type="uint16" />
+		<entry name="HeadBottom"    type="uint16" />
+		<entry name="Shield"        type="uint16" />
+		<entry name="HeadTop"       type="uint16" />
+		<entry name="HeadMiddle"    type="uint16" />
+		<entry name="HairColor"     type="uint16" />
+		<entry name="ClothesColor"  type="uint16" />
+		<entry name="HeadDirection" type="uint16" />
+		<entry name="GuildId"       type="uint32" />
+		<entry name="EmblemId"      type="uint32" />
+		<entry name="Manner"        type="uint16" />
+		<entry name="Karma"         type="uint8" />
+		<entry name="Sex"           type="uint8" />
+		<entry name="Position"      type="pos24" />
+		<entry name="Unused1"       type="uint16" unused="true" />
+		<entry name="Status"        type="uint8" />
 	</packet>
 
-	<packet id="0x01da" length="60" server="zone" sender="server" shortdescription="Unit Moved">
+	<packet id="0x01da" length="58" server="zone" sender="server" shortdescription="Unit Moved">
+		<!-- lwwwwwwwwwlwwwwwllwbbqb-b-b-w !-->
 		<!-- TODO !-->
+		<entry name="Id"            type="uint32" />
+		<entry name="Speed"         type="uint16" />
+		<entry name="Option1"       type="uint16" />
+		<entry name="Option2"       type="uint16" />
+		<entry name="Option"        type="uint16" />
+		<entry name="ViewClass"     type="uint16" />
+		<entry name="HairType"      type="uint16" />
+		<entry name="Weapon"        type="uint16" />
+		<entry name="Shield"        type="uint16" />
+		<entry name="HeadBottom"    type="uint16" />
+		<entry name="Tick"          type="uint32" />
+		<entry name="HeadTop"       type="uint16" />
+		<entry name="HeadMiddle"    type="uint16" />
+		<entry name="HairColor"     type="uint16" />
+		<entry name="ClothesColor"  type="uint16" />
+		<entry name="HeadDirection" type="uint16" />
+		<entry name="GuildId"       type="uint32" />
+		<entry name="EmblemId"      type="uint32" />
+		<entry name="Manner"        type="uint16" />
+		<entry name="Karma"         type="uint8"  />
+		<entry name="Sex"           type="uint8"  />
+		<entry name="Position"      type="pos24"  />
+		<entry name="Unused1"       type="uint8" unused="true" />
+		<entry name="Unused2"       type="uint8" unused="true" />
+		<entry name="Unused3"       type="uint8" unused="true" />
+		<entry name="Status"        type="uint8"  />
+		<entry name="Level"         type="uint16" />
 	</packet>
 
 	<packet id="0x01e1" length="28" server="zone" sender="server" shortdescription="Spirit Spheres (2)">

@@ -5,8 +5,12 @@
 
 	import('Winbinder.winbinder');
 
-	define('ID_APP_TIMER', 1001);
-	define('IDC_RESULT',   1002);
+	$cmd = 1001;
+	define('ID_APP_TIMER', $cmd++);
+	define('IDC_RESULT',   $cmd++);
+	define('ID_SELECT',    $cmd++);
+	define('ID_WEBSITE',   $cmd++);
+	define('ID_ABOUT',     $cmd++);
 
 	$mainwin = wb_create_window(NULL, 101, 'Lunea', WBC_CENTER, WBC_CENTER, 320, 240, WBC_VISIBLE, 0);
 	wb_set_image($mainwin, dirname(dirname(__FILE__)) . '/bin/lunea.ico');
@@ -14,6 +18,18 @@
 	//wb_create_window(NULL, PopupWindow, "Hello world!", 480, 320);
 
 	$Box = wb_create_control($mainwin, EditBox, "", 0, 0, 313, 213, IDC_RESULT, WBC_VISIBLE | WBC_ENABLED | WBC_LINES);
+
+	$mainmenu = wb_create_control($mainwin, Menu, array(
+	"&File",
+		array(ID_SELECT,	"Select &Bot...\tCtrl+B", "", "", "Ctrl+B"),
+		null,
+		array(IDCLOSE,		"E&xit\tAlt+F4", "", PATH_RES . "menu_exit.bmp"),
+	"&Help",
+		array(ID_WEBSITE,	"&Web site..."),
+		null,
+		array(ID_ABOUT,		"&About...", "", PATH_RES . "menu_help.bmp"),
+
+	), $mainwin);
 
 	wb_set_handler($mainwin, 'process_main');
     wb_create_timer($mainwin, ID_APP_TIMER, 50);
@@ -48,6 +64,10 @@
 					echo wb_send_message($Box, 0xF0B0, 0, 0);
 				}
 			break;
+			case ID_WEBSITE:
+				if (!wb_exec("http://phprobot.sourceforge.net/"))
+					wb_message_box($window, "Problem opening web site.");
+				break;
 			case IDCLOSE:
 				wb_destroy_window($window);
 			break;

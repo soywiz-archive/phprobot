@@ -11,12 +11,15 @@
 		$Bot->Map      = new MapRagnarok($Bot->ServerZone->MapName);
 
 		SendZoneLoaded($Bot);
+		echo "ID:              " . $Bot->Id . "\n";
 		SendZoneGetEntityName($Bot, $Bot->Id);
   	}
 
+	// 0078_0079 - Unit Exists/Enteres
 	function RecivePacket0x0078_0079(GenericBot &$Bot, $PId, $Data, $DataRaw) {
 		$Entity = $Bot->EntityList->GetEntityByIdCreate($Data['Id']);
 		foreach ($Data as $k => $v) $Entity->$k = $v;
+		//$Bot->Dump();
 	}
 
 	// 0078 - Unit Exists
@@ -29,10 +32,30 @@
 		RecivePacket0x0078_0079($Bot, $PId, $Data, $DataRaw);
 	}
 
+	// 007b - Unit Move
+	function RecivePacket0x007b(GenericBot &$Bot, $PId, $Data, $DataRaw) {
+	}
+
 	// 0081 - Disconnect
 	function RecivePacket0x0081(GenericBot &$Bot, $PId, $Data, $DataRaw) {
 		$Bot->Disconnect();
   	}
+
+	// 008d - Global Message (From Other)
+	function RecivePacket0x008d(GenericBot &$Bot, $PId, $Data, $DataRaw) {
+		list($Name, $Text) = explode(' : ', $Data['Text']);
+		// $Bot->EntityList->GetEntityByIdCreate($Data['Id']);
+		$Entity = new Entity(null, -1);
+		$Entity->IdAccount = $Data['Id'];
+		$Entity->Name      = $Name;
+		//$Entity->Dump();
+		$Bot->SetStepCallBack(
+			'OnZoneSay',
+			GenericBot::SPEECH_GLOBAL,
+			$Entity,
+			$Text
+		);
+	}
 
 	// 008e - Global Message
 	function RecivePacket0x008e(GenericBot &$Bot, $PId, $Data, $DataRaw) {
@@ -158,7 +181,7 @@
 
 	// 0119 - Unit Status (Freeze, Poison, ...)
 	function RecivePacket0x0119(GenericBot &$Bot, $PId, $Data, $DataRaw) {
-		$Entity          = $Bot->Entities->GetEntityByIdCreate($Data['Id']);
+		$Entity          = $Bot->EntityList->GetEntityByIdCreate($Data['Id']);
 		$Entity->Option1 = $Data['Option1'];
 		$Entity->Option2 = $Data['Option2'];
 		$Entity->Option  = $Data['Option'];
@@ -189,9 +212,19 @@
 		}
 	}
 
+	// 01da - Unit Move : 007B
+	function RecivePacket0x01da(GenericBot &$Bot, $PId, $Data, $DataRaw) {
+		RecivePacket0x007b($Bot, $PId, $Data, $DataRaw);
+	}
+
 	// 01d7 - Weapon / Shield Display
 	function RecivePacket0x01d7(GenericBot &$Bot, $PId, $Data, $DataRaw) {
 		// TODO
+	}
+
+	// 01d8 - Unit Exists : 0078
+	function RecivePacket0x01d8(GenericBot &$Bot, $PId, $Data, $DataRaw) {
+		RecivePacket0x0078_0079($Bot, $PId, $Data, $DataRaw);
 	}
 
 	// 01ee - Inventory Items List : 00A3
@@ -201,14 +234,6 @@
 
 
 /*
-	// 00bd - Your Status Info (Calculated)
-	function parse_recv_00bd(GenericBot &$o, $p, $d) {
-		$d = parse_str_packet($d, 'a[status_points;str;str_b;agi;agi_b;vit;vit_b;int;int_b;dex;dex_b;luk;luk_b;atk;atk_per;matk;matk_max;def;def_per;mdef;mdef_per;hit;flee;flee_per;crit;karma;manner]wbbbbbbbbbbbbwwwwwwwwwwwwww');
-		foreach ($d as $k => $v) $o->player->$k = $v;
-		//$o->player->trace(); exit;
-
-		$o->onCharaInfoUpdate(false, false);
-	}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -465,73 +490,6 @@
 		//print_r($d);
 	}
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-	function parse_recv_0078_0079(GenericBot &$o, $p, $d) {
-		$entity = Entity::getEntityByIdCreate($o, $d['id']);
-
-		if (isset($d['pos']) && sizeof($d['pos']) >= 2) {
-			$entity->setXY($d['pos'][0], $d['pos'][1]);
-		}
-
-		foreach (array('speed', 'opt1', 'opt2', 'option', 'view_class', 'hair', 'weapon', 'head_bottom',
-		'shield', 'head_top', 'head_mid', 'hair_color', 'clothes_color', 'head_dir',
-		'manner', 'karma', 'sex', 'dead_sit', 'base_level') as $k) {
-			if (isset($d[$k])) $entity->$k = $d[$k];
-		}
-
-		//$entity->emblem = &Emblem::getEmblemByIdCreate($o, $d['emblem_id']);
-		//$entity->guild  = &Guild::getGuildByIdCreate($o, $d['guild_id']);
-		Emblem::getEmblemByIdCreate($o, $d['emblem_id']);
-		Guild::getGuildByIdCreate($o, $d['guild_id']);
-
-		//$entity->trace();
-		sendGetEntityName($o, $d['id']);
-
-		if (isset($entity->_name) && $entity->_name) $o->onAppear($entity);
-
-		$entity->visible = true;
-	}
-
-	// 0078 - Unit Exists
-	function parse_recv_0078(GenericBot &$o, $p, $d) {
-		parse_recv_0078_0079($o, $p, parse_str_packet($d, 'a[id;speed;opt1;opt2;option;view_class;hair;weapon;head_bottom;shield;head_top;head_mid;hair_color;clothes_color;head_dir;guild_id;emblem_id;manner;karma;sex;pos;dead_sit;base_level]lwwwwwwwwwwwwwwllwbbpw-bw'));
-
-		//$entity->visible = true;
-	}
-
-	// 0079 - Unit Connected
-	function parse_recv_0079(GenericBot &$o, $p, $d) {
-		parse_recv_0078_0079($o, $p, parse_str_packet($d, 'a[id;speed;opt1;opt2;option;view_class;hair;weapon;head_bottom;shield;head_top;head_mid;hair_color;clothes_color;head_dir;guild_id;emblem_id;manner;karma;sex;pos;dead_sit]lwwwwwwwwwwwwwwllwbbpw-b'));
-
-		//$entity->visible = true;
-	}
-
-	// 007b - Unit Move
-	function parse_recv_007b(GenericBot &$o, $p, $d) {
-		$d = parse_str_packet($d, 'a[id;speed;opt1;opt2;option;view_class;hair;weapon;shield;head_bottom;tick;head_top;head_mid;hair_color;clothes_color;head_dir;guild_id;emblem_id;manner;karma;sex;pos_m;max_level]lwwwwwwwwwlwwwwwllwbbqb-b-b-w');
-		$pm = &$d['pos_m'];
-
-		$entity = &Entity::getEntityByIdCreate($o, $d['id']);
-
-		//echo 'UNIT MOVE: - ' . $entity->id . ' : ' . $p . "\n";
-
-		foreach (array('speed', 'opt1', 'opt2', 'option', 'view_class', 'hair', 'weapon', 'shield',
-		'head_bottom', 'tick', 'head_top', 'head_mid', 'hair_color', 'clothes_color', 'head_dir',
-		'manner', 'karma', 'sex', 'max_level') as $k) $entity->$k == $d[$k];
-
-		//$entity->visible = true; $entity->setXY($pm[0], $pm[1]);
-
-		//$entity->emblem = &Emblem::getEmblemByIdCreate($o, $d['emblem_id']);
-		//$entity->guild  = &Guild::getGuildByIdCreate($o, $d['guild_id']);
-
-		$entity->move($pm[0], $pm[1], $pm[2], $pm[3], $d['speed']);
-	}
 
 	// 0087 - You Move
 	function parse_recv_0087(GenericBot &$o, $p, $d) {
