@@ -1,0 +1,105 @@
+# <switch> <length> <description>
+# Total Packets: 103
+0064 55 Master Login
+0065 17 Game Login
+0066 3 Char Login
+0072 19 Map Login
+007D 2 Map Loaded
+007E 6 Sync
+0085 5 Move
+0089 7 Attack / Sit / Stand
+008C 0 Chat
+0090 7 Talk
+0094 6 Get Unit Info
+0096 0 Private Msg
+009B 5 Look
+009F 6 Take
+00A2 6 Drop
+00A7 8 Item Use
+00A9 6 Equip
+00AB 4 Unequip
+00B2 3 Respawn
+00B8 7 Talk Response
+00B9 6 Talk Continue
+00BB 5 Add Status Point
+00BF 3 Emotion
+00C1 2 Who
+00C5 7 Get Store / Sell List
+00C8 0 Buy
+00C9 0 Sell
+00CF 27 Ignore
+00D0 3 Ignore All
+00D3 2 Ignore List Request
+00D5 0 Chat Room Create
+00D9 14 Chat Room Join
+00DE 0 Chat Room Change
+00E0 30 Chat Room Bestow
+00E2 26 Chat Room Kick
+00E3 2 Chat Room Leave
+00E4 6 Deal
+00E6 3 Deal Accept / Cancel
+00E8 8 Deal Add Item
+00EB 2 Deal OK / Finalize
+00ED 2 Current Deal Cancel
+00EF 2 Deal Trade
+00F3 8 Storage Add
+00F5 8 Storage Get
+00F7 2 Storage Close
+00F9 26 Party Organize
+00FC 6 Party Join Request
+00FF 10 Party Join
+0100 2 Party Leave
+0102 6 Party Share EXP
+0103 30 Party Kick
+0108 0 Party Chat
+0112 4 Add Skill Point
+0113 10 Skill Use
+0116 10 Skill Use Location
+0118 2 Attack Stop
+011B 20 Teleport / Warp Portal
+011D 2 Memo
+0126 8 Cart Add
+0127 8 Cart Get
+0128 8 Cart Get (Shop)
+0129 8 Cart Storage Add
+012E 2 Shop Close
+012F 0 Shop Open
+0130 6 Vender Items List
+0134 12 Vender Buy
+0146 6 Talk Cancel
+0149 7 Alignment
+014D 2 Guild First Query
+014F 6 Guild Query Page
+0151 6 Emblem Request
+0155 16 
+0157 6 
+0159 54 Guild Leave
+015B 54 Guild Member Delete
+0161 44 
+0168 14 Guild Join Request
+016B 10 Guild Join
+016E 186 Guild Notice
+0170 14 Guild Ally Request
+0172 10 Guild Ally
+0178 4 Identify
+017A 4 Card Merge Request
+017C 6 Card Merge
+017E 0 Guild Chat
+0180 6 Guild Enemy Request
+0183 10 Guild Delete Request
+0187 6 Char BAN Check
+018A 4 Exit
+018E 10 Tempering
+0190 90 
+0193 6 Character Name Request
+019F 6 Pet Catch
+01A1 3 Pet Command
+01A5 30 Pet Name
+01A7 4 Pet Incubator
+01A9 6 Pet Talk / Emo
+01AE 4 
+01AF 4 
+01B2 0 Shop Open
+01DB 2 Login Code Request
+01DD 47 Login
+01FA 48 Login
