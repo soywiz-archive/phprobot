@@ -38,7 +38,7 @@
 		}
 
 		function GetEntityById($Id) {
-			return isset($this->ListId[$Id]) ? this->ListId[$Id] : false;
+			return isset($this->ListId[$Id]) ? $this->ListId[$Id] : false;
 		}
 
 		// Entity

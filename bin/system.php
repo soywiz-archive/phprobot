@@ -63,4 +63,6 @@
 
 		return $return;
 	}
+
+	chdir(dirname($_SERVER['PHP_SELF']));
 ?>

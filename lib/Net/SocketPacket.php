@@ -35,6 +35,8 @@
 						if (strlen($s) >= $l) return true;
 					} else {
 						// Paquete no definido
+						$this->Dump();
+
 						throw(new Exception('Paquete desconocido: 0x' . dechex($p) . '. Borrando buffer (Es posible que se pierda información)' . "\n"));
 						$s = '';
 						//throw(new Exception('Paquere desconocido 0x' . dechex($p)));
@@ -51,6 +53,8 @@
 
 				$p = ExtR16($s);
 
+				echo "Recibido Paquete 0x" . str_pad(dechex($p), 4, '0', STR_PAD_LEFT) . "\n";
+
 				// No está definida la estructura del paquete
 				if (($l = $this->PacketList->PacketLength($p)) === false) {
 					return false;
@@ -64,6 +68,16 @@
 			}
 
 			return false;
+		}
+
+		function Dump() {
+			$l = strlen($b = &$this->SockBuffer);
+			echo "\n\nDUMP ($l) ";
+			for ($n = 0; $n < $l; $n++) {
+				echo str_pad(dechex(ord($b[$n])), 2, '0', STR_PAD_LEFT);
+				echo " ";
+			}
+			echo "\n\n";
 		}
 	}
 ?>

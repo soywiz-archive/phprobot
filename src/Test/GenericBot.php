@@ -25,9 +25,11 @@
 		}
 
 		function OnCharaSelect(EntityList &$EntityList) {
-			print_r($EntityList->GetListBySimilarName('Test'));
-			$this->CharaSelect();
-			exit;
+			$this->CharaSelect('Test');
+		}
+
+		function OnCharaSelectSuccess(ServerZone &$Zone) {
+			$this->ConnectZone();
 		}
 	}
 

@@ -14,7 +14,20 @@
 		public $Type;
 
 		protected function SetType()      { $this->Type = EntityType::UNKNOWN; }
-		protected function SetName($Name) { $this->Name = $Name; $this->EntityList->Update($this); }
+		protected function SetName($Name) { $this->Name = $Name; $this->Update(); }
+
+		public function Dump() {
+			$EntityList = &$this->EntityList;
+			$this->EntityList = null;
+
+			print_r($this);
+
+			$this->EntityList = &$EntityList;
+		}
+
+		public function Update() {
+			$this->EntityList->Update($this);
+		}
 
 		protected function EntityInit(EntityList &$EntityList) {
 			$this->EntityList = &$EntityList;
@@ -40,6 +53,10 @@
 	class Position {
 		public $X;
 		public $Y;
+
+		function __construct($X, $Y) {
+			list($this->X, $this->Y) = array($X, $Y);
+		}
 	}
 
 	class Direction {

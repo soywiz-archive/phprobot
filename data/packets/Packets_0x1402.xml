@@ -117,7 +117,7 @@
 	<packet id="0x006f" length="0" server="chara" sender="server" shortdescription="Success to Delete Character">
 	</packet>
 	
-	<packet id="0x0071" length="0" server="chara" sender="server" shortdescription="Recieved character ID and Map IP from Game Login Server">
+	<packet id="0x0071" length="26" server="chara" sender="server" shortdescription="Recieved character ID and Map IP from Game Login Server">
 		<entry name="Id"        type="uint32" />
 		<entry name="Map"       type="stringz"  length="16" />
 		<entry name="IpRaw"     type="uint32"   reverse="true" />

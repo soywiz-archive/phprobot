@@ -1,27 +1,6 @@
 <?php
 	Import('Ragnarok.Server');
 
-/*
-R 006c <error No>.B
-	キャラクタ選択失敗
-	fail to select character
-R 006d <charactor select data>.106B
-	キャラクタ作成成功
-	success to create new character
-R 006e <error No>.B
-	キャラクタ作成失敗
-	fail to create new character
-R 006f
-	キャラクタ削除成功
-	success to delete character
-R 0070 <error No>.B
-	キャラクタ削除失敗
-	fail to delete character
-R 0071 <charactor ID>.l <map name>.16B <ip>.l <port>.w
-	キャラクタ選択成功&マップ名&ゲーム鯖IP/port
-	success to select character & map name and ip/port number for game server
-*/
-
 	// 006b - Recieved characters from Game Login Server
 	function RecivePacket0x006b(GenericBot &$Bot, $PId, $Data, $DataRaw) {
 		$EntityList = new EntityList();
@@ -34,7 +13,7 @@ R 0071 <charactor ID>.l <map name>.16B <ip>.l <port>.w
 			$Entity->Visible = true;
 		}
 
-		Bot->ServerCharaList = &$EntityList;
+		$Bot->ServerCharaList = &$EntityList;
 
 		$Bot->SetStepCallBack('OnCharaSelect', $EntityList);
   	}
@@ -66,6 +45,11 @@ R 0071 <charactor ID>.l <map name>.16B <ip>.l <port>.w
 
   	// 0071 - Success to Select Character & Map Name And Ip/Port Number for Game Server
   	function RecivePacket0x0071(GenericBot &$Bot, $PId, $Data, $DataRaw) {
-		$Bot->SetStepCallBack('OnCharaSelectSuccess');
+		$ServerZone = new ServerZone($Data['Map'], $Data['Ip'], $Data['Port']);
+		$Bot->Id = $Data['Id'];
+		$Bot->Update();
+		$Bot->ServerZone = $ServerZone;
+
+		$Bot->SetStepCallBack('OnCharaSelectSuccess', $ServerZone);
 	}
 ?>

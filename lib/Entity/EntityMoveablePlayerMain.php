@@ -13,7 +13,7 @@
 		public $LevelJob;
 
 		public $PointsSkill;
-		public $PointsStat;
+		public $PointsStatus;
 
 		public $WalkSpeed;
 		public $Aspd;

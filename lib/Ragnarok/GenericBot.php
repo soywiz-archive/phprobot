@@ -22,13 +22,13 @@
 		public  $ClientCode               = 0x14;
 		public  $ClientProtocolVersion    = 0x02;
 
-		const   SERVER_NONE                = 0;
-		const   SERVER_MASTER              = 1;
-		const   SERVER_CHARA               = 2;
-		const   SERVER_ZONE                = 3;
+		const   SERVER_NONE               = 0;
+		const   SERVER_MASTER             = 1;
+		const   SERVER_CHARA              = 2;
+		const   SERVER_ZONE               = 3;
 
-		const   STATUS_OK                  = 0;
-		const   STATUS_ERROR               = 1;
+		const   STATUS_OK                 = 0;
+		const   STATUS_ERROR              = 1;
 
 		public  $IdLogin1                 = 0x00000000;
 		public  $IdLogin2                 = 0x00000000;
@@ -36,6 +36,22 @@
 		public  $DateLastLogin            = '';
 
 		public  $ServerCharaList          = array();
+		public  $ServerZone;
+
+		public function Dump() {
+			$EntityList             = $this->EntityList;
+			$SocketPacket           = $this->SocketPacket;
+			$ServerCharaList        = $this->ServerCharaList;
+			$this->EntityList       = null;
+			$this->SocketPacket     = null;
+			$this->ServerCharaList  = null;
+
+			print_r($this);
+
+			$this->EntityList       = $EntityList;
+			$this->SocketPacket     = $SocketPacket;
+			$this->ServerCharaList  = $ServerCharaList;
+		}
 
 		function __construct() {
 			$this->ConnectionServer  = self::SERVER_NONE;
@@ -118,6 +134,8 @@
 			$this->SocketPacket->Connect($Host, 6900);
 
 			SendMasterLogin($this, $User, $Password, $this->ClientCode, $this->ClientProtocolVersion);
+
+			$this->ConnectionServer = self::SERVER_MASTER;
 		}
 
 		public function ConnectChara($ServerChara) {
@@ -142,6 +160,18 @@
 			SendCharaLogin($this);
 
 			$this->IdAccount2 = GetR32($this->SocketPacket->Extract(4));
+
+			$this->ConnectionServer = self::SERVER_CHARA;
+		}
+
+		public function ConnectZone($ServerZone = null) {
+			if (!isset($ServerZone)) $ServerZone = $this->ServerZone;
+
+			$this->SocketPacket->Connect($ServerZone->Ip, $ServerZone->Port);
+
+			SendZoneLogin($this);
+
+			$this->ConnectionServer = self::SERVER_ZONE;
 		}
 
 		public function CharaSelect($Chara) {
@@ -150,7 +180,7 @@
 				if (isset($List[$Chara])) {
 					$Chara = &$List[$Chara];
 				} else {
-					$Chara = $EntityList->GetListBySimilarName($Chara)
+					$Chara = $this->ServerCharaList->GetEntityBySimilarName($Chara);
 				}
 			}
 
@@ -158,6 +188,11 @@
 			if (!($Chara instanceof Entity)) {
 				throw(new Exception('No se pudo elegir el character "' . $Chara . '"'));
 			}
+
+			SendCharaSelect($this, $Chara->Position);
+
+			//$this->SocketPacket->Extract(0);
+			//echo GetR32($) . "\n";
 		}
 
 		public function Disconnect() {
