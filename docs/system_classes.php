@@ -1,4 +1,31 @@
 <?php
+/*
+
+Directories:
+
+	bin
+		php5ts.dll
+		php.exe
+		php.ini
+		system.php
+	map
+		mapas
+	cfg
+		...
+	lib
+		php_grf.dll
+		php_path.dll
+		php_bz2.dll
+	src
+		Net
+			Socket
+		Entity
+			...
+	util
+Notas:
+	En "php.ini" el fichero de preppend debe ser "system.php"
+
+*/
 	class Error {
 		public $Id;
 		public $Text;
