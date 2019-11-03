@@ -1,0 +1,475 @@
+<?xml version="1.0" ?>
+<packets>
+	<packet id="0x0081" length="1" description="Disconnected from Server">
+		<entry name="error" type="uint8" />
+	</packet>
+
+	<packet id="0x0073" length="9" description="Enter Map">
+		<entry name="Tick" type="uint32" />
+		<entry name="Position" type="pos24" />
+		<entry name="Unused1" type="uint16" unused="true" />
+	</packet>
+
+	<packet id="0x0078" length="52" description="Unit Exists">
+		<entry name="Id" type="uint32" />
+		<entry name="Speed" type="uint16" />
+		<entry name="Option1" type="uint16" />
+		<entry name="Option2" type="uint16" />
+		<entry name="Option" type="uint16" />
+		<entry name="ViewClass" type="uint16" />
+		<entry name="Hair" type="uint16" />
+		<entry name="Weapon" type="uint16" />
+		<entry name="HeadBottom" type="uint16" />
+		<entry name="Shield" type="uint16" />
+		<entry name="HeadTop" type="uint16" />
+		<entry name="HeadMiddle" type="uint16" />
+		<entry name="HairColor" type="uint16" />
+		<entry name="ClothesColor" type="uint16" />
+		<entry name="HeadDirection" type="uint16" />
+		<entry name="GuildId" type="uint32" />
+		<entry name="EmblemId" type="uint32" />
+		<entry name="Manner" type="uint16" />
+		<entry name="Karma" type="uint8" />
+		<entry name="Sex" type="uint8" />
+		<entry name="Position" type="pos24" />
+		<entry name="Unused1" type="uint16" unused="true" />
+		<entry name="Status" type="uint8" />
+		<entry name="Level" type="uint16" />
+	</packet>
+
+	<packet id="0x0079" length="51" description="Unit Connected">
+		<!-- CHECK !-->
+		<entry name="Id" type="uint32" />
+		<entry name="Speed" type="uint16" />
+		<entry name="Option1" type="uint16" />
+		<entry name="Option2" type="uint16" />
+		<entry name="Option" type="uint16" />
+		<entry name="ViewClass" type="uint16" />
+		<entry name="Hair" type="uint16" />
+		<entry name="Weapon" type="uint16" />
+		<entry name="HeadBottom" type="uint16" />
+		<entry name="Shield" type="uint16" />
+		<entry name="HeadTop" type="uint16" />
+		<entry name="HeadMiddle" type="uint16" />
+		<entry name="HairColor" type="uint16" />
+		<entry name="ClothesColor" type="uint16" />
+		<entry name="HeadDirection" type="uint16" />
+		<entry name="GuildId" type="uint32" />
+		<entry name="EmblemId" type="uint32" />
+		<entry name="Manner" type="uint16" />
+		<entry name="Karma" type="uint8" />
+		<entry name="Sex" type="uint8" />
+		<entry name="Position" type="pos24" />
+		<entry name="Unused1" type="uint16" unused="true" />
+		<entry name="Status" type="uint8" />
+	</packet>
+
+	<packet id="0x007b" length="58" description="Entity Move">
+		<!--
+			a[id;speed;opt1;opt2;option;view_class;hair;weapon;shield;head_bottom;tick;head_top;head_mid;hair_color;clothes_color;head_dir;guild_id;emblem_id;manner;karma;sex;pos_m;max_level]
+			lwwwwwwwwwlwwwwwllwbbqb-b-b-w
+		!-->
+		<entry name="Id" type="uint32" />
+		<entry name="Speed" type="uint16" />
+		<entry name="Option1" type="uint16" />
+		<entry name="Option2" type="uint16" />
+		<entry name="Option" type="uint16" />
+		<entry name="ViewClass" type="uint16" />
+		<entry name="Hair" type="uint16" />
+		<entry name="Weapon" type="uint16" />
+		<entry name="HeadBottom" type="uint16" />
+		<entry name="Tick" type="uint32" />
+		<entry name="HeadTop" type="uint16" />
+		<entry name="HeadMiddle" type="uint16" />
+		<entry name="HairColor" type="uint16" />
+		<entry name="ClothesColor" type="uint16" />
+		<entry name="HeadDirection" type="uint16" />
+		<entry name="GuildId" type="uint32" />
+		<entry name="EmblemId" type="uint32" />
+		<entry name="Manner" type="uint16" />
+		<entry name="Karma" type="uint8" />
+		<entry name="Sex" type="uint8" />
+		<entry name="PositionMove" type="pos40" />
+		<entry name="Unused1" type="uint8" unused="true" />
+		<entry name="Unused2" type="uint8" unused="true" />
+		<entry name="Unused3" type="uint8" unused="true" />
+		<entry name="Level" type="uint16" />
+	</packet>
+
+	<packet id="0x007f" length="4" description="Server Tick">
+		<entry name="Tick" type="uint32" />
+	</packet>
+
+	<packet id="0x0080" length="5" description="Unit Lost">
+		<entry name="Id" type="uint32" />
+		<entry name="Type" type="uint8" />
+	</packet>
+
+	<packet id="0x0087" length="10" description="You Move">
+		<entry name="Tick" type="uint32" />
+		<entry name="PositionMove" type="pos40" />
+		<entry name="Unused1" type="uint8" unused="true" />
+	</packet>
+
+	<packet id="0x0088" length="8" description="Unit Position">
+		<entry name="Id" type="uint32" />
+		<entry name="X" type="uint16" />
+		<entry name="Y" type="uint16" />
+	</packet>
+
+	<packet id="0x008a" length="27" description="Attack Damage/Sit/Stand">
+		<!-- a[src_id;dst_id;tick;src_speed;dst_speed;param1;param2;type;param3]lllllwwbw !-->
+		<entry name="IdFrom" type="uint32" />
+		<entry name="IdTo" type="uint32" />
+		<entry name="Tick" type="uint32" />
+		<entry name="SpeedFrom" type="uint32" />
+		<entry name="SpeedTo" type="uint32" />
+		<entry name="Param1" type="uint16" />
+		<entry name="Param2" type="uint16" />
+		<entry name="Type" type="uint8" />
+		<entry name="Param3" type="uint16" />
+	</packet>
+
+	<packet id="0x0095" length="28" description="Entity Name (1)">
+		<entry name="Id" type="uint32" />
+		<entry name="Name" type="stringz" length="24" />
+	</packet>
+
+	<packet id="0x0097" length="-" description="Private Message From Player">
+		<entry name="Name" type="stringz" length="24" />
+		<entry name="Text" type="stringz" length="rest" />
+	</packet>
+
+	<packet id="0x008d" length="-" description="Global Message From Player">
+		<entry name="Id" type="uint32" />
+		<entry name="Text" type="stringz" length="rest" />
+	</packet>
+
+	<packet id="0x008e" length="-" description="Global Message">
+		<entry name="Text" type="stringz" length="rest" />
+	</packet>
+
+	<packet id="0x009c" length="-" description="Unit Look">
+		<entry name="Id" type="uint32" />
+		<entry name="Direction1" type="uint16" />
+		<entry name="Direction2" type="uint8" />
+	</packet>
+
+	<packet id="0x00a3" length="-" description="Inventory Item List (1)">
+		<!-- a[items]x[rest][a[index;id;type;identify;amount;equip]wwbbww] !-->
+		<entry name="List" type="group" length="rest">
+			<!-- a[index;id;type;identify;amount;equip]wwbbww !-->
+			<entry name="Index" type="uint16" />
+			<entry name="Id" type="uint16" />
+			<entry name="Type" type="uint8" />
+			<entry name="Identify" type="uint8" />
+			<entry name="Amount" type="uint16" />
+			<entry name="Equip" type="uint16" />
+		</entry>
+	</packet>
+
+	<packet id="0x00a3" length="-" description="Inventory Equipment List">
+		<!-- a[equip]x[rest][a[index;id;type;identify;point;equipped;attr;refine;card1;card2;card3;card4]wwbbwwbbwwww] !-->
+		<entry name="List" type="group" length="rest">
+			<!-- a[index;id;type;identify;point;equipped;attr;refine;card1;card2;card3;card4]wwbbwwbbwwww !-->
+			<entry name="Index" type="uint16" />
+			<entry name="Id" type="uint16" />
+			<entry name="Type" type="uint8" />
+			<entry name="Identify" type="uint8" />
+			<entry name="Point" type="uint16" />
+			<entry name="Equip" type="uint16" />
+			<entry name="Attribute" type="uint8" />
+			<entry name="Refined" type="uint8" />
+			<entry name="Card1" type="uint16" />
+			<entry name="Card2" type="uint16" />
+			<entry name="Card3" type="uint16" />
+			<entry name="Card4" type="uint16" />
+		</entry>
+	</packet>
+
+	<packet id="0x00b0" length="6" description="Update Status Long (1)">
+		<entry name="Type" type="uint16" />
+		<entry name="Value" type="uint32" />
+	</packet>
+
+	<packet id="0x00b1" length="6" description="Update Status Long (2)">
+		<entry name="Type" type="uint16" />
+		<entry name="Value" type="uint32" />
+	</packet>
+
+	<packet id="0x00bd" length="42" description="Player Status Info">
+		<entry name="StatusPoints" type="uint16" />
+		<entry name="Str" type="uint8" />
+		<entry name="StrBonus" type="uint8" />
+		<entry name="Agi" type="uint8" />
+		<entry name="AgiBonus" type="uint8" />
+		<entry name="Vit" type="uint8" />
+		<entry name="VitBonus" type="uint8" />
+		<entry name="Int" type="uint8" />
+		<entry name="IntBonus" type="uint8" />
+		<entry name="Dex" type="uint8" />
+		<entry name="DexBonus" type="uint8" />
+		<entry name="Luk" type="uint8" />
+		<entry name="LukBonus" type="uint8" />
+		<entry name="Atack" type="uint16" />
+		<entry name="AtackPercent" type="uint16" />
+		<entry name="MagicAtack" type="uint16" />
+		<entry name="MagicAtackMax" type="uint16" />
+		<entry name="Defense" type="uint16" />
+		<entry name="DefensePercent" type="uint16" />
+		<entry name="MagicDefense" type="uint16" />
+		<entry name="MagicDefensePercent" type="uint16" />
+		<entry name="Hit" type="uint16" />
+		<entry name="Flee" type="uint16" />
+		<entry name="FleePercent" type="uint16" />
+		<entry name="Critical" type="uint16" />
+		<entry name="Karma" type="uint16" />
+		<entry name="Manner" type="uint16" />
+	</packet>
+
+	<packet id="0x00c3" length="48" description="Change Equipment Display">
+		<entry name="Id" type="uint32" />
+		<entry name="Type" type="uint8" />
+		<entry name="Value" type="uint8" />
+	</packet>
+
+	<packet id="0x00e5" length="24" description="Trade Request">
+		<entry name="Name" type="stringz" length="24" />
+	</packet>
+
+	<packet id="0x00e7" length="1" description="Trade Response">
+		<entry name="Response" type="uint8" />
+	</packet>
+
+	<packet id="0x00ea" length="3" description="Trade Add Items">
+		<entry name="Item" type="uint16" />
+		<entry name="Mes" type="uint8" />
+	</packet>
+
+	<packet id="0x00ec" length="1" description="Trade Ok From">
+		<entry name="From" type="uint8" />
+	</packet>
+
+	<packet id="0x00ee" length="0" description="Trade Cancel">
+		<!-- TODO !-->
+	</packet>
+
+	<packet id="0x00f0" length="0" description="Trade Success">
+		<!-- TODO !-->
+	</packet>
+
+	<packet id="0x00fb" length="-" description="Party List">
+		<!-- a[name;players]z[24]x[rest][a[id;name;map_name;leader;online]lz[24]z[16]bb] !-->
+		<entry name="Name" type="stringz" length="24" />
+		<entry name="List" type="group" length="rest">
+			<!-- a[id;name;map_name;leader;online]lz[24]z[16]bb !-->
+			<entry name="Id" type="uint32" />
+			<entry name="Name" type="stringz" length="24" />
+			<entry name="MapName" type="stringz" length="16" />
+			<entry name="Leader" type="uint8" />
+			<entry name="Online" type="uint8" />
+		</entry>
+	</packet>
+
+	<packet id="0x0101" length="4" description="Party Configuration">
+		<entry name="ShareExperience" type="uint16" />
+		<entry name="ShareItems" type="uint16" />
+	</packet>
+
+	<packet id="0x0106" length="8" description="Party HP">
+		<entry name="Id" type="uint32" />
+		<entry name="Hp" type="uint16" />
+		<entry name="HpMax" type="uint16" />
+	</packet>
+
+	<packet id="0x0107" length="8" description="Party Move">
+		<entry name="Id" type="uint32" />
+		<entry name="X" type="uint16" />
+		<entry name="Y" type="uint16" />
+	</packet>
+
+	<packet id="0x010f" length="-" description="Skill List">
+		<!-- a[id;target;level_max;sp_max;range;name;canup]www-wwwz[24]b !-->
+		<entry name="List" type="group" length="rest">
+			<entry name="Id" type="uint16" />
+			<entry name="Target" type="uint16" />
+			<entry name="Unused1" type="uint16" unused="true" />
+			<entry name="MaxLevel" type="uint16" />
+			<entry name="MaxSp" type="uint16" />
+			<entry name="Range" type="uint16" />
+			<entry name="Name" type="stringz" length="24" />
+			<entry name="CanUp" type="uint8" />
+		</entry>
+	</packet>
+
+	<packet id="0x0110" length="10" description="Skill Use Failed">
+		<entry name="Id" type="uint16" />
+		<entry name="BType" type="uint16" />
+		<entry name="Unused1" type="uint16" unused="true" />
+		<entry name="Unused2" type="uint16" unused="true" />
+		<entry name="Type" type="uint8" />
+	</packet>
+
+	<packet id="0x0119" length="10" description="Unit Status">
+		<entry name="Id" type="uint32" />
+		<entry name="Option1" type="uint16" />
+		<entry name="Option2" type="uint16" />
+		<entry name="Option" type="uint16" />
+	</packet>
+
+	<packet id="0x011a" length="13" description="Skill Restore">
+		<!-- a[skill;value;id_dst;id_src;fail]wwllb !-->
+		<entry name="SkillId" type="uint16" />
+		<entry name="Value" type="uint16" />
+		<entry name="IdTo" type="uint32" />
+		<entry name="IdFrom" type="uint32" />
+		<entry name="Fail" type="uint8" />
+	</packet>
+
+	<packet id="0x013a" length="2" description="Update Attack Range">
+		<entry name="Range" type="uint16" />
+	</packet>
+
+	<packet id="0x013d" length="4" description="Update HP/SP">
+		<entry name="Type" type="uint16" />
+		<entry name="Value" type="uint16" />
+	</packet>
+
+	<packet id="0x013e" length="22" description="Skill Cast">
+		<!-- a[id_src;id_dst;x_dst;y_dst;skill_num;skill;time]llwwwll !-->
+		<entry name="IdFrom" type="uint32" />
+		<entry name="IdTo" type="uint32" />
+		<entry name="X" type="uint16" />
+		<entry name="Y" type="uint16" />
+		<entry name="SkillNum" type="uint16" />
+		<entry name="Skill" type="uint32" />
+		<entry name="Time" type="uint32" />
+	</packet>
+
+	<packet id="0x0141" length="12" description="Update Status+Bonus">
+		<entry name="Type" type="uint32" />
+		<entry name="Value1" type="uint32" />
+		<entry name="Value2" type="uint32" />
+	</packet>
+
+	<packet id="0x0194" length="28" description="Entity Name (2)">
+		<entry name="Id" type="uint32" />
+		<entry name="Name" type="stringz" length="24" />
+	</packet>
+
+	<packet id="0x0195" length="102" description="Player Guild Info">
+		<!-- a[id;name;guild_name;title]lz[24]z[24]-z[24]z[24] !-->
+		<entry name="Id" type="uint32" />
+		<entry name="Name" type="stringz" length="24" />
+		<entry name="GuildName" type="stringz" length="24" />
+		<entry name="Unused1" type="stringz" length="24" unused="true" />
+		<entry name="Title" type="stringz" length="24" />
+	</packet>
+
+	<packet id="0x0196" length="7" description="Unit Effects">
+		<entry name="Type" type="uint16" />
+		<entry name="Id" type="uint32" />
+		<entry name="Flag" type="uint8" />
+	</packet>
+
+	<packet id="0x019b" length="8" description="Effect">
+		<entry name="Id" type="uint32" />
+		<entry name="Type" type="uint32" />
+	</packet>
+
+	<packet id="0x01aa" length="8" description="Pet Talk">
+		<!-- TODO !-->
+	</packet>
+
+	<packet id="0x01d0" length="6" description="Spirit Spheres (1)">
+		<entry name="Id" type="uint32" />
+		<entry name="Count" type="uint16" />
+	</packet>
+
+	<packet id="0x01d7" length="6" description="Update Weapon/Armor Display">
+		<entry name="Id" type="uint32" />
+		<entry name="Type" type="uint8" />
+		<entry name="Value1" type="uint16" />
+		<entry name="Value2" type="uint16" />
+	</packet>
+
+	<packet id="0x01d8" length="52" description="Unit Exists">
+		<!-- a[id;speed;opt1;opt2;option;view_class;viewid1;viewid2;head_bottom;head_top;head_mid;hair_color;clothes_color;head_dir;guild_id;emblem_id;manner;karma;sex;pos;dead_sit;base_level]lwwwwwwwwwwwwwllwbbpw-bw !-->
+		<entry name="Id" type="uint32" />
+		<entry name="Speed" type="uint16" />
+		<entry name="Option1" type="uint16" />
+		<entry name="Option2" type="uint16" />
+		<entry name="Option" type="uint16" />
+		<entry name="ViewClass" type="uint16" />
+		<entry name="ViewId1" type="uint16" />
+		<entry name="ViewId2" type="uint16" />
+		<entry name="HeadBottom" type="uint16" />
+		<entry name="HeadTop" type="uint16" />
+		<entry name="HeadMiddle" type="uint16" />
+		<entry name="HairColor" type="uint16" />
+		<entry name="ClothesColor" type="uint16" />
+		<entry name="HeadDirection" type="uint16" />
+		<entry name="GuildId" type="uint32" />
+		<entry name="EmblemId" type="uint32" />
+		<entry name="Manner" type="uint16" />
+		<entry name="Karma" type="uint8" />
+		<entry name="Sex" type="uint8" />
+		<entry name="Position" type="pos24" />
+		<entry name="Unused1" type="uint16" unused="true" />
+		<entry name="Status" type="uint8" />
+		<entry name="Level" type="uint16" />
+	</packet>
+
+	<packet id="0x01d9" length="53" description="Unit Connected">
+		<!-- TODO !-->
+	</packet>
+
+	<packet id="0x01da" length="60" description="Unit Moved">
+		<!-- TODO !-->
+	</packet>
+
+	<packet id="0x01e1" length="28" description="Spirit Spheres (2)">
+		<entry name="Id" type="uint32" />
+		<entry name="Count" type="uint16" />
+	</packet>
+
+	<packet id="0x01ee" length="-" description="Inventory Item List (2)">
+		<!-- a[items]x[rest][a[index;id;type;identify;amount;equip;card1;card2;card3;card4]wwbbwwwwww] !-->
+		<entry name="List" type="group" length="rest">
+			<!-- a[index;id;type;identify;amount;equip;card1;card2;card3;card4]wwbbwwwwww !-->
+			<entry name="Index" type="uint16" />
+			<entry name="Id" type="uint16" />
+			<entry name="Type" type="uint8" />
+			<entry name="Identify" type="uint8" />
+			<entry name="Amount" type="uint16" />
+			<entry name="Equip" type="uint16" />
+			<entry name="Card1" type="uint16" />
+			<entry name="Card2" type="uint16" />
+			<entry name="Card3" type="uint16" />
+			<entry name="Card4" type="uint16" />
+		</entry>
+	</packet>
+
+	<packet id="0x016c" length="41" description="Guild Name">
+		<!-- a[id;emblem;count;name]llll-b-z[24] !-->
+		<entry name="Id" type="uint32" />
+		<entry name="Emblem" type="uint32" />
+		<entry name="Count" type="uint32" />
+		<entry name="Unused1" type="uint32" unused="true" />
+		<entry name="Unused2" type="uint8" unused="true" />
+		<entry name="Name" type="stringz" length="24" />
+	</packet>
+
+	<packet id="0x016d" length="12" description="Guild Member Online Status">
+		<!-- a[id;account_id;status]lll !-->
+		<entry name="Id" type="uint32" />
+		<entry name="AccountId" type="uint32" />
+		<entry name="Status" type="uint32" />
+	</packet>
+
+	<packet id="0x016f" length="120" description="Guild Notice">
+		<!-- a[text1;text2]z[60]z[60] !-->
+		<entry name="Text1" type="stringz" length="60" />
+		<entry name="Text2" type="stringz" length="60" />
+	</packet>
+</packets>
