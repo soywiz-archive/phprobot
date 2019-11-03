@@ -1,0 +1,21 @@
+td, body, p {
+	font-family: Verdana;
+	font-size:   14px;
+}
+
+td, ul, il {
+	font-family: Courier New;
+	font-size:   14px;
+}
+
+a:link {
+	color: #2222ff;
+}
+
+a:visited, a:active {
+	color: #444499;
+}
+
+a:hover {
+	color: red;
+}
